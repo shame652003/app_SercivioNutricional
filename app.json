@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "app_SercivioNutricional",
-    "slug": "app_SercivioNutricional",
+    "name": "ServicioNutricionalUPTAEB",
+    "slug": "ServicioNutricionalUPTAEB",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/adaptive-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -20,10 +20,16 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.shame652003.ServicioNutricionalUPTAEB"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e0d7d8c1-027b-477e-bc4d-3d15fd22c7fd"
+      }
     }
   }
 }
