@@ -6,9 +6,9 @@ import RecuperarContraseñaScreen from '../screens/RecuperarContraseñaScreen';
 import HomeScreen from '../screens/HomeScreen';
 import PerfilScreen from '../screens/PerfilScreen';
 import CambioContraseñaScreen from '../screens/CambioContraseñaScreen';
-import { RootStackParamList } from '../types';
 import {Provider as PaperProvider,} from 'react-native-paper';
 import StockAlimentosScreen from '../screens/StockAlimentosScreen';
+import { RootStackParamList } from '../types';
 
 export default function Navigation() {
   return (
@@ -23,7 +23,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   return (
-    <Stack.Navigator initialRouteName="LoginScreen">
+    <Stack.Navigator initialRouteName="LoginScreen" id={undefined}>
       <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="RecuperarContraseña" component={RecuperarContraseñaScreen}  options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
