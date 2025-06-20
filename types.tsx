@@ -15,6 +15,11 @@ export type RootStackParamList = {
   Perfil: undefined;
   CambioContraseña: undefined;
   StockAlimentos: undefined;
+  StockUtensilios: undefined;
+  Menus: undefined;
+  Eventos: undefined;
+  Asistencias: undefined;
+  ConsultarAsistencias: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

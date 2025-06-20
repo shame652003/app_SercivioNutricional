@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, StatusBar, Text, TouchableOpacity } from 'react-native';
 import Header from '../components/Header';
 import Input from '../components/Input';
 import Card from '../components/Card';
@@ -10,6 +10,7 @@ import NavHead from '../components/NavHead';
 import Container from '../components/Container';
 import ContentContainer from '../components/ContentContainer';
 import FlashMessage from 'react-native-flash-message';
+
 
 import useCambioContraseniaValidation from '../hooks/useCambioContraseniaValidation';
 
@@ -29,6 +30,7 @@ export default function CambioContraseñaScreen({ navigation }) {
 
   return (
     <Container>
+        <StatusBar backgroundColor="#0033aa" barStyle="light-content"/> 
       <FlashMessage position="center" />
       <NavHead navigation={navigation} />
       <ContentContainer>
@@ -64,11 +66,14 @@ export default function CambioContraseñaScreen({ navigation }) {
             error={ErrorContrasenias}
             iconError={ErrorContrasenias ? 'warning' : null}
           />
-          <View style={styles.buttonContainer}>
+
             <Botton title="Modificar" onPress={handleCambioContrasenia} />
             <BottonCancel title="Cancelar" onPress={handleCancelar} />
-          </View>
-          <Botton title="Modificar Datos del Perfil" onPress={() => navigation.navigate('Perfil')} />
+
+            <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate('Perfil')}>
+                    <Text style={styles.forgotPasswordText}>Modificar Datos del Perfil</Text>
+           </TouchableOpacity>
+          
         </Card>
       </ContentContainer>
       <BottomNavBar navigation={navigation} />
@@ -77,10 +82,15 @@ export default function CambioContraseñaScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 10,
-    width: '100%',
+ forgotPassword: {
+    marginTop: 10,
   },
+  forgotPasswordText: {
+    color: '#0066CC',
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+ 
+
 });

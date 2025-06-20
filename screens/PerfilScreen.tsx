@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar } from 'react-native';
 import Header from '../components/Header';
 import Input from '../components/Input';
 import Card from '../components/Card';
@@ -30,6 +30,7 @@ export default function PerfilScreen({ navigation }) {
 
   return (
     <Container>
+      <StatusBar backgroundColor="#0033aa" barStyle="light-content"/> 
       <NavHead navigation={navigation} />
       <ContentContainer>
         <FlashMessage position="center" />
@@ -71,12 +72,12 @@ export default function PerfilScreen({ navigation }) {
            iconError={errorEmail ? 'warning' : null} 
           />
 
-          <View style={styles.buttonContainer}>
             <Botton title="Modificar" onPress={handleCambioPerfil} />
             <BottonCancel title="Cancelar" onPress={inicializarCampos} />
-          </View>
 
-          <Botton title="Cambiar Contraseña" onPress={() => navigation.navigate('CambioContraseña')} />
+             <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate('CambioContraseña')}>
+                      <Text style={styles.forgotPasswordText}>Cambiar Contraseña</Text>
+             </TouchableOpacity>
         </Card>
       </ContentContainer>
       <BottomNavBar navigation={navigation} />
@@ -108,10 +109,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     justifyContent: 'center',
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 10,
-    width: '100%',
+   forgotPassword: {
+    marginTop: 10,
   },
+  forgotPasswordText: {
+    color: '#0066CC',
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+ 
+
 }); 

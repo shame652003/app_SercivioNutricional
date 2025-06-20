@@ -8,6 +8,11 @@ import PerfilScreen from '../screens/PerfilScreen';
 import CambioContraseñaScreen from '../screens/CambioContraseñaScreen';
 import {Provider as PaperProvider,} from 'react-native-paper';
 import StockAlimentosScreen from '../screens/StockAlimentosScreen';
+import StockUtensiliosScreen from '../screens/StockUtensiliosScreen';
+import MenusScreen from '../screens/MenusScreen';
+import EventosScreen from '../screens/EventosScreen';
+import AsistenciasScreen from '../screens/AsistenciasScreen';
+import ConsultarAsistenciasScreen from '../screens/ConsultarAsistenciasScreen';
 import { RootStackParamList } from '../types';
 
 export default function Navigation() {
@@ -30,6 +35,11 @@ function RootNavigator() {
       <Stack.Screen name="Perfil" component={PerfilScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="CambioContraseña" component={CambioContraseñaScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="StockAlimentos" component={StockAlimentosScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="StockUtensilios" component={StockUtensiliosScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="Menus" component={MenusScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="Eventos" component={EventosScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="Asistencias" component={AsistenciasScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="ConsultarAsistencias" component={ConsultarAsistenciasScreen} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }

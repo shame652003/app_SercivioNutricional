@@ -1,25 +1,29 @@
-import React from "react";
-import { Text,View,StyleSheet, TouchableOpacity } from "react-native";
 
-interface Info{
-    title: string,
-    onPress ?: () => void;
-}
-
-export default function BottoCancel(props:Info){
-    return(
-        <View>
-            <TouchableOpacity style={styleBotton.btnSecondary} onPress={props.onPress}>
-                 <Text style={styleBotton.textBotton}>{props.title}</Text>
-            </TouchableOpacity>
-        </View>
-
+  import React from "react";
+  import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+  
+  interface Info {
+    title: string;
+    onPress?: () => void;
+  }
+  
+  function BottonCancel(props: Info) {
+    return (
+      <View style={styleBotton.container}>
+        <TouchableOpacity style={styleBotton.btnSecondary} onPress={props.onPress}>
+          <Text style={styleBotton.textBotton}>{props.title}</Text>
+        </TouchableOpacity>
+      </View>
     );
-}
-
-
-const styleBotton = StyleSheet.create({
-   
+  }
+  
+  export default BottonCancel;
+  
+  const styleBotton = StyleSheet.create({
+    container: {
+      width: "100%", // Asegura que el contenedor ocupe el 100% del ancho
+      alignItems: "center", // Centra el botón en el contenedor
+    },
     btnSecondary: {
         backgroundColor: '#F44336',
         borderColor: '#8d0101',
@@ -41,4 +45,3 @@ const styleBotton = StyleSheet.create({
         fontWeight:'bold'
     }
   });
-  

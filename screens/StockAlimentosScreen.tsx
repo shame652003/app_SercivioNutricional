@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Dimensions, StyleSheet, Text } from 'react-native';
+import { FlatList, Dimensions, StyleSheet, Text, StatusBar } from 'react-native';
 import Header from '../components/Header';
 import BottomNavBar from '../components/BottomNavBar';
 import NavHead from '../components/NavHead';
@@ -45,6 +45,7 @@ export default function StockAlimentosScreen({ navigation }) {
 
   return (
     <Container>
+        <StatusBar backgroundColor="#0033aa" barStyle="light-content"/> 
       <NavHead navigation={navigation} />
       <ContentContainer>
         <Header Titulo="Stock de Alimentos" showSubtitle={false} />

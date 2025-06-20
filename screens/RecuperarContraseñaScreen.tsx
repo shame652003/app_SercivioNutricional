@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, StatusBar } from 'react-native';
 import Input from '../components/Input';
 import Card from '../components/Card';
 import Botton from '../components/Botton';
@@ -11,6 +11,7 @@ export default function RecuperarContraseñaScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+        <StatusBar backgroundColor="#0033aa" barStyle="light-content"/> 
       <FlashMessage position="top" />
       <Card>
         <View style={styles.header}>
