@@ -1,10 +1,14 @@
-import { useValidarUsuario, useValidarContrasena } from './useValidacion';
+import { useState } from 'react';
 import { showMessage } from 'react-native-flash-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const BACKEND_URL = 'http://192.168.1.108/Servicio-Nutricional-Uptaeb/bin/controlador/api/loginApi.php';
 
 export default function useLogin(profile, navigation) {
-  // Ahora extraemos también setError para validar en tiempo real
-  const [usuario, setUsuario, ErrorUsuario, setErrorUsuario, validarUsuario, resetUsuario] = useValidarUsuario();
-  const [contrasenia, setContrasenia, ErrorContrasenia, setErrorContrasenia, validarContrasenia, resetContrasenia] = useValidarContrasena();
+  const [usuario, setUsuario] = useState('');
+  const [contrasenia, setContrasenia] = useState('');
+  const [ErrorUsuario, setErrorUsuario] = useState(null);
+  const [ErrorContrasenia, setErrorContrasenia] = useState(null);
 
   const validarUsuarioConValor = (valor) => {
     if (!valor || valor.trim() === "") return "El usuario no puede estar vacío!";
@@ -22,47 +26,76 @@ export default function useLogin(profile, navigation) {
   const handleUsuarioChange = (text) => {
     setUsuario(text);
     const error = validarUsuarioConValor(text);
-    if (error) setErrorUsuario(error);
-    else resetUsuario();
+    setErrorUsuario(error);
   };
 
   const handleContraseniaChange = (text) => {
     setContrasenia(text);
     const error = validarContraseniaConValor(text);
-    if (error) setErrorContrasenia(error);
-    else resetContrasenia();
+    setErrorContrasenia(error);
   };
 
- const handleLogin = () => {
-  const errorUsuario = validarUsuarioConValor(usuario);
-  const errorContrasenia = validarContraseniaConValor(contrasenia);
+  const handleLogin = async () => {
+    const errorUsuario = validarUsuarioConValor(usuario);
+    const errorContrasenia = validarContraseniaConValor(contrasenia);
 
-  setErrorUsuario(errorUsuario);
-  setErrorContrasenia(errorContrasenia);
+    setErrorUsuario(errorUsuario);
+    setErrorContrasenia(errorContrasenia);
 
-  if (!errorUsuario && !errorContrasenia) {
-    if (usuario === profile.cedula && contrasenia === profile.clave) {
-      navigation.navigate('Home');
-      setUsuario('');
-      setContrasenia('');
-      resetContrasenia();
-      resetUsuario();
-    } else {
+    if (errorUsuario || errorContrasenia) {
       showMessage({
-        message: 'Error de Usuario o Contraseña!',
-        description: 'Ingrese los Datos Correctamente.',
+        message: 'Error de Datos!',
+        description: 'Por favor, corrige los errores en el formulario.',
+        type: 'danger',
+      });
+      return;
+    }
+
+    try {
+      const formBody = new URLSearchParams();
+      formBody.append('cedula', usuario);
+      formBody.append('clave', contrasenia);
+
+      const response = await fetch(BACKEND_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+         },
+        body: formBody.toString(),
+     });
+      const data = await response.json();
+
+      if ( data.resultado === 'success') {
+
+        await AsyncStorage.setItem('token', data.token);
+        console.log(await AsyncStorage.getItem('token'));
+
+        showMessage({
+          message: 'Login Exitoso',
+          description: 'Bienvenido!',
+          type: 'success',
+        });
+        setUsuario('');
+        setContrasenia('');
+        setErrorUsuario(null);
+        setErrorContrasenia(null);
+
+        navigation.navigate('Home');
+      } else {
+        showMessage({
+          message: 'Error de Usuario o Contraseña',
+          description: data.mensaje || 'Credenciales incorrectas.',
+          type: 'danger',
+        });
+      }
+    } catch (error) {
+      showMessage({
+        message: 'Error de Conexión',
+        description: 'No se pudo conectar al servidor. Intente más tarde.',
         type: 'danger',
       });
     }
-  } else {
-    showMessage({
-      message: 'Error de Datos!',
-      description: 'Ingrese los Datos Correctamente.',
-      type: 'danger',
-    });
-  }
-};
-
+  };
 
   return {
     usuario,
