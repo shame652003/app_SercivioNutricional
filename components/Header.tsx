@@ -8,7 +8,7 @@ interface Info {
 }
 
 function Header(props: Info) {
-  const { name, lastName } = useSelector((state: any) => state.profile);
+  const user = useSelector((state: any) => state.user.user);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -42,7 +42,7 @@ function Header(props: Info) {
       
       <Text style={styleHeader.title}>{props.Titulo}</Text>
       {props.showSubtitle !== false && (
-        <Text style={styleHeader.subtitle}>{name} {lastName}</Text>
+        <Text style={styleHeader.subtitle}>{user.nombre} {user.apellido}</Text>
       )}
     </View>
   );

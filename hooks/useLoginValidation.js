@@ -1,12 +1,10 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../context/actions/userActions';
 import { showMessage } from 'react-native-flash-message';
-import { API_URL} from '@env';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 
-const BACKEND_URL = `${API_URL}bin/controlador/api/loginApi.php`;
-
-export default function useLogin(profile, navigation) {
+export default function useLogin(navigation) {
+  const dispatch = useDispatch();
 
   const [usuario, setUsuario] = useState('');
   const [contrasenia, setContrasenia] = useState('');
@@ -28,17 +26,15 @@ export default function useLogin(profile, navigation) {
 
   const handleUsuarioChange = (text) => {
     setUsuario(text);
-    const error = validarUsuarioConValor(text);
-    setErrorUsuario(error);
+    setErrorUsuario(validarUsuarioConValor(text));
   };
 
   const handleContraseniaChange = (text) => {
     setContrasenia(text);
-    const error = validarContraseniaConValor(text);
-    setErrorContrasenia(error);
+    setErrorContrasenia(validarContraseniaConValor(text));
   };
 
-  const handleLogin = async () => {
+  const handleLogin = () => {
     const errorUsuario = validarUsuarioConValor(usuario);
     const errorContrasenia = validarContraseniaConValor(contrasenia);
 
@@ -54,47 +50,7 @@ export default function useLogin(profile, navigation) {
       return;
     }
 
-    try {
-      const formBody = new URLSearchParams();
-      formBody.append('cedula', usuario);
-      formBody.append('clave', contrasenia);
-
-      const { data } = await axios.post(BACKEND_URL, formBody.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-
-      if (data.resultado === 'success') {
-        await AsyncStorage.setItem('token', data.token);
-        console.log(await AsyncStorage.getItem('token'));
-
-        showMessage({
-          message: 'Login Exitoso',
-          description: 'Bienvenido!',
-          type: 'success',
-        });
-
-        setUsuario('');
-        setContrasenia('');
-        setErrorUsuario(null);
-        setErrorContrasenia(null);
-
-        navigation.navigate('Home');
-      } else {
-        showMessage({
-          message: 'Error de Usuario o Contraseña',
-          description: data.mensaje || 'Credenciales incorrectas.',
-          type: 'danger',
-        });
-      }
-    } catch (error) {
-      showMessage({
-        message: 'Error de Conexión',
-        description: 'No se pudo conectar al servidor. Intente más tarde.',
-        type: 'danger',
-      });
-    }
+    dispatch(loginUser(usuario, contrasenia, navigation, showMessage));
   };
 
   return {
