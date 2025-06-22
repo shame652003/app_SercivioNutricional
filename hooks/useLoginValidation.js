@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { showMessage } from 'react-native-flash-message';
+import { API_URL} from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
-const BACKEND_URL = 'http://192.168.1.108/Servicio-Nutricional-Uptaeb/bin/controlador/api/loginApi.php';
+const BACKEND_URL = `${API_URL}bin/controlador/api/loginApi.php`;
 
 export default function useLogin(profile, navigation) {
+
   const [usuario, setUsuario] = useState('');
   const [contrasenia, setContrasenia] = useState('');
   const [ErrorUsuario, setErrorUsuario] = useState(null);
@@ -45,7 +48,7 @@ export default function useLogin(profile, navigation) {
     if (errorUsuario || errorContrasenia) {
       showMessage({
         message: 'Error de Datos!',
-        description: 'Por favor, corrige los errores en el formulario.',
+        description: 'Ingrese los datos correctamente!',
         type: 'danger',
       });
       return;
@@ -56,17 +59,13 @@ export default function useLogin(profile, navigation) {
       formBody.append('cedula', usuario);
       formBody.append('clave', contrasenia);
 
-      const response = await fetch(BACKEND_URL, {
-        method: 'POST',
+      const { data } = await axios.post(BACKEND_URL, formBody.toString(), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-         },
-        body: formBody.toString(),
-     });
-      const data = await response.json();
+        },
+      });
 
-      if ( data.resultado === 'success') {
-
+      if (data.resultado === 'success') {
         await AsyncStorage.setItem('token', data.token);
         console.log(await AsyncStorage.getItem('token'));
 
@@ -75,6 +74,7 @@ export default function useLogin(profile, navigation) {
           description: 'Bienvenido!',
           type: 'success',
         });
+
         setUsuario('');
         setContrasenia('');
         setErrorUsuario(null);
