@@ -19,7 +19,7 @@ export default function LoginScreen({ navigation }) {
     handleUsuarioChange,
     handleContraseniaChange,
     handleLogin,
-  } = useLogin(profile, navigation);
+  } = useLogin(navigation);
 
   return (
     <View style={styles.container}>
@@ -27,7 +27,7 @@ export default function LoginScreen({ navigation }) {
       <Card>
         <View>
           <View style={styles.img}>
-            <Image source={require('../assets/logo.png')} style={styles.icon} />
+            <Image source={require('../../assets/logo.png')} style={styles.icon} />
           </View>
 
           <Text style={styles.welcomeText}>Bienvenidos</Text>

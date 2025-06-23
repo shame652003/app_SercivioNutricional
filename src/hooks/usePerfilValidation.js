@@ -7,24 +7,21 @@ import { useValidarNombreApellido, useValidarEmail } from './useValidacion';
 export default function usePerfilValidation(profile) {
   const { handleUpdateProfile } = useProfile();
 
-  // Usa los hooks de validación personalizados para nombre y apellido
   const [nombre, setNombre, errorNombre, , validarNombre] = useValidarNombreApellido();
   const [apellido, setApellido, errorApellido, , validarApellido] = useValidarNombreApellido();
   const [email, setEmail, errorEmail, , validarEmail] = useValidarEmail();
 
-  // Inicializa los campos con el perfil actual
+  // Inicializa los campos con los datos del perfil
   const inicializarCampos = () => {
-    setNombre(profile?.name || '');
-    setApellido(profile?.lastName || '');
-    setEmail(profile?.email || '');
+    setNombre(profile?.nombre || '');
+    setApellido(profile?.apellido || '');
+    setEmail(profile?.correo || '');
   };
 
-  // Cuando cambia el perfil, inicializa los campos
   useEffect(() => {
     inicializarCampos();
   }, [profile]);
 
-  // Validar en tiempo real cada vez que cambia el valor
   useEffect(() => {
     validarNombre();
   }, [nombre]);
@@ -37,7 +34,6 @@ export default function usePerfilValidation(profile) {
     validarEmail();
   }, [email]);
 
-  // Validación completa para el formulario
   const validarFormulario = () => {
     validarNombre();
     validarApellido();
@@ -53,7 +49,6 @@ export default function usePerfilValidation(profile) {
     );
   };
 
-  // Maneja cambio de imagen con ImagePicker y actualización de perfil
   const handleImageChange = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -63,7 +58,7 @@ export default function usePerfilValidation(profile) {
     });
 
     if (!result.canceled) {
-      handleUpdateProfile('profileImage', result.assets[0].uri);
+      handleUpdateProfile('img', result.assets[0].uri);
       showMessage({
         message: 'Imagen actualizada!',
         type: 'success',
@@ -71,12 +66,11 @@ export default function usePerfilValidation(profile) {
     }
   };
 
-  // Maneja el envío/modificación del perfil
   const handleCambioPerfil = () => {
     if (validarFormulario()) {
-      handleUpdateProfile('name', nombre);
-      handleUpdateProfile('lastName', apellido);
-      handleUpdateProfile('email', email);
+      handleUpdateProfile('nombre', nombre);
+      handleUpdateProfile('apellido', apellido);
+      handleUpdateProfile('correo', email);
 
       showMessage({
         message: 'Modificado Exitosamente!',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Dimensions, StyleSheet, Text, StatusBar } from 'react-native';
+import { Dimensions, StyleSheet, Text, StatusBar, View, ActivityIndicator } from 'react-native';
 import Header from '../components/Header';
 import BottomNavBar from '../components/BottomNavBar';
 import NavHead from '../components/NavHead';
@@ -23,29 +23,15 @@ export default function StockAlimentosScreen({ navigation }) {
     modalVisible,
     alimentoSeleccionado,
     alimentosFiltrados,
+    busquedaExitosa,
+    loading,        // <-- loading
     seleccionarAlimento,
     cerrarModal,
   } = useStockAlimentosValidation();
 
-  const renderItem = ({ item }) => (
-    <CardElemento
-      nombre={item.nombre}
-      marca={item.marca}
-      stock={item.stock}
-      tituloCantidad="Stock"
-      imagenUri={item.imagenUri}
-      onPress={() => seleccionarAlimento(item)}
-      style={{
-        width: cardWidth,
-        marginLeft: marginHorizontal,
-        marginBottom: marginHorizontal,
-      }}
-    />
-  );
-
   return (
     <Container>
-        <StatusBar backgroundColor="#0033aa" barStyle="light-content"/> 
+      <StatusBar backgroundColor="#0033aa" barStyle="light-content" />
       <NavHead navigation={navigation} />
       <ContentContainer>
         <Header Titulo="Stock de Alimentos" showSubtitle={false} />
@@ -59,31 +45,51 @@ export default function StockAlimentosScreen({ navigation }) {
         </Card>
 
         {searchText.trim() !== '' ? (
-          alimentosFiltrados.length > 0 ? (
-            <FlatList
-              data={alimentosFiltrados}
-              keyExtractor={item => item.id}
-              renderItem={renderItem}
-              numColumns={cardsPerRow}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 20, paddingTop: 12 }}
-            />
-          ) : (
-            <Text style={styles.noResultsText}>No se encontraron alimentos</Text>
-          )
+          loading ? (
+            <ActivityIndicator size="large" color="#0033aa" style={{ marginTop: 20 }} />
+          ) : busquedaExitosa ? (
+            alimentosFiltrados.length > 0 ? (
+              <View style={styles.gridContainer}>
+                {alimentosFiltrados.map((item) => (
+                  <CardElemento
+                    key={item.idAlimento}
+                    nombre={item.nombre}
+                    marca={item.marca !== 'Sin Marca' ? item.marca : undefined}
+                    stock={item.stock}
+                    tituloCantidad="Stock"
+                    imagenUri={item.imagenUri}
+                    onPress={() => seleccionarAlimento(item)}
+                    style={[
+                      styles.card,
+                      { width: cardWidth, marginHorizontal: marginHorizontal / 2 },
+                    ]}
+                  />
+                ))}
+              </View>
+            ) : (
+              <Text style={styles.noResultsText}>No se encontraron alimentos</Text>
+            )
+          ) : null
         ) : null}
       </ContentContainer>
       <BottomNavBar navigation={navigation} />
-      <ModalDetalle
-        visible={modalVisible}
-        onClose={cerrarModal}
-        detalle={alimentoSeleccionado}
-      />
+      <ModalDetalle visible={modalVisible} onClose={cerrarModal} detalle={alimentoSeleccionado} />
     </Container>
   );
 }
 
 const styles = StyleSheet.create({
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingTop: 12,
+    paddingBottom: 20,
+    paddingHorizontal: 8,
+  },
+  card: {
+    marginBottom: marginHorizontal,
+  },
   noResultsText: {
     marginTop: 20,
     textAlign: 'center',

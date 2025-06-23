@@ -4,14 +4,15 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useSelector } from 'react-redux'; 
 
 export default function NavHead({ navigation }) {
-  const { profileImage } = useSelector((state) => state.profile); 
+  const user = useSelector((state: any) => state.user.user);
+  const profileImage = user.img ? `http://192.168.1.106/Servicio-Nutricional-Uptaeb/${user.img}` : null;
 
   return (
     <View style={styles.header}>
       <TouchableOpacity onPress={() => navigation.navigate('Home')}>
         <View style={styles.leftSection}>
           <Image
-            source={require('../assets/logo.png')} 
+            source={require('../../assets/logo.png')} 
             style={styles.icono}
           />
           <Text style={styles.appName}>Servicio Nutricional</Text>
@@ -27,9 +28,9 @@ export default function NavHead({ navigation }) {
         <TouchableOpacity onPress={() => navigation.navigate('Perfil')}>
           <Image
             source={
-              profileImage
+             profileImage
                 ? { uri: profileImage } 
-                : require('../assets/user.png')
+                : require('../../assets/user.png')
             }
             style={styles.profileImage}
           />

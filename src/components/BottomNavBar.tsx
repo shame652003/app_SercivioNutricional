@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, ScrollView } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import useAuth from '../hooks/useAuth';
 
 const BottomNavBar = ({ navigation }) => {
+  const { cerrarSesion } = useAuth();
   return (
     <View style={styles.container}>
 
@@ -32,7 +34,7 @@ const BottomNavBar = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.navButton}
-          onPress={() => navigation.navigate('LoginScreen')}
+          onPress={cerrarSesion}
         >
           <FontAwesome name="sign-out" size={24} color="#0066CC" />
           <Text style={styles.navLabel}>Cerrar Sesión</Text>

@@ -13,7 +13,7 @@ import MenusScreen from '../screens/MenusScreen';
 import EventosScreen from '../screens/EventosScreen';
 import AsistenciasScreen from '../screens/AsistenciasScreen';
 import ConsultarAsistenciasScreen from '../screens/ConsultarAsistenciasScreen';
-import { RootStackParamList } from '../types';
+import { RootStackParamList }  from '../../types';
 
 export default function Navigation() {
   return (
