@@ -1,12 +1,11 @@
 import React from 'react';
-import { StyleSheet, StatusBar } from 'react-native';
+import {  Dimensions, StyleSheet, Text, StatusBar } from 'react-native';
 import Header from '../components/Header';
 import BottomNavBar from '../components/BottomNavBar';
 import NavHead from '../components/NavHead';
 import Container from '../components/Container';
 import ContentContainer from '../components/ContentContainer';
 import Card from '../components/Card';
-import AsistenciasDataTable from '../components/AsistenciasDataTable';
 
 
 export default function ConsultarAsistenciasScreen({ navigation }) {
@@ -19,8 +18,9 @@ export default function ConsultarAsistenciasScreen({ navigation }) {
       <ContentContainer>
         <Header Titulo="Consultar Asistencias" showSubtitle={false} />
         <Card>
-          <AsistenciasDataTable />
-          
+          <Text style={{ padding: 16, fontSize: 16, color: '#333' }}>
+           Lo que vayan a hacer
+          </Text>
         </Card>
       </ContentContainer>
       <BottomNavBar navigation={navigation} />
