@@ -19,7 +19,7 @@ export default function LoginScreen({ navigation }) {
     handleUsuarioChange,
     handleContraseniaChange,
     handleLogin,
-  } = useLogin(profile, navigation);
+  } = useLogin(navigation);
 
   return (
     <View style={styles.container}>

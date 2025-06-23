@@ -41,9 +41,9 @@ function Header(props: Info) {
       </Animated.View>
       
       <Text style={styleHeader.title}>{props.Titulo}</Text>
-      {props.showSubtitle !== false && (
-        <Text style={styleHeader.subtitle}>{user.nombre} {user.apellido}</Text>
-      )}
+      {props.showSubtitle !== false && user && (
+       <Text style={styleHeader.subtitle}>{user.nombre} {user.apellido}</Text>
+   )}
     </View>
   );
 }

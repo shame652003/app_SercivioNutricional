@@ -14,23 +14,24 @@ import usePerfilValidation from '../hooks/usePerfilValidation';
 import useProfile from '../hooks/useProfile';
 
 export default function PerfilScreen({ navigation }) {
-  const { profile } = useProfile();
+  const { profile,profileImage } = useProfile();
   const {
-    nombre, setNombre, errorNombre, validarNombre,
-    apellido, setApellido, errorApellido, validarApellido,
-    email, setEmail, errorEmail, validarEmail,
+    nombre, setNombre, errorNombre,
+    apellido, setApellido, errorApellido,
+    email, setEmail, errorEmail,
     inicializarCampos,
     handleImageChange,
-    handleCambioPerfil
+    handleCambioPerfil,
   } = usePerfilValidation(profile);
 
   useEffect(() => {
     inicializarCampos();
   }, [profile]);
 
+
   return (
     <Container>
-      <StatusBar backgroundColor="#0033aa" barStyle="light-content"/> 
+      <StatusBar backgroundColor="#0033aa" barStyle="light-content"/>
       <NavHead navigation={navigation} />
       <ContentContainer>
         <FlashMessage position="center" />
@@ -39,7 +40,7 @@ export default function PerfilScreen({ navigation }) {
           <View style={styles.profileImageContainer}>
             <TouchableOpacity onPress={handleImageChange}>
               <Image 
-                source={profile.profileImage ? { uri: profile.profileImage } : require('../assets/user.png')} 
+                source={profileImage ? { uri: profileImage } : require('../assets/user.png')} 
                 style={styles.profileImage}
               />
               <Text style={styles.addImageText}>Agregar Imagen</Text>
@@ -47,37 +48,37 @@ export default function PerfilScreen({ navigation }) {
           </View>
 
           <Input 
-           label="Nombre" 
-           icon="id-card" 
-           value={nombre} 
-           onChangeText={setNombre} 
-           error={errorNombre} 
-           iconError={errorNombre ? 'warning' : null} 
+            label="Nombre" 
+            icon="id-card" 
+            value={nombre} 
+            onChangeText={setNombre} 
+            error={errorNombre} 
+            iconError={errorNombre ? 'warning' : null} 
           />
           <Input 
-           label="Apellido" 
-           icon="id-card" 
-           value={apellido} 
-           onChangeText={setApellido}  
-           error={errorApellido} 
-           iconError={errorApellido ? 'warning' : null}
+            label="Apellido" 
+            icon="id-card" 
+            value={apellido} 
+            onChangeText={setApellido}  
+            error={errorApellido} 
+            iconError={errorApellido ? 'warning' : null}
           />
           <Input 
-           label="Correo Electrónico" 
-           icon="envelope"  
-           value={email}  
-           onChangeText={setEmail} 
-           error={errorEmail} 
-           placeholder="email@example.com" 
-           iconError={errorEmail ? 'warning' : null} 
+            label="Correo Electrónico" 
+            icon="envelope"  
+            value={email}  
+            onChangeText={setEmail} 
+            error={errorEmail} 
+            placeholder="email@example.com" 
+            iconError={errorEmail ? 'warning' : null} 
           />
 
-            <Botton title="Modificar" onPress={handleCambioPerfil} />
-            <BottonCancel title="Cancelar" onPress={inicializarCampos} />
+          <Botton title="Modificar" onPress={handleCambioPerfil} />
+          <BottonCancel title="Cancelar" onPress={inicializarCampos} />
 
-             <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate('CambioContraseña')}>
-                      <Text style={styles.forgotPasswordText}>Cambiar Contraseña</Text>
-             </TouchableOpacity>
+          <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate('CambioContraseña')}>
+            <Text style={styles.forgotPasswordText}>Cambiar Contraseña</Text>
+          </TouchableOpacity>
         </Card>
       </ContentContainer>
       <BottomNavBar navigation={navigation} />
@@ -105,11 +106,10 @@ const styles = StyleSheet.create({
     borderColor: '#01154d',
     borderRadius: 8,
     padding: 10,
-    alignItems: 'center',
     fontWeight: 'bold',
-    justifyContent: 'center',
+    textAlign: 'center',
   },
-   forgotPassword: {
+  forgotPassword: {
     marginTop: 10,
   },
   forgotPasswordText: {
@@ -118,6 +118,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
   },
- 
-
-}); 
+});
