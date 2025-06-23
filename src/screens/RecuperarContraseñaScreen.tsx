@@ -15,7 +15,7 @@ export default function RecuperarContraseñaScreen({ navigation }) {
       <FlashMessage position="top" />
       <Card>
         <View style={styles.header}>
-          <Image source={require('../assets/logo.png')} style={styles.icon} />
+          <Image source={require('../../assets/logo.png')} style={styles.icon} />
           <Text style={styles.welcomeText}>Recuperar Contraseña</Text>
         </View>
 

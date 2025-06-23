@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text } from 'react-native';
 import { Provider } from "react-redux"
-import store from "./context/store"
-import Navigate from './navigate/Navigate';
+import store from './src/context/store'
+import Navigate from './src/navigate/Navigate';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import FlashMessage, { showMessage } from 'react-native-flash-message';
 export default function App() {

@@ -12,7 +12,7 @@ export default function NavHead({ navigation }) {
       <TouchableOpacity onPress={() => navigation.navigate('Home')}>
         <View style={styles.leftSection}>
           <Image
-            source={require('../assets/logo.png')} 
+            source={require('../../assets/logo.png')} 
             style={styles.icono}
           />
           <Text style={styles.appName}>Servicio Nutricional</Text>
@@ -30,7 +30,7 @@ export default function NavHead({ navigation }) {
             source={
              profileImage
                 ? { uri: profileImage } 
-                : require('../assets/user.png')
+                : require('../../assets/user.png')
             }
             style={styles.profileImage}
           />

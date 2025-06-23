@@ -40,7 +40,7 @@ export default function PerfilScreen({ navigation }) {
           <View style={styles.profileImageContainer}>
             <TouchableOpacity onPress={handleImageChange}>
               <Image 
-                source={profileImage ? { uri: profileImage } : require('../assets/user.png')} 
+                source={profileImage ? { uri: profileImage } : require('../../assets/user.png')} 
                 style={styles.profileImage}
               />
               <Text style={styles.addImageText}>Agregar Imagen</Text>

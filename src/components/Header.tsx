@@ -34,7 +34,7 @@ function Header(props: Info) {
     <View style={styleHeader.header}>
       <Animated.View style={{ ...StyleSheet.absoluteFillObject, transform: [{ scale: scaleAnim }] }}>
         <ImageBackground 
-          source={require('../assets/header2.png')} 
+          source={require('../../assets/header2.png')} 
           style={styleHeader.image}
           resizeMode="cover"
         />

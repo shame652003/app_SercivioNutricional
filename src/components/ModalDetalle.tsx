@@ -39,7 +39,7 @@ export default function ModalDetalle({
 
           <Text style={styles.nombre}>{nombre}</Text>
           <Text style={styles.marca}>
-            {marca && marca.trim() !== '' ? marca : 'Sin marca'}
+            {marca !== 'Sin Marca' ? marca : ''}
           </Text>
 
           <View style={styles.datosContainer}>
