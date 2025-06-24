@@ -40,15 +40,15 @@ export default function AsistenciasScreen({ navigation }) {
         <Header Titulo="Registrar Asistencias" showSubtitle={false} />
         <Card>
             <FechaActual />
-            <View style={styles.rowContainer}>
-              <View style={styles.platosContainer}>
-                <PlatosDisponibles platos={platosDisponibles} />
-              </View>
+              <View style={styles.rowContainer}>
               <View style={styles.horarioContainer}>
                 <HorarioComidaSelect 
                   selectedValue={horarioSeleccionado}
                   onValueChange={cambiarHorario}
                 />
+              </View>
+              <View style={styles.platosContainer}>
+                <PlatosDisponibles platos={platosDisponibles} />
               </View>
             </View>
             <CedulaInput 
@@ -88,13 +88,12 @@ export default function AsistenciasScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   rowContainer: {
-    flexDirection: 'row',
-    marginBottom: 8,
-    alignItems: 'stretch',
+    flexDirection: 'column',
+    gap: 1,
+    width: '100%',
   },
   platosContainer: {
-    flex: 1,
-    marginRight: 8,
+    width: '100%',
   },
   horarioContainer: {
     flex: 1,

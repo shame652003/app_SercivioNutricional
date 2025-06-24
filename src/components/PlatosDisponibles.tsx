@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     borderColor: '#3399FF',
     padding: 8,
     marginVertical: 8,
-    alignSelf: 'flex-start',
+    alignSelf: 'auto',
   },
   text: {
     fontSize: 16,
