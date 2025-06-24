@@ -23,15 +23,15 @@ export default function useStockAlimentosValidation() {
       const token = await AsyncStorage.getItem('token');
       if (!token) throw new Error('Token no encontrado');
 
-      const payloadObjeto = {
+      const DatosObjeto = {
         mostrarAlimentos: 'true',
         alimento: texto,
       };
 
-      const encryptedPayload = encryptData(payloadObjeto);
+      const encryptedData = encryptData(DatosObjeto);
 
       const formBody = new URLSearchParams();
-      formBody.append('payload', encryptedPayload);
+      formBody.append('datos', encryptedData);
 
       const response = await axios.post(BACKEND_URL, formBody.toString(), {
         headers: {
