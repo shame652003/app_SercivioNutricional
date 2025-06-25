@@ -1,4 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from 'react-native';
 import { StyleSheet, View, Text } from 'react-native';
 import { Provider } from "react-redux"
 import store from './src/context/store'
@@ -9,11 +9,11 @@ export default function App() {
  
   return (
     <SafeAreaProvider>
-       <FlashMessage position="center" />  
+      <StatusBar backgroundColor="#0033aa" barStyle="light-content" />
+      <FlashMessage position="center" />
       <Provider store={store}>
         <Navigate/>
         </Provider>
-      <StatusBar style="auto" />
     </SafeAreaProvider>
   );
 }

@@ -31,21 +31,20 @@ export default function HorarioComidaSelect({ selectedValue, onValueChange }: Ho
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    marginLeft: 8,
+    width: '100%',
     borderWidth: 1,
     borderColor: '#3399FF',
     borderRadius: 8,
     backgroundColor: '#fff',
-    minHeight: 44,
     justifyContent: 'center',
   },
   pickerContainer: {
-    flex: 1,
+    width: '100%',
   },
   picker: {
     color: '#333',
-    paddingHorizontal: 8,
-    minWidth: 120,
+    paddingHorizontal: 0,
+    marginHorizontal: 0,
+    width: '100%',
   },
 });

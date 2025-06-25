@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Alert, ActivityIndicator } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { exportAsistenciasToPdf } from '../hooks/useExportPdf';
-import { useAsistenciasData } from '../hooks/useAsistenciasData';
+import useAsistenciasData from '../hooks/useAsistenciasData';
 
 const accent = '#0066CC';
 const accentLight = '#3399FF';
@@ -17,6 +17,9 @@ const AsistenciasDataTable = () => {
     paginatedData,
     filteredData,
     handleChangePage,
+    loading,
+    isEmpty,
+    error
   } = useAsistenciasData();
 
   const renderHeader = () => (
@@ -75,13 +78,30 @@ const AsistenciasDataTable = () => {
       </View>
       <View style={styles.tableWrap}>
         {renderHeader()}
-        <FlatList
-          data={paginatedData}
-          renderItem={renderItem}
-          keyExtractor={(_, idx) => idx.toString()}
-          scrollEnabled={false}
-          style={{ minHeight: 220 }}
-        />
+        {loading ? (
+          <View style={styles.emptyState}>
+            <ActivityIndicator size="large" color={accent} />
+            <Text style={styles.emptyText}>Cargando asistencias...</Text>
+          </View>
+        ) : error ? (
+          <View style={styles.emptyState}>
+            <MaterialIcons name="error-outline" size={48} color="#ff4444" />
+            <Text style={[styles.emptyText, { color: '#ff4444' }]}>{error}</Text>
+          </View>
+        ) : isEmpty ? (
+          <View style={styles.emptyState}>
+            <MaterialIcons name="info-outline" size={48} color={accent} />
+            <Text style={styles.emptyText}>No hay asistencias registradas</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={search ? filteredData : paginatedData}
+            renderItem={renderItem}
+            keyExtractor={(_, idx) => idx.toString()}
+            scrollEnabled={false}
+            style={{ minHeight: 220 }}
+          />
+        )}
       </View>
       <View style={styles.paginationWrap}>
         <TouchableOpacity
@@ -107,13 +127,27 @@ const AsistenciasDataTable = () => {
 const styles = StyleSheet.create({
   cardWrap: {
     borderRadius: 18,
-   
+    backgroundColor: '#fff',
+    padding: 16,
   },
   headerRowWrap: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 6,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    minHeight: 200,
+  },
+  emptyText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: accent,
+    textAlign: 'center',
   },
   pdfBtn: {
     backgroundColor: '#f6faff',
@@ -148,10 +182,9 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    height: 40,
+    color: '#333',
     fontSize: 16,
-    color: accentDark,
-    backgroundColor: 'transparent',
+    paddingVertical: 10,
   },
   tableWrap: {
     borderRadius: 12,

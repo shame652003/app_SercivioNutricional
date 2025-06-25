@@ -1,77 +1,178 @@
-import * as React from 'react';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { Alert } from 'react-native';
+import { API_URL } from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { encryptData } from '../security/crypto/encryptor';
+import axios from 'axios';
 
-// Definir el tipo para los datos de asistencia
+const BACKEND_URL = `${API_URL}bin/controlador/api/consultarAsistenciaApi.php`;
+
 export type Asistencia = {
   cedula: string;
   nombre: string;
   carrera: string;
   horario: string;
+  fecha?: string;
 };
 
-// Datos de ejemplo
-const MOCK_DATA: Asistencia[] = [
-  { cedula: 'V12345678', nombre: 'Juan Pérez', carrera: 'Ingeniería Informática', horario: 'Desayuno' },
-  { cedula: 'V87654321', nombre: 'María García', carrera: 'Medicina', horario: 'Almuerzo' },
-  { cedula: 'V11223344', nombre: 'Carlos López', carrera: 'Derecho', horario: 'Desayuno' },
-  { cedula: 'V55667788', nombre: 'Ana Torres', carrera: 'Administración', horario: 'Almuerzo' },
-  { cedula: 'V99887766', nombre: 'Luis Fernández', carrera: 'Arquitectura', horario: 'Desayuno' },
-  { cedula: 'V44556677', nombre: 'Sofía Martínez', carrera: 'Psicología', horario: 'Desayuno' },
-  { cedula: 'V22334455', nombre: 'Pedro Ruiz', carrera: 'Ingeniería Informática', horario: 'Almuerzo' },
-  { cedula: 'V66778899', nombre: 'Lucía Herrera', carrera: 'Medicina', horario: 'Desayuno' },
-  { cedula: 'V33445566', nombre: 'Miguel Castro', carrera: 'Derecho', horario: 'Desayuno' },
-  { cedula: 'V77889900', nombre: 'Valentina Gómez', carrera: 'Administración', horario: 'Almuerzo' },
-  { cedula: 'V88990011', nombre: 'Javier Morales', carrera: 'Arquitectura', horario: 'Desayuno' },
-  { cedula: 'V99001122', nombre: 'Camila Peña', carrera: 'Psicología', horario: 'Desayuno' },
-];
+type UseAsistenciasDataReturn = {
+  asistencias: Asistencia[];
+  loading: boolean;
+  error: string | null;
+  fetchAsistencias: () => Promise<void>;
+  search: string;
+  setSearch: (search: string) => void;
+  page: number;
+  pageCount: number;
+  paginatedData: Asistencia[];
+  filteredData: Asistencia[];
+  handleChangePage: (next: boolean) => void;
+  isEmpty: boolean;
+};
 
-const PAGE_SIZE = 5;
-
-export const useAsistenciasData = () => {
+export default function useAsistenciasData(): UseAsistenciasDataReturn {
+  const [asistencias, setAsistencias] = useState<Asistencia[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
+  const [itemsPerPage] = useState(10);
 
-  const filteredData = useMemo(() => {
-    if (!search.trim()) return MOCK_DATA;
-    return MOCK_DATA.filter(
-      (item) =>
-        item.cedula.toLowerCase().includes(search.toLowerCase()) ||
-        item.nombre.toLowerCase().includes(search.toLowerCase()) ||
-        item.carrera.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [search]);
-
-  const pageCount = Math.ceil(filteredData.length / PAGE_SIZE);
-  const paginatedData = useMemo(
-    () => filteredData.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE),
-    [filteredData, page]
+  // Pagination
+  const pageCount = Math.ceil(asistencias.length / itemsPerPage);
+  const paginatedData = asistencias.slice(
+    page * itemsPerPage,
+    (page + 1) * itemsPerPage
   );
 
-  const handleChangePage = useCallback(
-    (next: boolean) => {
-      setPage((prev) => {
-        if (next) {
-          return prev < pageCount - 1 ? prev + 1 : prev;
-        } else {
-          return prev > 0 ? prev - 1 : prev;
-        }
+  // Search functionality with null checks
+  const filteredData = asistencias.filter(item => {
+    const searchTerm = search.toLowerCase();
+    const safeCedula = String(item?.cedula || '').toLowerCase();
+    const safeNombre = String(item?.nombre || '').toLowerCase();
+    const safeCarrera = String(item?.carrera || '').toLowerCase();
+    
+    return safeCedula.includes(searchTerm) ||
+           safeNombre.includes(searchTerm) ||
+           safeCarrera.includes(searchTerm);
+  });
+
+  const fetchAsistencias = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        throw new Error('No se encontró el token de autenticación');
+      }
+      
+      const datos = {
+        mostrar: 'true',
+        fecha: 'Seleccionar',
+        horarioComida: 'Seleccionar'
+      };
+
+
+      
+      const encryptedData = encryptData(datos);
+      const formBody = new URLSearchParams();
+      formBody.append('datos', encryptedData);
+
+      const response = await axios.post(BACKEND_URL, formBody.toString(), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Bearer ${token}`
+        },
+        timeout: 10000 // 10 segundos de timeout
       });
-    },
-    [pageCount]
-  );
 
-  // Reset page if search changes
-  React.useEffect(() => {
-    setPage(0);
-  }, [search]);
+    
+      const data = response.data;
+    
+    
+
+      if (Array.isArray(data)) {
+        if (data.length === 0) {
+          console.log('No hay asistencias registradas');
+          setAsistencias([]);
+          return;
+        }
+        
+       
+        const asistenciasMapeadas = data.map((item: any) => {
+        
+          const nombreCompleto = [
+            item.Nombre || '',
+            item.Apellido || ''
+          ].filter(Boolean).join(' ').trim();
+
+          return {
+            cedula: item.Cedula || '',
+            nombre: nombreCompleto,
+            carrera: item.Carrera || item.nombre_carrera || '',
+            horario: item.HorarioDeComida || item.nombre_horario || '',
+          };
+        });
+      
+        setAsistencias(asistenciasMapeadas);
+      } else if (data && data.resultado === 'error') {
+        throw new Error(data.mensaje || 'Error al obtener las asistencias');
+      } else {
+        console.error('Formato de respuesta inesperado:', data);
+        setAsistencias([]);
+      }
+    } catch (error: any) {
+      console.error('Error al obtener asistencias:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Error al cargar las asistencias';
+      setError(errorMessage);
+      Alert.alert('Error', errorMessage);
+      setAsistencias([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Fetch data on component mount
+  useEffect(() => {
+    let isMounted = true;
+    
+    const fetchData = async () => {
+      try {
+        await fetchAsistencias();
+      } catch (error) {
+        if (isMounted) {
+          console.error('Error in useEffect:', error);
+        }
+      }
+    };
+    
+    fetchData();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchAsistencias]);
+
+  const handleChangePage = (next: boolean) => {
+    setPage(prev => (next ? Math.min(prev + 1, pageCount - 1) : Math.max(prev - 1, 0)));
+  };
+
+  // Check if there's no data to display
+  const isEmpty = asistencias.length === 0 && !loading && !error;
 
   return {
+    asistencias,
+    loading,
+    error,
+    fetchAsistencias,
     search,
     setSearch,
     page,
     pageCount,
-    paginatedData,
+    paginatedData: search ? filteredData.slice(page * itemsPerPage, (page + 1) * itemsPerPage) : paginatedData,
     filteredData,
     handleChangePage,
+    isEmpty,
   };
-};
+}

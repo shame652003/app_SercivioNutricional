@@ -17,7 +17,7 @@ export default function GraficoCircular() {
       <Text style={styles.title}>Alimentos Disponibles</Text>
       <PieChart
         data={data}
-        width={screenWidth - 40} 
+        width={screenWidth - 40}
         height={220}
         chartConfig={{
           backgroundColor: '#f0f0f0',
@@ -28,7 +28,7 @@ export default function GraficoCircular() {
         accessor="population"
         backgroundColor="transparent"
         paddingLeft="15"
-        absolute 
+        hasLegend={true}
       />
     </View>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, StatusBar, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Header from '../components/Header';
 import Input from '../components/Input';
 import Card from '../components/Card';
@@ -30,7 +30,6 @@ export default function CambioContraseñaScreen({ navigation }) {
 
   return (
     <Container>
-        <StatusBar backgroundColor="#0033aa" barStyle="light-content"/> 
       <FlashMessage position="center" />
       <NavHead navigation={navigation} />
       <ContentContainer>

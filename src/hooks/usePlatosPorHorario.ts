@@ -1,21 +1,178 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { Alert } from 'react-native';
+import { API_URL } from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { encryptData } from '../security/crypto/encryptor';
+import axios from 'axios';
+
+const BACKEND_URL = `${API_URL}bin/controlador/api/asistenciaApi.php`;
 
 type HorarioComida = 'Desayuno' | 'Almuerzo' | 'Merienda' | 'Cena';
 
-const PLATOS_POR_HORARIO: Record<HorarioComida, number> = {
-  'Desayuno': 50,
-  'Almuerzo': 100,
-  'Merienda': 40,
-  'Cena': 80
-};
-
 export default function usePlatosPorHorario() {
   const [horarioSeleccionado, setHorarioSeleccionado] = useState<HorarioComida>('Desayuno');
-  const [platosDisponibles, setPlatosDisponibles] = useState<Record<HorarioComida, number>>(PLATOS_POR_HORARIO);
+  const [platosDisponibles, setPlatosDisponibles] = useState<Record<HorarioComida, number>>({
+    'Desayuno': 0,
+    'Almuerzo': 0,
+    'Merienda': 0,
+    'Cena': 0
+  });
+  const [idMenu, setIdMenu] = useState<number | null>(null);
+  const [cargando, setCargando] = useState<boolean>(false);
 
-  const cambiarHorario = (nuevoHorario: HorarioComida) => {
+  // Función para obtener el ID del menú
+  const obtenerIdMenu = useCallback(async (horario: HorarioComida): Promise<number | null> => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        Alert.alert('Error', 'No se encontró el token de autenticación');
+        return null;
+      }
+
+      const datos = {
+        vermenu: 'true',
+        horario: horario
+      };
+
+      const encryptedData = encryptData(datos);
+      const formBody = new URLSearchParams();
+      formBody.append('datos', encryptedData);
+
+      const response = await axios.post(BACKEND_URL, formBody.toString(), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = response.data;
+      console.log('Respuesta de la API (ID del menú):', data);
+      
+      if (Array.isArray(data) && data.length > 0 && data[0].idMenu) {
+        const menuId = Number(data[0].idMenu);
+        console.log('ID del menú obtenido:', menuId);
+        return menuId;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error al obtener el ID del menú:', error);
+      return null;
+    }
+  }, []);
+
+  // Función para obtener los platos disponibles del servidor
+  const obtenerPlatosDisponibles = useCallback(async (horario: HorarioComida) => {
+    try {
+      setCargando(true);
+      
+      // Primero obtenemos el ID del menú
+      const menuId = await obtenerIdMenu(horario);
+      if (menuId) {
+        setIdMenu(menuId);
+      }
+      
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        Alert.alert('Error', 'No se encontró el token de autenticación');
+        return 0;
+      }
+
+      const datos = {
+        verPlatosDisponibles: 'true',
+        horarioComida: horario
+      };
+
+      const encryptedData = encryptData(datos);
+      const formBody = new URLSearchParams();
+      formBody.append('datos', encryptedData);
+
+      const response = await axios.post(BACKEND_URL, formBody.toString(), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = response.data;
+      console.log('Respuesta de la API (platos disponibles):', data);
+      
+      let cantidadPlatos = 0; // Valor por defecto
+      
+      // Verificar si la respuesta es un array
+      if (Array.isArray(data)) {
+        if (data.length > 0) {
+          // Si hay elementos en el array, buscar platosDisponibles
+          if (data[0].platosDisponibles !== undefined) {
+            cantidadPlatos = Number(data[0].platosDisponibles);
+          }
+          
+          // Si hay un mensaje de error, mostrarlo
+          if (data[0].error) {
+            Alert.alert('Error', data[0].error);
+          }
+        } else {
+          // Array vacío - no hay menú disponible
+          Alert.alert(
+            'Menú No Disponible', 
+            'El Horario que fue Seleccionado No se Encuentra Disponible, Verifique si Hay un Menú Planificado para Hoy'
+          );
+        }
+      } else if (typeof data === 'object' && data !== null) {
+        // Si la respuesta es un objeto, verificar si hay un mensaje de error
+        if (data.error || data.message) {
+          Alert.alert('Error', data.error || data.message);
+        } else if (data.platosDisponibles !== undefined) {
+          cantidadPlatos = Number(data.platosDisponibles);
+        }
+      } else {
+        console.error('Formato de respuesta no reconocido:', data);
+        throw new Error('Formato de respuesta no reconocido');
+      }
+      
+      // Actualizar el estado con la cantidad de platos
+      setPlatosDisponibles(prev => ({
+        ...prev,
+        [horario]: cantidadPlatos
+      }));
+      
+      return cantidadPlatos;
+      
+      return data.cantPlatos;
+    } catch (error: any) {
+      console.error('Error al obtener platos disponibles:', error);
+      const mensajeError = error.message || 'Error al obtener platos disponibles';
+      Alert.alert('Error', mensajeError);
+    } finally {
+      setCargando(false);
+    }
+  }, []);
+
+  // Cargar platos disponibles cuando cambia el horario seleccionado
+  useEffect(() => {
+    obtenerPlatosDisponibles(horarioSeleccionado).catch(console.error);
+  }, [horarioSeleccionado, obtenerPlatosDisponibles]);
+
+  // Función para actualizar los platos disponibles
+  const actualizarPlatosDisponibles = useCallback(async () => {
+    try {
+      return await obtenerPlatosDisponibles(horarioSeleccionado);
+    } catch (error) {
+      console.error('Error al actualizar platos:', error);
+      throw error;
+    }
+  }, [horarioSeleccionado, obtenerPlatosDisponibles]);
+
+  // Verificar si hay platos disponibles
+  const hayPlatosDisponibles = useCallback(() => {
+    return platosDisponibles[horarioSeleccionado] > 0;
+  }, [platosDisponibles, horarioSeleccionado]);
+
+  // Cambiar el horario y cargar los platos disponibles
+  const cambiarHorario = useCallback(async (nuevoHorario: HorarioComida) => {
     setHorarioSeleccionado(nuevoHorario);
-  };
+    await obtenerPlatosDisponibles(nuevoHorario);
+  }, [obtenerPlatosDisponibles]);
 
   const descontarPlato = () => {
     if (platosDisponibles[horarioSeleccionado] > 0) {
@@ -27,14 +184,16 @@ export default function usePlatosPorHorario() {
   };
 
   const resetearPlatos = () => {
-    setPlatosDisponibles(PLATOS_POR_HORARIO);
   };
 
   return {
     horarioSeleccionado,
     platosDisponibles: platosDisponibles[horarioSeleccionado],
+    idMenu, // Exponer el ID del menú
+    cargando,
     cambiarHorario,
-    descontarPlato,
-    resetearPlatos
+    actualizarPlatosDisponibles,
+    hayPlatosDisponibles,
+    obtenerPlatosDisponibles: () => obtenerPlatosDisponibles(horarioSeleccionado)
   };
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import Header from '../components/Header';
 import BottomNavBar from '../components/BottomNavBar';
 import NavHead from '../components/NavHead';
@@ -11,7 +11,6 @@ import GraficoCircular from '../components/GraficoCircular';
 export default function HomeScreen({ navigation }) {
   return (
     <Container>
-       <StatusBar backgroundColor="#0033aa" barStyle="light-content"/>  
       <NavHead navigation={navigation} />
       <ContentContainer>
         <Header Titulo="Bienvenido al Servicio Nutricional" />
