@@ -1,5 +1,6 @@
 import { Children } from "react";
-import {View, StyleSheet} from "react-native"
+import { StyleSheet } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 interface Info{
@@ -8,7 +9,9 @@ interface Info{
   
   function Container(props:Info){
       return (
-        <View style={stylesContainer.container}>{props.children}</View>
+        <SafeAreaView style={stylesContainer.container} edges={['top']}>
+          {props.children}
+        </SafeAreaView>
       )
   
   }

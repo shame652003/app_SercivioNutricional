@@ -1,6 +1,6 @@
 // screens/LoginScreen.js
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Input from '../components/Input';
 import Card from '../components/Card';
 import Botton from '../components/Botton';
@@ -23,7 +23,6 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-        <StatusBar backgroundColor="#0033aa" barStyle="light-content"/> 
       <Card>
         <View>
           <View style={styles.img}>

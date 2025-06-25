@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, StatusBar } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Header from '../components/Header';
 import BottomNavBar from '../components/BottomNavBar';
 import NavHead from '../components/NavHead';
@@ -14,7 +14,6 @@ export default function ConsultarAsistenciasScreen({ navigation }) {
 
   return (
     <Container>
-        <StatusBar backgroundColor="#0033aa" barStyle="light-content"/> 
       <NavHead navigation={navigation} />
       <ContentContainer>
         <Header Titulo="Consultar Asistencias" showSubtitle={false} />

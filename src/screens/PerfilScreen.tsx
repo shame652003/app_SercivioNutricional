@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import Header from '../components/Header';
 import Input from '../components/Input';
 import Card from '../components/Card';
@@ -31,7 +31,6 @@ export default function PerfilScreen({ navigation }) {
 
   return (
     <Container>
-      <StatusBar backgroundColor="#0033aa" barStyle="light-content"/>
       <NavHead navigation={navigation} />
       <ContentContainer>
         <FlashMessage position="center" />
