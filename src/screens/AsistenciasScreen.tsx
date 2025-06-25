@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, StatusBar, View } from 'react-native';
+import { StyleSheet, StatusBar, View, Text } from 'react-native';
 import Header from '../components/Header';
 import BottomNavBar from '../components/BottomNavBar';
 import NavHead from '../components/NavHead';
@@ -9,11 +9,10 @@ import Card from '../components/Card';
 import CedulaInput from '../components/CedulaInput';
 import EstudianteInfo from '../components/EstudianteInfo';
 import PlatosDisponibles from '../components/PlatosDisponibles';
-import QRScanner from '../components/QRScanner';
 import BotonesAsistencia from '../components/BotonesAsistencia';
 import useCedulaInput from '../hooks/useCedulaInput';
 import usePlatosPorHorario from '../hooks/usePlatosPorHorario';
-import useAsistencia from '../hooks/useAsistencia';
+import useRegistrarAsistencia from '../hooks/useRegistrarAsistencia';
 import FechaActual from '../components/FechaActual';
 import HorarioComidaSelect from '../components/HorarioComidaSelect';
 import QRScannerModal from '../components/QRScannerModal';
@@ -25,11 +24,13 @@ export default function AsistenciasScreen({ navigation }) {
   const { 
     horarioSeleccionado, 
     platosDisponibles, 
+    cargando: cargandoPlatos,
+    idMenu,
     cambiarHorario, 
-    descontarPlato, 
-    resetearPlatos 
+    actualizarPlatosDisponibles,
+    hayPlatosDisponibles
   } = usePlatosPorHorario();
-  const { registrado, registrar, cancelar } = useAsistencia();
+  const { loading: loadingAsistencia, registrarAsistencia } = useRegistrarAsistencia();
   const [isScannerVisible, setScannerVisible] = useState(false);
 
   return (
@@ -55,7 +56,7 @@ export default function AsistenciasScreen({ navigation }) {
               value={cedula} 
               onChange={handleCedulaChange} 
               onScanQR={() => setScannerVisible(true)}
-              editable={!registrado && platosDisponibles > 0} 
+              editable={hayPlatosDisponibles()}
             />
             <QRScannerModal 
               visible={isScannerVisible}
@@ -69,15 +70,17 @@ export default function AsistenciasScreen({ navigation }) {
               <EstudianteInfo estudiante={estudiante} />
             )}
             <BotonesAsistencia
-              onConfirmar={() => {
-                registrar();
-                descontarPlato();
+              onConfirmar={async () => {
+                if (estudiante && idMenu) {
+                  await registrarAsistencia(estudiante.cedula, idMenu, horarioSeleccionado);
+                  await actualizarPlatosDisponibles();
+                  clear();
+                }
               }}
               onCancelar={() => {
-                cancelar();
                 clear();
               }}
-              disabled={!estudiante || platosDisponibles === 0 || registrado}
+              disabled={!estudiante || !hayPlatosDisponibles() || loadingAsistencia}
             />
           </Card>
       </ContentContainer>
