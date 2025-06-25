@@ -90,6 +90,7 @@ export default function useAsistenciasData(): UseAsistenciasDataReturn {
     
       const data = response.data;
     
+    
 
       if (Array.isArray(data)) {
         if (data.length === 0) {
@@ -98,15 +99,22 @@ export default function useAsistenciasData(): UseAsistenciasDataReturn {
           return;
         }
         
-        // Mapear la respuesta de la API al formato esperado
-        const asistenciasMapeadas = data.map((item: any) => ({
-          cedula: item.Cedula || '',
-          nombre: item.Nombre || `${item.nombre_estudiante || ''} ${item.apellido_estudiante || ''}`.trim(),
-          carrera: item.Carrera || item.nombre_carrera || '',
-          horario: item.HorarioDeComida || item.nombre_horario || '',
        
-        }));
-        console.log('Asistencias mapeadas:', asistenciasMapeadas);
+        const asistenciasMapeadas = data.map((item: any) => {
+        
+          const nombreCompleto = [
+            item.Nombre || '',
+            item.Apellido || ''
+          ].filter(Boolean).join(' ').trim();
+
+          return {
+            cedula: item.Cedula || '',
+            nombre: nombreCompleto,
+            carrera: item.Carrera || item.nombre_carrera || '',
+            horario: item.HorarioDeComida || item.nombre_horario || '',
+          };
+        });
+      
         setAsistencias(asistenciasMapeadas);
       } else if (data && data.resultado === 'error') {
         throw new Error(data.mensaje || 'Error al obtener las asistencias');
