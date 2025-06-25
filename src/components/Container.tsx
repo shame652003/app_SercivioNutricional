@@ -8,7 +8,7 @@ interface Info{
   
   function Container(props:Info){
       return (
-        <View style={stylesContainer.container}> {props.children}</View>
+        <View style={stylesContainer.container}>{props.children}</View>
       )
   
   }
