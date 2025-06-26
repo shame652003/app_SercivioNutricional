@@ -13,7 +13,7 @@ export const loginUser = (cedula, clave, navigation, showMessage) => async (disp
 
   try {
     const encryptedPayload = encryptData({ cedula, clave });
-
+    console.log('Encrypted payload:', encryptedPayload);
     const formBody = new URLSearchParams();
     formBody.append('payload', encryptedPayload);
 

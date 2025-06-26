@@ -6,6 +6,7 @@ import { encryptData } from '../security/crypto/encryptor';
 import axios from 'axios';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/stockAlimentosApi.php`;
+console.log(BACKEND_URL);
 
 export default function useStockAlimentosValidation() {
   const [searchText, setSearchText] = useState('');
@@ -21,6 +22,7 @@ export default function useStockAlimentosValidation() {
     try {
       setLoading(true);  // Empieza la carga
       const token = await AsyncStorage.getItem('token');
+      console.log( 'el token ',token);
       if (!token) throw new Error('Token no encontrado');
 
       const DatosObjeto = {
@@ -29,6 +31,7 @@ export default function useStockAlimentosValidation() {
       };
 
       const encryptedData = encryptData(DatosObjeto);
+      console.log('datosAlimentos ',encryptData);
 
       const formBody = new URLSearchParams();
       formBody.append('datos', encryptedData);
