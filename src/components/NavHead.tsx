@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 export default function NavHead({ navigation }) {
   const user = useSelector((state: any) => state.user.user);
-  const profileImage = user.img ? `http://192.168.1.106/Servicio-Nutricional-Uptaeb/${user.img}` : null;
+  const profileImage = user.img ? `http://192.168.1.108/Servicio-Nutricional-Uptaeb/${user.img}` : null;
 
   return (
     <View style={styles.header}>

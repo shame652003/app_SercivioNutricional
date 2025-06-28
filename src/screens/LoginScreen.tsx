@@ -1,6 +1,6 @@
 // screens/LoginScreen.js
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import Input from '../components/Input';
 import Card from '../components/Card';
 import Botton from '../components/Botton';
@@ -16,6 +16,7 @@ export default function LoginScreen({ navigation }) {
     contrasenia,
     ErrorUsuario,
     ErrorContrasenia,
+    loading,
     handleUsuarioChange,
     handleContraseniaChange,
     handleLogin,
@@ -57,7 +58,11 @@ export default function LoginScreen({ navigation }) {
           iconError={ErrorContrasenia ? 'warning' : null}
         />
 
+        {loading ? (
+        <ActivityIndicator size="large" color="#0066CC" />
+      ) : (
         <Botton title="Iniciar Sesión" onPress={handleLogin} />
+      )}
 
         <TouchableOpacity
           style={styles.forgotPassword}

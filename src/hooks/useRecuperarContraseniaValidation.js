@@ -1,10 +1,15 @@
 import { useValidarEmail } from './useValidacion';
 import { showMessage } from 'react-native-flash-message';
-import useProfile from './useProfile';
+import axios from 'axios';
+import { useState } from 'react';
+import { encryptData } from '../security/crypto/encryptor';
+import { API_URL } from '@env';
+
+const BACKEND_URL = `${API_URL}bin/controlador/api/recuperarContraseñaApi.php`;
 
 export default function useRecuperarContrasenaValidation() {
   const [email, setEmail, errorEmail, setErrorEmail, validarEmail, resetEmail] = useValidarEmail();
-  const { profile } = useProfile();
+  const [loading, setLoading] = useState(false); // 👈 Nuevo estado loading
 
   const handleEmailChange = (text) => {
     setEmail(text);
@@ -18,30 +23,65 @@ export default function useRecuperarContrasenaValidation() {
     return !regex.test(valor) ? "El formato del correo electrónico es incorrecto!" : null;
   };
 
-  const recuperarPassword = () => {
+  const recuperarPassword = async () => {
     const error = validarEmailDirecto(email);
     setErrorEmail(error);
 
     if (!error) {
-      if (email === profile.email) {
-        showMessage({
-          message: 'Correo Electrónico Enviado!',
-          description: 'Revise su correo electrónico para recuperar la contraseña.',
-          type: 'success',
+      setLoading(true); // 👈 Inicia loading
+
+      try {
+        const encryptedDatos = encryptData({ enviar: 'true', correo: email });
+        const formBody = new URLSearchParams();
+        formBody.append('datos', encryptedDatos);
+
+        const { data } = await axios.post(BACKEND_URL, formBody.toString(), {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         });
-        setEmail('');
-        resetEmail();
-      } else {
+
+        console.log('Respuesta backend:', data);
+
+        if (data.resultado === 'ok') {
+          showMessage({
+            message: 'Correo Electrónico Enviado!',
+            description: 'Revise su correo electrónico para recuperar la contraseña.',
+            duration: 3000, 
+            type: 'success',
+          });
+        } else if (data.resultado === 'error') {
+          showMessage({
+            message: 'Error al enviar el correo',
+            description: data.mensaje || 'Intente nuevamente más tarde.',
+            duration: 3000, 
+            type: 'danger',
+          });
+        } else if (data.resultado === 'no existe') {
+          showMessage({
+            message: 'Error en el Correo Electrónico',
+            description: 'Ingrese correctamente el correo electrónico.',
+            duration: 3000, 
+            type: 'danger',
+          });
+        }
+      } catch (error) {
+        console.error('Error al recuperar la contraseña:', error);
         showMessage({
-          message: 'Error de Correo!',
-          description: 'El correo ingresado no está registrado.',
+          message: 'Error inesperado',
+          description: 'No se pudo enviar el correo. Intente más tarde.',
+          duration: 3000, 
           type: 'danger',
         });
+      } finally {
+        setLoading(false); // 👈 Detiene loading siempre
       }
+
+      setEmail('');
+      resetEmail();
     } else {
       showMessage({
         message: 'Error de Correo!',
         description: 'Ingrese un correo electrónico válido.',
+        duration: 3000, 
         type: 'danger',
       });
     }
@@ -50,6 +90,7 @@ export default function useRecuperarContrasenaValidation() {
   return {
     email,
     errorEmail,
+    loading, // 👈 Devuelve el loading
     handleEmailChange,
     recuperarPassword,
   };

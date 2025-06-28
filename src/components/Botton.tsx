@@ -4,6 +4,7 @@ import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 interface Info {
   title: string;
   onPress?: () => void;
+  disabled?: boolean;
 }
 
 function Botton(props: Info) {

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { loginUser } from '../context/actions/userActions';
 import { showMessage } from 'react-native-flash-message';
 
 export default function useLogin(navigation) {
   const dispatch = useDispatch();
+  const { loading } = useSelector(state => state.user);
 
   const [usuario, setUsuario] = useState('');
   const [contrasenia, setContrasenia] = useState('');
@@ -58,6 +60,7 @@ export default function useLogin(navigation) {
     contrasenia,
     ErrorUsuario,
     ErrorContrasenia,
+    loading,
     handleUsuarioChange,
     handleContraseniaChange,
     handleLogin,
