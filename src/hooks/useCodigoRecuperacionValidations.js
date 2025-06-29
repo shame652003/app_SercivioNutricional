@@ -26,17 +26,41 @@ export default function useCodigoRecuperacionValidation(navigation) {
       const tokenRC = await AsyncStorage.getItem('tokenRC');
       const datos = jwtDecode(tokenRC);
       console.log('Datos decodificados:', datos);
-
-      if (codigo === String(datos.codigo)) {
+      if(datos.tipo !== 'recuperacion') {
         showMessage({
-          message: '¡Código verificado correctamente!',
-          type: 'success',
-          duration: 2000,
-        });
+            message: 'El token no es válido para recuperación de contraseña.',
+            type: 'danger',
+            onHide: async () => {
+              await AsyncStorage.removeItem('tokenRC');
+              navigation.navigate("LoginScreen");
+            } });
+        return;
+      }
 
-        navigation.navigate('CambiarClave');
-
-       // navigation.navigate('CambiarClave', { tokenRC });
+      if(datos.exp * 1000 < Date.now()) {
+        showMessage({
+          message: 'El token ha expirado.',
+          type: 'danger',
+          onHide: async () => {
+            await AsyncStorage.removeItem('tokenRC');
+            navigation.navigate("LoginScreen");
+          } });
+        return;
+      }
+      if (!datos.codigo) {
+        showMessage({
+          message: 'El token no contiene un código de verificación.',
+          type: 'danger',
+          onHide: async () => {
+            await AsyncStorage.removeItem('tokenRC');
+            navigation.navigate("LoginScreen");
+          } });
+        return;
+      }
+      console.log('Código esperado:', datos.codigo);
+      if (codigo === String(datos.codigo)) {
+            await AsyncStorage.removeItem("tokenRC");
+            navigation.navigate('CambiarClave', { datos });
 
       } else {
         setErrorCodigo('Código incorrecto');

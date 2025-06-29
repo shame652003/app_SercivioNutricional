@@ -2,14 +2,12 @@ import { useState, useEffect } from "react";
 import { useValidarLasContrasenas } from "./useValidacion";
 import { showMessage } from 'react-native-flash-message';
 import { API_URL } from '@env';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { encryptData } from '../security/crypto/encryptor';
 import axios from "axios";
-const { jwtDecode } = require('jwt-decode');
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/cambiarClaveApi.php`;
 
-const useCambiarClave = (navigation) => {
+const useCambiarClave = (navigation, datos) => {
   const [
     contrasenia,
     setContrasenia,
@@ -66,49 +64,45 @@ const useCambiarClave = (navigation) => {
 
     setLoading(true);
     try {
-        const tokenRC = await AsyncStorage.getItem("tokenRC");
-        console.log("Token de recuperación:", tokenRC);
-        if (!tokenRC) {   
-          throw new Error("No se encontró el token de recuperacion.");
-        }
-        const datos = jwtDecode(tokenRC);
-        console.log("Datos decodificados cambiar clave:", datos);
 
-        const encryptedContrasenia = encryptData({cambiarClave:true, token: tokenRC, codigo:datos.codigo, clave: contrasenia, clave2: contrasenia2});
+        const encryptedContrasenia = encryptData({cambiarClave:true, codigo:datos.codigo, clave: contrasenia, clave2: contrasenia2, correo: datos.correo });
         console.log("Datos encriptados:", encryptedContrasenia);
+
         const formBody = new URLSearchParams();
         formBody.append("datos", encryptedContrasenia);
+        
         const response = await axios.post(BACKEND_URL, formBody.toString(), {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
         });
+        console.log("Respuesta del servidor:", response.data);
 
-        if(response.resultado === "error") {
-            showMessage({
-              message: "Error al cambiar la contraseña",
-              description: response.mensaje || "Error de Cambio de Contraseña.",
-              duration: 3000,
-              type: "danger",
-           });
+if(response.data.resultado === "error") {
+  showMessage({
+    message: "Error al cambiar la contraseña",
+    description: response.data.mensaje || "Error de Cambio de Contraseña.",
+    duration: 3000,
+    type: "danger",
+  });
+} else if(response.data.resultado === "ok") {
+ showMessage({
+    message: "Contraseña Cambiada",
+    description: "La contraseña se ha cambiado exitosamente.",
+    duration: 2000,
+    type: "success",
+    onHide: async () => {
+    setContrasenia("");
+    setContrasenia2("");
+    resetError();
+    navigation.navigate("LoginScreen");
+  }
+});
 
-        }
-        else if(response.resultado === "ok") {
-            showMessage({
-              message: "Contraseña Cambiada",
-              description: "La contraseña se ha cambiado exitosamente.",
-              duration: 2000,
-              type: "success",
-            });
-            setContrasenia("");
-            setContrasenia2("");
-            resetError();
-            await AsyncStorage.removeItem("tokenRC");
-            navigation.navigate("LoginScreen");
-            
-        } else {
-            throw new Error("Respuesta inesperada del servidor.");
-        }
+} else {
+  throw new Error("Respuesta inesperada del servidor.");
+}
+
     } catch (e) {
       console.error("Error al cambiar la contraseña:", e.message);
     } finally {

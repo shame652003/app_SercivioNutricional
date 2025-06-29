@@ -45,12 +45,6 @@ export default function useRecuperarContrasenaValidation(navigation) {
 
 
         if (data.resultado === 'ok') {
-          showMessage({
-            message: 'Correo Electrónico Enviado!',
-            description: 'Revise su correo electrónico para recuperar la contraseña.',
-            duration: 3000, 
-            type: 'success',
-          });
            await AsyncStorage.setItem('tokenRC', data.tokenRC);
            navigation.navigate('CodigoRecuperacion');
 

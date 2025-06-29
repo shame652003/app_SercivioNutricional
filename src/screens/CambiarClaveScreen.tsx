@@ -6,7 +6,8 @@ import Botton from '../components/Botton';
 import useCambiarClave from '../hooks/useCambiarClave'; 
 
 
-export default function CambiarClaveScreen({ navigation }) {
+export default function CambiarClaveScreen({ navigation, route }) {
+  const datos = route.params?.datos || null;
   const {
   contrasenia,
   setContrasenia,
@@ -17,7 +18,7 @@ export default function CambiarClaveScreen({ navigation }) {
   handleCambiarClave,
   loading,
   resetError,
-} = useCambiarClave();
+} = useCambiarClave(navigation, datos);
 
 
   return (
