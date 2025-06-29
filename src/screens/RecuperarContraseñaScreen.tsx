@@ -8,7 +8,7 @@ import useRecuperarContrasenaValidation from '../hooks/useRecuperarContraseniaVa
 import LoadingModal from '../components/LoadingModal';
 
 export default function RecuperarContraseñaScreen({ navigation }) {
-  const { email, errorEmail, loading, handleEmailChange, recuperarPassword } = useRecuperarContrasenaValidation();
+  const { email, errorEmail, loading, handleEmailChange, recuperarPassword } = useRecuperarContrasenaValidation(navigation);
 
   return (
     <View style={styles.container}>

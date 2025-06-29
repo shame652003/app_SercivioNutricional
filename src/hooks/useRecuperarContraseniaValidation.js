@@ -4,10 +4,12 @@ import axios from 'axios';
 import { useState } from 'react';
 import { encryptData } from '../security/crypto/encryptor';
 import { API_URL } from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/recuperarContraseñaApi.php`;
 
-export default function useRecuperarContrasenaValidation() {
+export default function useRecuperarContrasenaValidation(navigation) {
   const [email, setEmail, errorEmail, setErrorEmail, validarEmail, resetEmail] = useValidarEmail();
   const [loading, setLoading] = useState(false); // 👈 Nuevo estado loading
 
@@ -28,10 +30,10 @@ export default function useRecuperarContrasenaValidation() {
     setErrorEmail(error);
 
     if (!error) {
-      setLoading(true); // 👈 Inicia loading
+      setLoading(true); 
 
       try {
-        const encryptedDatos = encryptData({ enviar: 'true', correo: email });
+        const encryptedDatos = encryptData({ enviar: 'true', tipo: 'app', correo: email });
         const formBody = new URLSearchParams();
         formBody.append('datos', encryptedDatos);
 
@@ -41,6 +43,7 @@ export default function useRecuperarContrasenaValidation() {
 
         console.log('Respuesta backend:', data);
 
+
         if (data.resultado === 'ok') {
           showMessage({
             message: 'Correo Electrónico Enviado!',
@@ -48,6 +51,9 @@ export default function useRecuperarContrasenaValidation() {
             duration: 3000, 
             type: 'success',
           });
+           await AsyncStorage.setItem('tokenRC', data.tokenRC);
+           navigation.navigate('CodigoRecuperacion');
+
         } else if (data.resultado === 'error') {
           showMessage({
             message: 'Error al enviar el correo',
@@ -72,7 +78,7 @@ export default function useRecuperarContrasenaValidation() {
           type: 'danger',
         });
       } finally {
-        setLoading(false); // 👈 Detiene loading siempre
+        setLoading(false); 
       }
 
       setEmail('');
