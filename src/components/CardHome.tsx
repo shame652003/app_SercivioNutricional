@@ -8,12 +8,16 @@ interface Info {
   cantidad?: string;
   icon?: string;
   icon2?: string;
-  onPress?: () => void; // función para manejar el toque
+  onPress?: () => void;
+  style?: object; 
 }
-
 export default function CardHome(props: Info) {
   return (
-    <TouchableOpacity style={styles.card} onPress={props.onPress} activeOpacity={0.7}>
+    <TouchableOpacity 
+      style={[styles.card, props.style]} // <-- agregar aquí props.style para combinar estilos
+      onPress={props.onPress} 
+      activeOpacity={0.7}
+    >
       {props.icon && <FontAwesome name={props.icon} size={70} color="#0066CC" />}
       {props.icon2 && <MaterialCommunityIcons name={props.icon2} size={70} color="#0066CC" />}
       <Text style={styles.cardTitle}>{props.title}</Text>
@@ -24,13 +28,11 @@ export default function CardHome(props: Info) {
 
 const styles = StyleSheet.create({
   card: {
-    width: "48%",
     backgroundColor: "#fff",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
-    marginBottom: 5,
-    margin: 5,
+    // quitar width y margin de aquí
     shadowColor: '#00000054',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
