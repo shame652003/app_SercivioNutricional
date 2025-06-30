@@ -1,5 +1,6 @@
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import { Image } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 
 export type Asistencia = {
@@ -9,7 +10,13 @@ export type Asistencia = {
   horario: string;
 };
 
+// Importar las imágenes
+const logoImage = Image.resolveAssetSource(require('../../assets/logo.png')).uri;
+const uptaebImage = Image.resolveAssetSource(require('../../assets/uptaeb.png')).uri;
+
 export async function exportAsistenciasToPdf(data: Asistencia[]): Promise<void> {
+  // Obtener las URIs de las imágenes
+
   if (!data || data.length === 0) {
     showMessage({
       message: 'Error',
@@ -57,10 +64,34 @@ export async function exportAsistenciasToPdf(data: Asistencia[]): Promise<void> 
           }
           
           .header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 40px;
-            padding-bottom: 20px;
+            padding: 20px 0;
             border-bottom: 3px solid #0066CC;
+          }
+
+          .header .logo-container {
+            flex: 1;
+            text-align: left;
+            padding-right: 20px;
+          }
+
+          .header .uptaeb-container {
+            flex: 1;
+            text-align: right;
+            padding-left: 20px;
+          }
+
+          .header img {
+            max-height: 80px;
+            width: auto;
+          }
+
+          .header-content {
+            flex: 2;
+            text-align: center;
           }
           
           .header h1 {
@@ -265,14 +296,60 @@ export async function exportAsistenciasToPdf(data: Asistencia[]): Promise<void> 
               page-break-inside: avoid;
             }
           }
+          
+          /* Estilos para el header */
+          .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e8f4fd;
+          }
+          
+          .logo-container {
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+          }
+          
+          .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+          }
+          
+          .header-content {
+            flex-grow: 1;
+            text-align: center;
+          }
+          
+          .uptaeb-container {
+            width: 100px;
+            height: 100px;
+            margin-left: 20px;
+          }
+          
+          .uptaeb-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+          }
         </style>
       </head>
       <body>
         <!-- Header similar al FPDF -->
         <div class="header">
-          <h1>Servicio Nutricional</h1>
-          <h2>Universidad Politécnica Territorial Andrés Eloy Blanco</h2>
-          <h3>Barquisimeto - Edo - Lara</h3>
+          <div class="logo-container">
+            <img src="${logoImage}" alt="Logo" />
+          </div>
+          <div class="header-content">
+            <h1>Servicio Nutricional</h1>
+            <h2>Universidad Politécnica Territorial Andrés Eloy Blanco</h2>
+            <h3>Barquisimeto - Edo - Lara</h3>
+          </div>
+          <div class="uptaeb-container">
+            <img src="${uptaebImage}" alt="UPTAEB" />
+          </div>
         </div>
 
         <!-- Información del reporte -->
@@ -357,7 +434,7 @@ export async function exportAsistenciasToPdf(data: Asistencia[]): Promise<void> 
       html, 
       base64: false,
       width: 612,  // Ancho estándar carta
-      height: 792, // Alto estándar carta
+      height: 792 // Alto estándar carta
     });
 
     if (!uri) {
