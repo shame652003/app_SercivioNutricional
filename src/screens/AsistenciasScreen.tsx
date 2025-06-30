@@ -99,6 +99,6 @@ const styles = StyleSheet.create({
   },
   horarioContainer: {
     flex: 1,
-    marginLeft: 8,
+    width: '100%',
   },
 });
