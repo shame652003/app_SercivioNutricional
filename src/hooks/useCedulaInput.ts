@@ -13,6 +13,7 @@ export interface Estudiante {
   nombre: string;
   apellido: string;
   carrera: string;
+  seccion: string;
 }
 
 export default function useCedulaInput() {
@@ -64,18 +65,12 @@ export default function useCedulaInput() {
 
       const studentData = Array.isArray(data) ? data[0] : data;
       
-      
-      const CarreraYSeccion = [
-        studentData.carrera,
-        `
-        || ${studentData.seccion || ''}`
-      ].filter(Boolean).join(' ').trim();
-      
       const estudianteMapeado = {
         cedula: studentData.cedEstudiante,
         nombre: studentData.nombre,
         apellido: studentData.apellido,
-        carrera: CarreraYSeccion
+        carrera: studentData.carrera,
+        seccion: studentData.seccion
       };
       
 

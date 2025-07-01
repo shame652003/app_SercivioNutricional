@@ -18,6 +18,10 @@ export default function EstudianteInfo({ estudiante }: Props) {
         <Ionicons name="school-outline" size={24} color="#3399FF" style={{ marginRight: 8 }} />
         <Text style={styles.text}>{estudiante.carrera}</Text>
       </View>
+      <View style={styles.row}>
+        <Ionicons name="school-outline" size={24} color="#3399FF" style={{ marginRight: 8 }} />
+        <Text style={styles.text}>{estudiante.seccion}</Text>
+      </View>
     </View>
   );
 }

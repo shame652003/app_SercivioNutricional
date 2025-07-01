@@ -61,10 +61,12 @@ export default function useAsistenciasData(): UseAsistenciasDataReturn {
     const safeCedula = normalizeText(String(item?.cedula || ''));
     const safeNombre = normalizeText(String(item?.nombre || ''));
     const safeCarrera = normalizeText(String(item?.carrera || ''));
+    const safeHorario = normalizeText(String(item?.horario || ''));
     
     return safeCedula.includes(searchTerm) ||
            safeNombre.includes(searchTerm) ||
-           safeCarrera.includes(searchTerm);
+           safeCarrera.includes(searchTerm) ||
+           safeHorario.includes(searchTerm);
   });
 
   const fetchAsistencias = useCallback(async () => {

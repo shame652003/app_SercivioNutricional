@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 interface Info {
   Titulo?: string;
   showSubtitle?: boolean;
+  showConsultarAsistencia?: boolean;
+  navigation?: any;
 }
 
 function Header(props: Info) {
@@ -43,6 +45,14 @@ function Header(props: Info) {
       <Text style={styleHeader.title}>{props.Titulo}</Text>
       {props.showSubtitle !== false && user && user.nombre && user.apellido && (
        <Text style={styleHeader.subtitle}>{user.nombre} {user.apellido}</Text>
+      )}
+      {props.showConsultarAsistencia && (
+        <Text 
+          onPress={() => props.navigation?.navigate('ConsultarAsistencias')} 
+          style={styleHeader.subtitle}
+        >
+          Consultar Asistencia
+        </Text>
       )}
     </View>
   );
