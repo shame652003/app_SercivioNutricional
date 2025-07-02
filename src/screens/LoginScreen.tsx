@@ -48,6 +48,7 @@ export default function LoginScreen({ navigation }) {
         <Input
           label="Contraseña"
           icon="lock"
+          isPassword={true}
           placeholder="Ingresar Contraseña"
           value={contrasenia}
           onChangeText={handleContraseniaChange}

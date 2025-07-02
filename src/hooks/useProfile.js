@@ -17,6 +17,21 @@ export default function useProfile() {
     dispatch(updateProfile({ [field]: value }));
   };
 
+  const formatearTextoPerfil = (nombre, apellido, correo) => {
+  const formatear = (texto) =>
+    texto.trim().charAt(0).toUpperCase() + texto.trim().slice(1).toLowerCase();
+
+  const formatearCorreo = (email) =>
+    email.trim().charAt(0).toUpperCase() + email.trim().slice(1).toLowerCase();
+
+  return {
+    nombre: formatear(nombre),
+    apellido: formatear(apellido),
+    correo: formatearCorreo(correo),
+  };
+};
+
+
   // 🔍 Validar si un correo ya está en uso
   const validarCorreo = async (correo) => {
     try {
@@ -26,10 +41,13 @@ export default function useProfile() {
       console.log('Validando correo:', correo);
       console.log('Token:', token);
   
+      const correoFormateado = correo.trim().toLowerCase();
+
       const encryptedPayload = encryptData({
         validarCorreo: true,
-        correo: correo
-      });
+        correo: correoFormateado
+     });
+
   
       const formData = new URLSearchParams();
       formData.append('datos', encryptedPayload);
@@ -69,7 +87,9 @@ export default function useProfile() {
       const token = await AsyncStorage.getItem('token');
       if (!token) throw new Error('Token no encontrado');
   
-      const mismoCorreo = profile.correo === correo;
+      const correoFormateado = correo.trim().toLowerCase();
+      const mismoCorreo = profile.correo === correoFormateado;
+
   
       // Validar nombre y apellido
       if (!nombre.trim() || !apellido.trim()) {
@@ -93,8 +113,10 @@ export default function useProfile() {
           return false;
         }
       }
+
+      const datosFormateados = formatearTextoPerfil(nombre, apellido, correo);
   
-      const encryptedPayload = encryptData({ nombre, apellido, correo });
+      const encryptedPayload = encryptData(datosFormateados);
   
       const formData = new URLSearchParams();
       formData.append('datos', encryptedPayload);

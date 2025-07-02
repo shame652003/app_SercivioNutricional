@@ -37,6 +37,7 @@ export default function CambiarClaveScreen({ navigation, route }) {
         <Input
   label="Nueva Contraseña"
   icon="lock"
+  isPassword={true}
   placeholder="Ingresar Nueva Contraseña"
   value={contrasenia}
   onChangeText={(text) => {
@@ -49,6 +50,7 @@ export default function CambiarClaveScreen({ navigation, route }) {
 <Input
   label="Confirmar Contraseña"
   icon="lock"
+  isPassword={true}
   placeholder="Repetir Contraseña"
   value={contrasenia2}
   onChangeText={(text) => {

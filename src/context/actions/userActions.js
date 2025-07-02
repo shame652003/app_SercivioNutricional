@@ -21,6 +21,7 @@ export const loginUser = (cedula, clave, navigation, showMessage) => async (disp
     const { data } = await axios.post(BACKEND_URL, formBody.toString(), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
+    console.log('Response data:', data.resultado);
 
     if (data.resultado === 'success') {
       await AsyncStorage.setItem('token', data.token);
@@ -31,7 +32,7 @@ export const loginUser = (cedula, clave, navigation, showMessage) => async (disp
       navigation.navigate('Home');
     } else {
       dispatch({ type: 'USER_ERROR', payload: data.mensaje || 'Credenciales incorrectas.' });
-      showMessage({ message: 'Error de Usuario o Contraseña', description: data.mensaje || 'Credenciales incorrectas.', type: 'danger' });
+      showMessage({ message: 'Error de Usuario o Contraseña', description: data.mensaje || 'Credenciales incorrectas.', type: 'danger', duration: 2500 });
     }
   } catch (error) {
     dispatch({ type: 'USER_ERROR', payload: 'Error de conexión' });
