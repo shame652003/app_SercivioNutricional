@@ -16,6 +16,7 @@ interface BuscadorProps {
   onBlur?: (value: string) => void;
   onFocus?: (value: string) => void;
   error?: string;
+  editable?: boolean;
 }
 
 export default function Buscador(props: BuscadorProps) {

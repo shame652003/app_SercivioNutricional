@@ -11,7 +11,6 @@ import Container from '../components/Container';
 import ContentContainer from '../components/ContentContainer';
 import FlashMessage from 'react-native-flash-message';
 
-
 import useCambioContraseniaValidation from '../hooks/useCambioContraseniaValidation';
 
 export default function CambioContraseñaScreen({ navigation }) {
@@ -20,7 +19,8 @@ export default function CambioContraseñaScreen({ navigation }) {
     contrasenia1,
     contrasenia2,
     ErrorContrasenia,
-    ErrorContrasenias,
+    errorContrasenia1,
+    errorContrasenia2,
     handleContraseniaChange,
     handleContrasenia1Change,
     handleContrasenia2Change,
@@ -34,45 +34,52 @@ export default function CambioContraseñaScreen({ navigation }) {
       <NavHead navigation={navigation} />
       <ContentContainer>
         <Header Titulo="Modificar Contraseña" />
-        <Card>
-          <Input
-            label="Contraseña Actual"
-            icon="lock"
-            placeholder="Ingresar la Contraseña"
-            value={contrasenia}
-            onChangeText={handleContraseniaChange}
-            onBlur={handleContraseniaChange} // o una función que valide si quieres
-            error={ErrorContrasenia}
-            iconError={ErrorContrasenia ? 'warning' : null}
-          />
-          <Input
-            label="Nueva Contraseña"
-            icon="lock"
-            placeholder="Ingresar Nueva Contraseña"
-            value={contrasenia1}
-            onChangeText={handleContrasenia1Change}
-            onBlur={handleContrasenia1Change}
-            error={ErrorContrasenias}
-            iconError={ErrorContrasenias ? 'warning' : null}
-          />
-          <Input
-            label="Repetir Contraseña"
-            icon="lock"
-            placeholder="Repetir Nueva Contraseña"
-            value={contrasenia2}
-            onChangeText={handleContrasenia2Change}
-            onBlur={handleContrasenia2Change}
-            error={ErrorContrasenias}
-            iconError={ErrorContrasenias ? 'warning' : null}
-          />
-
-            <Botton title="Modificar" onPress={handleCambioContrasenia} />
-            <BottonCancel title="Cancelar" onPress={handleCancelar} />
-
-            <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate('Perfil')}>
-                    <Text style={styles.forgotPasswordText}>Modificar Datos del Perfil</Text>
-           </TouchableOpacity>
+        <Card>   
           
+          <Input
+          label="Contraseña Actual"
+          icon="lock"
+          isPassword={true}
+          placeholder="Ingresar la Contraseña"
+          value={contrasenia}
+          onChangeText={handleContraseniaChange}
+          error={ErrorContrasenia}
+          iconError={ErrorContrasenia ? 'warning' : null}
+        />
+        <Input
+          label="Nueva Contraseña"
+          icon="lock"
+          isPassword={true}
+          placeholder="Ingresar Nueva Contraseña"
+          value={contrasenia1}
+          onChangeText={handleContrasenia1Change}
+          error={errorContrasenia1}
+          iconError={errorContrasenia1 ? 'warning' : null}
+        />
+        <Input
+          label="Confirmar Contraseña"
+          icon="lock"
+          isPassword={true}
+          placeholder="Repetir Nueva Contraseña"
+          value={contrasenia2}
+          onChangeText={handleContrasenia2Change}
+          error={errorContrasenia2}
+          iconError={errorContrasenia2 ? 'warning' : null}
+        />
+
+        <View style={styles.rowButtons}>  
+        <View style={styles.buttonWrapper}>
+          <BottonCancel title="Cancelar" onPress={handleCancelar} />
+        </View>
+        <View style={styles.buttonWrapper}>
+          <Botton title="Modificar" onPress={handleCambioContrasenia} />
+        </View>
+      </View>
+
+
+          <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate('Perfil')}>
+            <Text style={styles.forgotPasswordText}>Modificar Datos del Perfil</Text>
+          </TouchableOpacity>
         </Card>
       </ContentContainer>
       <BottomNavBar navigation={navigation} />
@@ -81,7 +88,7 @@ export default function CambioContraseñaScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
- forgotPassword: {
+  forgotPassword: {
     marginTop: 10,
   },
   forgotPasswordText: {
@@ -90,6 +97,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
   },
- 
+  rowButtons: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  gap: 10, 
+  marginTop: 20,
+  },
+  buttonWrapper: {
+  flex: 1,
+  marginHorizontal: 5, // separa los botones
+  },
+
 
 });

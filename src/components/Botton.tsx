@@ -42,4 +42,6 @@ const styleBotton = StyleSheet.create({
     color: "#fff", // Asegura que el texto sea blanco
     fontWeight: "bold",
   },
+  
 });
+

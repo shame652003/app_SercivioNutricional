@@ -1,19 +1,23 @@
 import { StatusBar } from 'react-native';
-import { StyleSheet, View, Text } from 'react-native';
-import { Provider } from "react-redux"
-import store from './src/context/store'
-import Navigate from './src/navigate/Navigate';
+import { StyleSheet } from 'react-native';
+import { Provider as ReduxProvider } from 'react-redux';
+import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import FlashMessage, { showMessage } from 'react-native-flash-message';
+import FlashMessage from 'react-native-flash-message';
+
+import store from './src/context/store';
+import Navigate from './src/navigate/Navigate';
+
 export default function App() {
- 
   return (
     <SafeAreaProvider>
       <StatusBar backgroundColor="#0033aa" barStyle="light-content" />
       <FlashMessage position="center" />
-      <Provider store={store}>
-        <Navigate/>
-        </Provider>
+      <ReduxProvider store={store}>
+        <PaperProvider>
+          <Navigate />
+        </PaperProvider>
+      </ReduxProvider>
     </SafeAreaProvider>
   );
 }
@@ -25,7 +29,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonColor:{
+  buttonColor: {
     backgroundColor: 'red',
-  }
+  },
 });
