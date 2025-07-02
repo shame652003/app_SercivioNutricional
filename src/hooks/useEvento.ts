@@ -259,100 +259,122 @@ export default function useEventoValidation() {
         encoding: FileSystem.EncodingType.Base64,
       });
 
-  let contenidoHTML = `
-  <html>
-    <head>
-      <meta charset="utf-8" />
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          margin: 20px;
-          color: #000;
-          background-color: #fff;
-        }
-        header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-bottom: 2px solid #000;
-          padding-bottom: 10px;
-          margin-bottom: 20px;
-        }
-        header img {
-          height: 80px;
-          width: auto;
-        }
-        .title-container {
-          flex-grow: 1;
-          text-align: center;
-          font-weight: bold;
-          font-size: 22px;
-          line-height: 1.1;
-          margin: 0 10px;
-        }
-        .subtitle, .location {
-          font-weight: 600;
-          font-size: 12px;
-          margin-top: 4px;
-          color: #000;
-        }
-        .info {
-          margin-bottom: 10px;
-          font-size: 14px;
-        }
-        .info strong {
-          color: #000;
-        }
-        h1, h2 {
-          color: #000;
-        }
-        h2 {
-          border-bottom: 2px solid #000;
-          padding-bottom: 4px;
-          margin-top: 25px;
-          margin-bottom: 10px;
-          font-size: 18px;
-        }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-bottom: 15px;
-          font-size: 13px;
-        }
-         td {
-          border: 1px solid #bbb;
-          padding: 6px 8px;
-          text-align: left;
-          vertical-align: middle;
-          max-width: 150px;
-          word-wrap: break-word;
-          color: #000;
-        }
-        th {
-          background-color: #003366; 
-          color: #fff;            
-          font-weight: bold;        
-        }
-      </style>
-    </head>
-    <body>
-      <header>
-        <img src="data:image/png;base64,${base64Logo}" alt="Logo" />
-        <div class="title-container">
-          Servicio Nutricional<br/>
-          <span class="subtitle">Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB)</span><br/>
-          <span class="location">Barquisimeto - Estado - Lara</span>
-        </div>
-        <img src="data:image/png;base64,${base64Logo}" alt="Logo" />
-      </header>
+let contenidoHTML = `
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @page {
+        margin-top: 40px;
+        margin-bottom: 40px;
+        margin-left: 24px;
+        margin-right: 24px;
+      }
 
-      <h1>Reporte de Evento</h1>
-      <p><strong>Nombre del Evento:</strong> ${evento.nomEvent}</p>
-      <p><strong>Descripción del Evento:</strong> ${evento.descripEvent}</p>
-      <p><strong>Fecha del Evento:</strong> ${evento.feMenu}</p>
-      <p><strong>Horario:</strong> ${evento.horarioComida}</p>
-      <p><strong>Cantidad de platos:</strong> ${evento.cantPlatos}</p>
-      <p><strong>Descripción:</strong> ${evento.descripcion}</p>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 24px;
+        color: #000;
+        background-color: #fff;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-align: center;
+        color: #000;
+      }
+
+      header img {
+        height: 100px;
+        width: auto;
+        margin-bottom: 10px;
+      }
+
+      .title-container {
+        flex-grow: 1;
+        font-weight: bold;
+        font-size: 22px;
+        line-height: 1.1;
+        margin: 0 10px;
+        color: #000;
+      }
+
+      .subtitle, .location {
+        font-weight: 600;
+        font-size: 14px;
+        margin-top: 4px;
+        color: #000;
+      }
+
+      h1, h2 {
+        color: #0066CC;
+        text-align: center;
+      }
+
+      h2 {
+        border-bottom: 2px solid #0066CC;
+        padding-bottom: 4px;
+        margin-top: 25px;
+        margin-bottom: 10px;
+        font-size: 18px;
+      }
+
+      p {
+        font-size: 14px;
+        margin: 6px 0;
+      }
+
+      p strong {
+        color: #000;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+        font-size: 14px;
+      }
+
+      th, td {
+        border: 1px solid #3399FF;
+        padding: 8px 6px;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      th {
+        background-color: #0066CC;
+        color: #fff;
+        font-weight: bold;
+      }
+
+      tr:nth-child(even) {
+        background: #f6faff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img src="data:image/png;base64,${base64Logo}" alt="Logo" />
+      <div class="title-container">
+        Servicio Nutricional<br/>
+        <span class="subtitle">Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB)</span><br/>
+        <span class="location">Barquisimeto - Estado - Lara</span>
+      </div>
+      <img src="data:image/png;base64,${base64Logo}" alt="Logo" />
+    </header>
+
+    <h1>Reporte de Evento</h1>
+    <p><strong>Nombre del Evento:</strong> ${evento.nomEvent}</p>
+    <p><strong>Descripción del Evento:</strong> ${evento.descripEvent}</p>
+    <p><strong>Fecha del Evento:</strong> ${evento.feMenu}</p>
+    <p><strong>Horario:</strong> ${evento.horarioComida}</p>
+    <p><strong>Cantidad de platos:</strong> ${evento.cantPlatos}</p>
+    <p><strong>Descripción:</strong> ${evento.descripcion}</p>
 `;
 
 
