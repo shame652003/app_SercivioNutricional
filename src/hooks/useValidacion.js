@@ -14,7 +14,6 @@ const useValidacionCampo = (validarFn, valorInicial = "") => {
   return [valor, setValor, error, setError, validar, resetError];
 };
 
-
 const validarNoVacio = (valor) =>
   !valor || valor.trim() === "" ? "El campo no puede estar vacío!" : null;
 
@@ -44,7 +43,6 @@ const validarNombreApellido = (valor) => {
   return null;
 };
 
-
 export const useValidarNombreApellido = () => useValidacionCampo(validarNombreApellido);
 
 export const useValidarEmail = () => useValidacionCampo(validarEmail);
@@ -59,57 +57,74 @@ export const useValidarLasContrasenas = () => {
   const [errorContrasena1, setErrorContrasena1] = useState(null);
   const [errorContrasena2, setErrorContrasena2] = useState(null);
 
-  const validarContrasena1 = (val1, val2) => {
-    if (!val1.trim()) {
-      setErrorContrasena1("La nueva contraseña no puede estar vacía!");
-      return false;
+  // Validar solo la contraseña 1 (nuevo valor)
+  const validarContrasena1 = (valor) => {
+    if (!valor.trim()) {
+      return "La nueva contraseña no puede estar vacía!";
     }
-    if (val1.length < 8) {
-      setErrorContrasena1("La contraseña debe tener al menos 8 caracteres!");
-      return false;
+    if (valor.length < 8) {
+      return "La contraseña debe tener al menos 8 caracteres!";
     }
-    if (!/[A-Z]/.test(val1) || !/\d/.test(val1) || !/[!@#$%^&*(),.?":{}|<>]/.test(val1)) {
-      setErrorContrasena1("Debe incluir mayúscula, número y carácter especial!");
-      return false;
+    if (!/[A-Z]/.test(valor) || !/\d/.test(valor) || !/[!@#$%^&*(),.?":{}|<>]/.test(valor)) {
+      return "Debe incluir mayúscula, número y carácter especial!";
     }
+    return null;
+  };
+
+  // Validar la confirmación de contraseña (que coincida con contrasena1)
+  const validarContrasena2 = (valor2, valor1) => {
+    if (!valor2.trim()) {
+      return "La confirmación no puede estar vacía!";
+    }
+    if (valor2 !== valor1) {
+      return "Las contraseñas no coinciden!";
+    }
+    return null;
+  };
+
+  // Esta función valida todo (antes de enviar)
+  const validar = () => {
+    let valido = true;
+    const error1 = validarContrasena1(contrasena1);
+    const error2 = validarContrasena2(contrasena2, contrasena1);
+
+    setErrorContrasena1(error1);
+    setErrorContrasena2(error2);
+
+    if (error1 || error2) valido = false;
+
+    return valido;
+  };
+
+  const resetError = () => {
     setErrorContrasena1(null);
-
-    if (val2 && val1 !== val2) {
-      setErrorContrasena2("Las contraseñas no coinciden!");
-      return false;
-    } else {
-      setErrorContrasena2(null);
-    }
-    return true;
-  };
-
-  const validarContrasena2 = (val1, val2) => {
-    if (!val2.trim()) {
-      setErrorContrasena2("La confirmación no puede estar vacía!");
-      return false;
-    }
-    if (val1 !== val2) {
-      setErrorContrasena2("Las contraseñas no coinciden!");
-      return false;
-    }
     setErrorContrasena2(null);
-    return true;
   };
 
-  const resetErrorContrasena1 = () => setErrorContrasena1(null);
-  const resetErrorContrasena2 = () => setErrorContrasena2(null);
+  // Para validación en tiempo real: actualizo error al cambiar texto
+  const onChangeContrasena1 = (valor) => {
+    setContrasena1(valor);
+    setErrorContrasena1(validarContrasena1(valor));
+
+    // También valido confirmación porque puede que ya haya texto ahí
+    if (contrasena2) {
+      setErrorContrasena2(validarContrasena2(contrasena2, valor));
+    }
+  };
+
+  const onChangeContrasena2 = (valor) => {
+    setContrasena2(valor);
+    setErrorContrasena2(validarContrasena2(valor, contrasena1));
+  };
 
   return [
     contrasena1,
-    setContrasena1,
-    errorContrasena1,
-    resetErrorContrasena1,
+    onChangeContrasena1,
     contrasena2,
-    setContrasena2,
+    onChangeContrasena2,
+    errorContrasena1,
     errorContrasena2,
-    resetErrorContrasena2,
-    validarContrasena1,
-    validarContrasena2,
+    validar,
+    resetError,
   ];
 };
-

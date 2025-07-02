@@ -34,15 +34,13 @@ export default function CambiarClaveScreen({ navigation, route }) {
 
         <Text style={styles.subtitle}>Servicio Nutricional</Text>
 
-        <Input
+      <Input
   label="Nueva Contraseña"
   icon="lock"
   isPassword={true}
   placeholder="Ingresar Nueva Contraseña"
   value={contrasenia}
-  onChangeText={(text) => {
-    setContrasenia(text);
-  }}
+  onChangeText={setContrasenia} 
   error={ErrorContrasenia}
   iconError={ErrorContrasenia ? 'warning' : null}
 />
@@ -53,9 +51,7 @@ export default function CambiarClaveScreen({ navigation, route }) {
   isPassword={true}
   placeholder="Repetir Contraseña"
   value={contrasenia2}
-  onChangeText={(text) => {
-    setContrasenia2(text);
-  }}
+  onChangeText={setContrasenia2}
   error={ErrorContrasenia2}
   iconError={ErrorContrasenia2 ? 'warning' : null}
 />

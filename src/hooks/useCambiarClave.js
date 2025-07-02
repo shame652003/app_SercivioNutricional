@@ -8,107 +8,71 @@ import axios from "axios";
 const BACKEND_URL = `${API_URL}bin/controlador/api/cambiarClaveApi.php`;
 
 const useCambiarClave = (navigation, datos) => {
-  const [
+ const [
     contrasenia,
     setContrasenia,
     contrasenia2,
     setContrasenia2,
-    error,
+    errorContrasenia,
+    errorContrasenia2,
     validar,
     resetError,
   ] = useValidarLasContrasenas();
 
-  const [errorContrasenia, setErrorContrasenia] = useState(null);
-  const [errorContrasenia2, setErrorContrasenia2] = useState(null);
-  const [loading, setLoading] = useState(false);
+const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (contrasenia !== "" || contrasenia2 !== "") {
-      validarCamposTiempoReal();
-    }
-  }, [contrasenia, contrasenia2]);
-
-  const validarCamposTiempoReal = () => {
-    if (!contrasenia.trim()) {
-      setErrorContrasenia("La nueva contraseña no puede estar vacía!");
-    } else if (contrasenia.length < 8) {
-      setErrorContrasenia("Debe tener al menos 8 caracteres!");
-    } else if (
-      !/[A-Z]/.test(contrasenia) ||
-      !/\d/.test(contrasenia) ||
-      !/[!@#$%^&*(),.?":{}|<>]/.test(contrasenia)
-    ) {
-      setErrorContrasenia("Debe incluir una mayúscula, un número y un carácter especial!");
-    } else {
-      setErrorContrasenia(null);
-    }
-
-    if (!contrasenia2.trim()) {
-      setErrorContrasenia2("La confirmación no puede estar vacía!");
-    } else if (contrasenia !== contrasenia2) {
-      setErrorContrasenia2("Las contraseñas no coinciden!");
-    } else {
-      setErrorContrasenia2(null);
-    }
-  };
-
-  const handleCambiarClave = async () => {
-    validar();
-    if (
-      !contrasenia.trim() ||
-      !contrasenia2.trim() ||
-      errorContrasenia ||
-      errorContrasenia2
-    )
-      return;
-
-    setLoading(true);
-    try {
-
-        const encryptedContrasenia = encryptData({cambiarClave:true, codigo:datos.codigo, clave: contrasenia, clave2: contrasenia2, correo: datos.correo });
-        console.log("Datos encriptados:", encryptedContrasenia);
-
-        const formBody = new URLSearchParams();
-        formBody.append("datos", encryptedContrasenia);
-        
-        const response = await axios.post(BACKEND_URL, formBody.toString(), {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        });
-        console.log("Respuesta del servidor:", response.data);
-
-if(response.data.resultado === "error") {
-  showMessage({
-    message: "Error al cambiar la contraseña",
-    description: response.data.mensaje || "Error de Cambio de Contraseña.",
-    duration: 3000,
-    type: "danger",
-  });
-} else if(response.data.resultado === "ok") {
- showMessage({
-    message: "Contraseña Cambiada",
-    description: "La contraseña se ha cambiado exitosamente.",
-    duration: 2000,
-    type: "success",
-    onHide: async () => {
-    setContrasenia("");
-    setContrasenia2("");
-    resetError();
-    navigation.navigate("LoginScreen");
+const handleCambiarClave = async () => {
+  if (!validar()) {
+    return; 
   }
-});
 
-} else {
-  throw new Error("Respuesta inesperada del servidor.");
-}
+  setLoading(true);
+  try {
+    const encryptedContrasenia = encryptData({
+      cambiarClave: true,
+      codigo: datos.codigo,
+      clave: contrasenia,
+      clave2: contrasenia2,
+      correo: datos.correo,
+    });
+    const formBody = new URLSearchParams();
+    formBody.append("datos", encryptedContrasenia);
 
-    } catch (e) {
-      console.error("Error al cambiar la contraseña:", e.message);
-    } finally {
-      setLoading(false);
+    const response = await axios.post(BACKEND_URL, formBody.toString(), {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+
+    if (response.data.resultado === "error") {
+      showMessage({
+        message: "Error al cambiar la contraseña",
+        description: response.data.mensaje || "Error de Cambio de Contraseña.",
+        duration: 3000,
+        type: "danger",
+      });
+    } else if (response.data.resultado === "ok") {
+      showMessage({
+        message: "Contraseña Cambiada",
+        description: "La contraseña se ha cambiado exitosamente.",
+        duration: 2000,
+        type: "success",
+        onHide: async () => {
+          setContrasenia("");
+          setContrasenia2("");
+          resetError();
+          navigation.navigate("LoginScreen");
+        },
+      });
+    } else {
+      throw new Error("Respuesta inesperada del servidor.");
     }
-  };
+  } catch (e) {
+    console.error("Error al cambiar la contraseña:", e.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return {
     contrasenia,

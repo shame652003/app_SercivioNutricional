@@ -96,9 +96,9 @@ export default function useStockAlimentosValidation() {
     }
   };
 
-  const generarPdf = async () => {
-    try {
-        setLoadingPdf(true);
+const generarPdf = async () => {
+  try {
+    setLoadingPdf(true);
 
     const alimentos = await obtenerStockCompleto();
 
@@ -108,55 +108,114 @@ export default function useStockAlimentosValidation() {
       return;
     }
 
-      const totalStock = alimentos.reduce(
-        (acc, a) => acc + (Number(a.stock) + Number(a.reservado)),
-        0
-      );
+    const totalStock = alimentos.reduce(
+      (acc, a) => acc + (Number(a.stock) + Number(a.reservado)),
+      0
+    );
 
-      const logoAsset = Asset.fromModule(require('../../assets/logo.png'));
-      await logoAsset.downloadAsync();
-      const base64Logo = await FileSystem.readAsStringAsync(logoAsset.localUri || '', {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+    const fechaExportacion = new Date().toLocaleString('es-VE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+const logoAsset = Asset.fromModule(require('../../assets/logo.png'));
+await logoAsset.downloadAsync();
+const base64Logo = await FileSystem.readAsStringAsync(logoAsset.localUri, {
+  encoding: FileSystem.EncodingType.Base64,
+});
+
+const logoAssetU = Asset.fromModule(require('../../assets/uptaeb.png'));
+await logoAssetU.downloadAsync();
+const base64LogoU = await FileSystem.readAsStringAsync(logoAssetU.localUri, {
+  encoding: FileSystem.EncodingType.Base64,
+});
+
+
 
     const html = `
-  <html>
+    <!DOCTYPE html>
+    <html lang="es">
     <head>
       <meta charset="utf-8" />
       <style>
         @page {
-          margin-top: 40px;
-          margin-bottom: 40px;
-          margin-left: 24px;
-          margin-right: 24px;
+          margin: 40px 30px 60px 30px;
+          @bottom-center {
+            content: "Página " counter(page) " / Servicio Nutricional";
+            font-size: 12px;
+            color: #666;
+          }
         }
 
         body {
-          font-family: Arial, sans-serif;
-          padding: 24px;
+          font-family: 'Helvetica', Arial, sans-serif;
+          margin: 0;
+          padding: 0 24px;
+          color: #333;
+          line-height: 1.4;
         }
 
-        .encabezado {
-          color: #000;
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 3px solid #0066CC;
+          padding-bottom: 15px;
+          margin-bottom: 30px;
+        }
+
+        .header img {
+          max-height: 70px;
+          width: auto;
+        }
+
+        .header .title-container {
+          flex: 1;
           text-align: center;
-          padding: 10px 20px;
-          border-radius: 8px;
-        }
-
-        .encabezado img {
-          height: 100px;
-          margin-bottom: 10px;
-        }
-
-        h2 {
           color: #0066CC;
+          font-weight: bold;
+          letter-spacing: 1.2px;
+        }
+
+        .header .title-container h1 {
+          margin: 0;
+          font-size: 24px;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+        }
+
+        .header .title-container p {
+          margin: 4px 0 0 0;
+          font-weight: 600;
+          font-size: 14px;
+          color: #222;
+        }
+
+        .report-title {
           text-align: center;
+          font-size: 20px;
+          color: #0066CC;
+          font-weight: bold;
+          margin-bottom: 5px;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+        }
+
+        .report-summary {
+          text-align: center;
+          font-size: 13px;
+          color: #444;
+          margin-bottom: 25px;
+          font-weight: 500;
         }
 
         table {
           width: 100%;
           border-collapse: collapse;
-          margin-top: 16px;
+          margin-bottom: 30px;
         }
 
         th, td {
@@ -167,23 +226,42 @@ export default function useStockAlimentosValidation() {
         }
 
         th {
-          background: #0066CC;
-          color: #fff;
+          background-color: #0066CC;
+          color: white;
         }
 
-        tr:nth-child(even) {
-          background: #f6faff;
+        tbody tr:nth-child(even) {
+          background-color: #f6faff;
+        }
+
+        tfoot td {
+          font-weight: bold;
+          text-align: right;
+          padding-right: 10px;
+          background-color: #dceeff;
+        }
+
+        tfoot td.total {
+          text-align: center;
         }
       </style>
     </head>
     <body>
-      <div class="encabezado">
-        <h3><strong>Servicio Nutricional</strong></h3>
-        <h3>Universidad Politécnica Territorial Andrés Eloy Blanco</h3>
-        <h3>Barquisimeto - Edo - Lara</h3>
+      <div class="header">
         <img src="data:image/png;base64,${base64Logo}" alt="Logo" />
+        <div class="title-container">
+          <h1>Servicio Nutricional</h1>
+          <p>Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB)</p>
+          <p>Barquisimeto - Estado Lara</p>
+        </div>
+        <img src="data:image/png;base64,${base64LogoU}" alt="Logo" />
       </div>
-      <h2>Stock de Alimentos</h2>
+
+      <div class="report-title">Stock de Alimentos</div>
+      <div class="report-summary">
+        Fecha y hora de exportación: ${fechaExportacion} | Cantidad de registros: ${alimentos.length}
+      </div>
+
       <table>
         <thead>
           <tr>
@@ -204,30 +282,34 @@ export default function useStockAlimentosValidation() {
               <td>${Number(a.stock) + Number(a.reservado)}</td>
             </tr>
           `).join('')}
-          <tr>
-            <td colspan="4" style="font-weight:bold; text-align:right;">Total general</td>
-            <td style="font-weight:bold; text-align:center;">${totalStock}</td>
-          </tr>
         </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4">Total general</td>
+            <td class="total">${totalStock}</td>
+          </tr>
+        </tfoot>
       </table>
     </body>
-  </html>
-`;
+    </html>
+    `;
 
+    const { uri } = await Print.printToFileAsync({ html });
 
-      const { uri } = await Print.printToFileAsync({ html });
-      if (!(await Sharing.isAvailableAsync())) {
-        Alert.alert('Error', 'La función de compartir no está disponible en este dispositivo.');
-        return;
-      }
-      await Sharing.shareAsync(uri, { mimeType: 'application/pdf', dialogTitle: 'Exportar Inventario a PDF' });
-       setLoadingPdf(false);
-
-    } catch (error) {
-      console.error('Error al generar PDF:', error);
-      Alert.alert('Error', 'No se pudo generar el PDF');
+    if (!(await Sharing.isAvailableAsync())) {
+      Alert.alert('Error', 'La función de compartir no está disponible en este dispositivo.');
+      setLoadingPdf(false);
+      return;
     }
-  };
+
+    await Sharing.shareAsync(uri, { mimeType: 'application/pdf', dialogTitle: 'Exportar Inventario a PDF' });
+    setLoadingPdf(false);
+  } catch (error) {
+    console.error('Error al generar PDF:', error);
+    Alert.alert('Error', 'No se pudo generar el PDF');
+    setLoadingPdf(false);
+  }
+};
 
   useEffect(() => {
     if (timeoutRef.current) {
