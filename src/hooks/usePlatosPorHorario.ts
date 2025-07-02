@@ -4,6 +4,7 @@ import { API_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { encryptData } from '../security/crypto/encryptor';
 import axios from 'axios';
+import { showMessage } from 'react-native-flash-message';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/asistenciaApi.php`;
 
@@ -25,7 +26,11 @@ export default function usePlatosPorHorario() {
     try {
       const token = await AsyncStorage.getItem('token');
       if (!token) {
-        Alert.alert('Error', 'No se encontró el token de autenticación');
+        showMessage({
+          message: 'Error',
+          description: 'No se encontró el token de autenticación',
+          type: 'danger',
+        });
         return null;
       }
 
@@ -46,11 +51,9 @@ export default function usePlatosPorHorario() {
       });
 
       const data = response.data;
-      console.log('Respuesta de la API (ID del menú):', data);
       
       if (Array.isArray(data) && data.length > 0 && data[0].idMenu) {
         const menuId = Number(data[0].idMenu);
-        console.log('ID del menú obtenido:', menuId);
         return menuId;
       }
       
@@ -74,7 +77,11 @@ export default function usePlatosPorHorario() {
       
       const token = await AsyncStorage.getItem('token');
       if (!token) {
-        Alert.alert('Error', 'No se encontró el token de autenticación');
+        showMessage({
+          message: 'Error',
+          description: 'No se encontró el token de autenticación',
+          type: 'danger',
+        });
         return 0;
       }
 
@@ -95,7 +102,6 @@ export default function usePlatosPorHorario() {
       });
 
       const data = response.data;
-      console.log('Respuesta de la API (platos disponibles):', data);
       
       let cantidadPlatos = 0; // Valor por defecto
       
@@ -109,19 +115,28 @@ export default function usePlatosPorHorario() {
           
           // Si hay un mensaje de error, mostrarlo
           if (data[0].error) {
-            Alert.alert('Error', data[0].error);
+            showMessage({
+              message: 'Error',
+              description: data[0].error,
+              type: 'danger',
+            });
           }
         } else {
           // Array vacío - no hay menú disponible
-          Alert.alert(
-            'Menú No Disponible', 
-            'El Horario que fue Seleccionado No se Encuentra Disponible, Verifique si Hay un Menú Planificado para Hoy'
-          );
+          showMessage({
+            message: 'Menú No Disponible', 
+            description: 'El Horario que fue Seleccionado No se Encuentra Disponible, Verifique si Hay un Menú Planificado para Hoy',
+            type: 'danger',
+          });
         }
       } else if (typeof data === 'object' && data !== null) {
         // Si la respuesta es un objeto, verificar si hay un mensaje de error
         if (data.error || data.message) {
-          Alert.alert('Error', data.error || data.message);
+          showMessage({
+            message: 'Error',
+            description: data.error || data.message,
+            type: 'danger',
+          });
         } else if (data.platosDisponibles !== undefined) {
           cantidadPlatos = Number(data.platosDisponibles);
         }
@@ -142,7 +157,11 @@ export default function usePlatosPorHorario() {
     } catch (error: any) {
       console.error('Error al obtener platos disponibles:', error);
       const mensajeError = error.message || 'Error al obtener platos disponibles';
-      Alert.alert('Error', mensajeError);
+      showMessage({
+        message: 'Error',
+        description: mensajeError,
+        type: 'danger',
+      });
     } finally {
       setCargando(false);
     }

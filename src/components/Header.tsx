@@ -1,15 +1,23 @@
 import React, { useEffect, useRef } from 'react';
 import { Text, StyleSheet, Animated, ImageBackground, View, Easing } from 'react-native';
-import { useSelector } from 'react-redux'; 
+import { useSelector } from 'react-redux';
+import { API_URL } from '@env'; 
 
 interface Info {
   Titulo?: string;
   showSubtitle?: boolean;
+  showConsultarAsistencia?: boolean;
+  navigation?: any;
 }
 
 function Header(props: Info) {
-  const user = useSelector((state: any) => state.user.user);
+  const profile = useSelector((state: any) => state.profile || {});
+  const nombreCompleto = `${profile.nombre || ''} ${profile.apellido || ''}`.trim();
   const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  // Aseguramos que el componente se actualice cuando el perfil cambie
+  useEffect(() => {
+  }, [profile]);
 
   useEffect(() => {
     Animated.loop(
@@ -41,8 +49,14 @@ function Header(props: Info) {
       </Animated.View>
       
       <Text style={styleHeader.title}>{props.Titulo}</Text>
-      {props.showSubtitle !== false && user && user.nombre && user.apellido && (
-       <Text style={styleHeader.subtitle}>{user.nombre} {user.apellido}</Text>
+      {props.showSubtitle !== false && (
+        <Text style={styleHeader.subtitle}>{nombreCompleto}</Text>
+      )}
+      {props.showConsultarAsistencia && (
+        <Text 
+          onPress={() => props.navigation?.navigate('ConsultarAsistencias')} 
+          style={styleHeader.subtitle}>
+          Consultar Asistencia</Text>
       )}
     </View>
   );

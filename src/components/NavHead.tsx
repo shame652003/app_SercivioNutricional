@@ -1,11 +1,13 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'; 
-import { useSelector } from 'react-redux'; 
+import { useSelector } from 'react-redux';
+import { API_URL } from '@env'; 
 
 export default function NavHead({ navigation }) {
-  const user = useSelector((state: any) => state.user.user);
-  const profileImage = user.img ? `http://192.168.1.108/Servicio-Nutricional-Uptaeb/${user.img}` : null;
+
+  const profile = useSelector((state: any) => state.profile);
+  const profileImage = profile.img ? `${API_URL}${profile.img}` : null;
 
   return (
     <View style={styles.header}>

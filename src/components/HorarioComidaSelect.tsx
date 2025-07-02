@@ -37,14 +37,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#fff',
     justifyContent: 'center',
+    padding: 0,
+    margin: 0,
   },
   pickerContainer: {
     width: '100%',
+    padding: 0,
+    margin: 0,
   },
   picker: {
     color: '#333',
-    paddingHorizontal: 0,
-    marginHorizontal: 0,
     width: '100%',
+    padding: 0,
+    margin: 0,
   },
 });

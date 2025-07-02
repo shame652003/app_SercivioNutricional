@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Alert } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 import { API_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { encryptData } from '../security/crypto/encryptor';
@@ -12,6 +13,7 @@ export interface Estudiante {
   nombre: string;
   apellido: string;
   carrera: string;
+  seccion: string;
 }
 
 export default function useCedulaInput() {
@@ -46,7 +48,11 @@ export default function useCedulaInput() {
     
       if (!data || (Array.isArray(data) && data.length === 0)) {
         setEstudiante(null);
-        Alert.alert('No encontrado', 'Estudiante no registrado.');
+        showMessage({
+          message: 'No encontrado',
+          description: 'Estudiante no registrado.',
+          type: 'danger',
+        });
         return;
       }
 
@@ -59,13 +65,14 @@ export default function useCedulaInput() {
 
       const studentData = Array.isArray(data) ? data[0] : data;
       
-      
       const estudianteMapeado = {
         cedula: studentData.cedEstudiante,
         nombre: studentData.nombre,
         apellido: studentData.apellido,
-        carrera: studentData.carrera
+        carrera: studentData.carrera,
+        seccion: studentData.seccion
       };
+      
 
     
 
@@ -74,10 +81,18 @@ export default function useCedulaInput() {
         setEstudiante(estudianteMapeado);
       } else {
         setEstudiante(null);
-        Alert.alert('Error', 'Formato de datos inválido del servidor');
+         showMessage({
+                message: 'Error de Datos!',
+                description: 'Formato de datos inválido del servidor',
+                type: 'danger',
+              });
       }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Ocurrió un error al buscar el estudiante');
+      showMessage({
+        message: 'Error',
+        description: error.message || 'Ocurrió un error al buscar el estudiante',
+        type: 'danger',
+      });
     } finally {
       setLoading(false);
     }

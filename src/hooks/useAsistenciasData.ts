@@ -45,16 +45,28 @@ export default function useAsistenciasData(): UseAsistenciasDataReturn {
     (page + 1) * itemsPerPage
   );
 
-  // Search functionality with null checks
+  // Function to normalize text by removing accents and converting to lowercase
+  const normalizeText = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+      .toLowerCase();
+  };
+
+  // Search functionality with null checks and accent normalization
   const filteredData = asistencias.filter(item => {
-    const searchTerm = search.toLowerCase();
-    const safeCedula = String(item?.cedula || '').toLowerCase();
-    const safeNombre = String(item?.nombre || '').toLowerCase();
-    const safeCarrera = String(item?.carrera || '').toLowerCase();
+    if (!search) return true;
+    
+    const searchTerm = normalizeText(search);
+    const safeCedula = normalizeText(String(item?.cedula || ''));
+    const safeNombre = normalizeText(String(item?.nombre || ''));
+    const safeCarrera = normalizeText(String(item?.carrera || ''));
+    const safeHorario = normalizeText(String(item?.horario || ''));
     
     return safeCedula.includes(searchTerm) ||
            safeNombre.includes(searchTerm) ||
-           safeCarrera.includes(searchTerm);
+           safeCarrera.includes(searchTerm) ||
+           safeHorario.includes(searchTerm);
   });
 
   const fetchAsistencias = useCallback(async () => {

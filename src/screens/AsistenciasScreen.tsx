@@ -37,7 +37,12 @@ export default function AsistenciasScreen({ navigation }) {
     <Container>
       <NavHead navigation={navigation} />
       <ContentContainer>
-        <Header Titulo="Registrar Asistencias" showSubtitle={false} />
+        <Header 
+          Titulo="Registrar Asistencias" 
+          showSubtitle={false} 
+          showConsultarAsistencia={true}
+          navigation={navigation}
+        />
         <Card>
             <FechaActual />
               <View style={styles.rowContainer}>
@@ -99,6 +104,6 @@ const styles = StyleSheet.create({
   },
   horarioContainer: {
     flex: 1,
-    marginLeft: 8,
+    width: '100%',
   },
 });

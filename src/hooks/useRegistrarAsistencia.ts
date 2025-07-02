@@ -4,6 +4,7 @@ import { API_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { encryptData } from '../security/crypto/encryptor';
 import axios from 'axios';
+import { showMessage } from 'react-native-flash-message';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/asistenciaApi.php`;
 
@@ -44,19 +45,27 @@ export default function useRegistrarAsistencia(): RegistrarAsistenciaResult {
         }
       });
       const dataVerificar = responseVerificar.data;
-      console.log('Respuesta de verificación:', dataVerificar);
+      
       
       // Manejar el nuevo formato de respuesta
       if (dataVerificar && dataVerificar.resultado) {
         if (dataVerificar.resultado.toLowerCase().includes('ya ingreso')) {
-          Alert.alert('Atención', 'El estudiante ya está registrado para este menú.');
+          showMessage({
+            message: 'Atención',
+            description: 'El estudiante ya está registrado para este menú.',
+            type: 'danger',
+          });
           setError('El estudiante ya está registrado para este menú.');
           setLoading(false);
           return false;
         }
       } else {
-        console.error('Formato de respuesta no reconocido:', dataVerificar);
-        Alert.alert('Error', 'No se pudo verificar el registro.');
+        
+        showMessage({
+          message: 'Error',
+          description: 'No se pudo verificar el registro.',
+          type: 'danger',
+        });
         setError('No se pudo verificar el registro.');
         setLoading(false);
         return false;
@@ -79,28 +88,42 @@ export default function useRegistrarAsistencia(): RegistrarAsistenciaResult {
         }
       });
       const dataRegistrar = responseRegistrar.data;
-      console.log('Respuesta de registro:', dataRegistrar);
       
       // Manejar el nuevo formato de respuesta
       if (dataRegistrar && dataRegistrar.resultado) {
         if (dataRegistrar.resultado.toLowerCase().includes('exitoso')) {
           setSuccess(true);
-          Alert.alert('Éxito', 'Asistencia registrada correctamente.');
+          showMessage({
+            message: 'Éxito',
+            description: 'Asistencia registrada correctamente.',
+            type: 'success',
+          });
           return true;
         } else if (dataRegistrar.resultado.toLowerCase().includes('error')) {
           setError(dataRegistrar.resultado);
-          Alert.alert('Error', dataRegistrar.resultado);
+          showMessage({
+            message: 'Error',
+            description: dataRegistrar.resultado,
+            type: 'danger',
+          });
           return false;
         }
       } else {
-        console.error('Formato de respuesta no reconocido:', dataRegistrar);
         setError('No se pudo registrar la asistencia.');
-        Alert.alert('Error', 'No se pudo registrar la asistencia.');
+        showMessage({
+          message: 'Error',
+          description: 'No se pudo registrar la asistencia.',
+          type: 'danger',
+        });
         return false;
       }
     } catch (err: any) {
       setError(err.message || 'Error al registrar asistencia.');
-      Alert.alert('Error', err.message || 'Error al registrar asistencia.');
+      showMessage({
+        message: 'Error',
+        description: err.message || 'Error al registrar asistencia.',
+        type: 'danger',
+      });
     } finally {
       setLoading(false);
     }
