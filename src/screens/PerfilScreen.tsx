@@ -14,7 +14,8 @@ import usePerfilValidation from '../hooks/usePerfilValidation';
 import useProfile from '../hooks/useProfile';
 
 export default function PerfilScreen({ navigation }) {
-  const { profile,profileImage } = useProfile();
+  const { profile, profileImage } = useProfile();
+  const { eliminarImagenPerfil } = useProfile();
   const {
     nombre, setNombre, errorNombre,
     apellido, setApellido, errorApellido,
@@ -22,7 +23,15 @@ export default function PerfilScreen({ navigation }) {
     inicializarCampos,
     handleImageChange,
     handleCambioPerfil,
+    editarPerfil  
   } = usePerfilValidation(profile);
+
+  // Logs de depuración para monitorear cambios en el perfil
+  useEffect(() => {
+  }, []);
+
+  useEffect(() => {
+  }, [profile]);
 
   useEffect(() => {
     inicializarCampos();
@@ -37,13 +46,23 @@ export default function PerfilScreen({ navigation }) {
         <Header Titulo="Perfil del Usuario" />
         <Card>
           <View style={styles.profileImageContainer}>
-            <TouchableOpacity onPress={handleImageChange}>
-              <Image 
-                source={profileImage ? { uri: profileImage } : require('../../assets/user.png')} 
-                style={styles.profileImage}
-              />
-              <Text style={styles.addImageText}>Agregar Imagen</Text>
-            </TouchableOpacity>
+            <View style={styles.imageWrapper}>
+              <TouchableOpacity onPress={handleImageChange}>
+                <Image 
+                  source={profileImage ? { uri: profileImage } : require('../../assets/user.png')} 
+                  style={styles.profileImage}
+                />
+                <Text style={styles.addImageText}>Agregar Imagen</Text>
+              </TouchableOpacity>
+              {profileImage && (
+                <TouchableOpacity 
+                  style={styles.resetImageButton}
+                  onPress={() => eliminarImagenPerfil()}
+                >
+                  <Text style={styles.resetImageText}>×</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
 
           <Input 
@@ -89,6 +108,32 @@ const styles = StyleSheet.create({
   profileImageContainer: {
     alignItems: 'center',
     marginBottom: 20,
+  },
+  imageWrapper: {
+    position: 'relative',
+  },
+  resetImageButton: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    backgroundColor: "#0066CC",
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  resetImageText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+    lineHeight: 24,
+    marginTop: -2,
   },
   profileImage: {
     width: 150,
