@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-// Hook genérico para validar cualquier campo
 const useValidacionCampo = (validarFn, valorInicial = "") => {
   const [valor, setValor] = useState(valorInicial);
   const [error, setError] = useState(null);
@@ -15,7 +14,6 @@ const useValidacionCampo = (validarFn, valorInicial = "") => {
   return [valor, setValor, error, setError, validar, resetError];
 };
 
-// Validaciones específicas
 
 const validarNoVacio = (valor) =>
   !valor || valor.trim() === "" ? "El campo no puede estar vacío!" : null;
@@ -39,7 +37,6 @@ const validarContrasena = (contrasena) => {
     : null;
 };
 
-// Nueva validación para nombre y apellido (solo letras, sin espacios, mínimo 2 caracteres)
 const validarNombreApellido = (valor) => {
   if (!valor || valor.trim() === "") return "El campo no puede estar vacío!";
   if (valor.length < 2) return "Debe tener al menos 2 caracteres!";
@@ -47,7 +44,6 @@ const validarNombreApellido = (valor) => {
   return null;
 };
 
-// Hooks usando el hook genérico
 
 export const useValidarNombreApellido = () => useValidacionCampo(validarNombreApellido);
 
@@ -57,47 +53,63 @@ export const useValidarUsuario = () => useValidacionCampo(validarUsuario);
 
 export const useValidarContrasena = () => useValidacionCampo(validarContrasena);
 
-// Validación especial para dos contraseñas
-
 export const useValidarLasContrasenas = () => {
   const [contrasena1, setContrasena1] = useState('');
   const [contrasena2, setContrasena2] = useState('');
-  const [error, setError] = useState(null);
+  const [errorContrasena1, setErrorContrasena1] = useState(null);
+  const [errorContrasena2, setErrorContrasena2] = useState(null);
 
-  const validar = () => {
-    if (!contrasena1.trim()) {
-      setError("La primera contraseña no puede estar vacía!");
-      return;
+  const validarContrasena1 = (val1, val2) => {
+    if (!val1.trim()) {
+      setErrorContrasena1("La nueva contraseña no puede estar vacía!");
+      return false;
     }
-
-    if (!contrasena2.trim()) {
-      setError("La segunda contraseña no puede estar vacía!");
-      return;
+    if (val1.length < 8) {
+      setErrorContrasena1("La contraseña debe tener al menos 8 caracteres!");
+      return false;
     }
-
-    if (contrasena1.length < 8) {
-      setError("Las contraseñas deben tener al menos 8 caracteres!");
-      return;
+    if (!/[A-Z]/.test(val1) || !/\d/.test(val1) || !/[!@#$%^&*(),.?":{}|<>]/.test(val1)) {
+      setErrorContrasena1("Debe incluir mayúscula, número y carácter especial!");
+      return false;
     }
+    setErrorContrasena1(null);
 
-    const tieneMayuscula = /[A-Z]/.test(contrasena1);
-    const tieneNumero = /\d/.test(contrasena1);
-    const tieneCaracterEspecial = /[!@#$%^&*(),.?":{}|<>]/.test(contrasena1);
-
-    if (!tieneMayuscula || !tieneNumero || !tieneCaracterEspecial) {
-      setError("La contraseña debe contener al menos una letra mayúscula, un número y un carácter especial!");
-      return;
+    if (val2 && val1 !== val2) {
+      setErrorContrasena2("Las contraseñas no coinciden!");
+      return false;
+    } else {
+      setErrorContrasena2(null);
     }
-
-    if (contrasena1 !== contrasena2) {
-      setError("Las contraseñas no coinciden!");
-      return;
-    }
-
-    setError(null);
+    return true;
   };
 
-  const resetErrorContrasenias = () => setError(null);
+  const validarContrasena2 = (val1, val2) => {
+    if (!val2.trim()) {
+      setErrorContrasena2("La confirmación no puede estar vacía!");
+      return false;
+    }
+    if (val1 !== val2) {
+      setErrorContrasena2("Las contraseñas no coinciden!");
+      return false;
+    }
+    setErrorContrasena2(null);
+    return true;
+  };
 
-  return [contrasena1, setContrasena1, contrasena2, setContrasena2, error, validar, resetErrorContrasenias];
+  const resetErrorContrasena1 = () => setErrorContrasena1(null);
+  const resetErrorContrasena2 = () => setErrorContrasena2(null);
+
+  return [
+    contrasena1,
+    setContrasena1,
+    errorContrasena1,
+    resetErrorContrasena1,
+    contrasena2,
+    setContrasena2,
+    errorContrasena2,
+    resetErrorContrasena2,
+    validarContrasena1,
+    validarContrasena2,
+  ];
 };
+

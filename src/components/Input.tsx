@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { TextInput, StyleSheet, Text, View, TouchableOpacity, Animated, Platform } from 'react-native';
+import {TextInput, StyleSheet, Text, View, TouchableOpacity, Animated, Platform} from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 // Colores definidos
-const BLUE = '#0066CC';       // Azul base
-const BLUE_LIGHT = '#3399FF'; // Azul claro para label sin foco
-const BLUE_DARK = '#0066CC';  // Azul oscuro para label enfocado
+const BLUE = '#0066CC';
+const BLUE_LIGHT = '#3399FF';
+const BLUE_DARK = '#0066CC';
 const GRAY_DEFAULT = '#ccc';
 const RED_ERROR = '#df0000';
 
@@ -19,7 +19,7 @@ interface Info {
   onFocus?: (value: string) => void;
   error?: string;
   icon?: string;
-  icon2 ?: string;
+  icon2?: string;
   iconError?: string;
   isPassword?: boolean;
 }
@@ -36,9 +36,7 @@ export default function Input(props: Info) {
       duration: 200,
       useNativeDriver: false,
     }).start();
-    if (props.onFocus) {
-      props.onFocus(props.value || '');
-    }
+    if (props.onFocus) props.onFocus(props.value || '');
   };
 
   const handleBlur = () => {
@@ -48,12 +46,13 @@ export default function Input(props: Info) {
       duration: 200,
       useNativeDriver: false,
     }).start();
-    if (props.onBlur) {
-      props.onBlur(props.value || '');
-    }
+    if (props.onBlur) props.onBlur(props.value || '');
   };
 
-  // Animación para la línea: crecer desde el centro hacia los lados
+  const togglePasswordVisibility = () => {
+    setSecureText(!secureText);
+  };
+
   const lineWidth = animatedValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0%', '100%'],
@@ -71,11 +70,18 @@ export default function Input(props: Info) {
     <View style={styles.container}>
       <View style={styles.textLabel}>
         {props.icon && <FontAwesome name={props.icon} size={20} color={labelColor} />}
-         {props.icon2 &&  <MaterialCommunityIcons name={props.icon2} size={20} color={labelColor} />}
+        {props.icon2 && (
+          <MaterialCommunityIcons name={props.icon2} size={20} color={labelColor} />
+        )}
         {props.label && <Text style={[styles.label, { color: labelColor }]}>{props.label}</Text>}
       </View>
 
-      <View style={[styles.inputContainer, { borderBottomColor: props.error ? RED_ERROR : GRAY_DEFAULT }]}>
+      <View
+        style={[
+          styles.inputContainer,
+          { borderBottomColor: props.error ? RED_ERROR : GRAY_DEFAULT },
+        ]}
+      >
         <TextInput
           value={props.value}
           onChangeText={props.onChangeText}
@@ -90,12 +96,11 @@ export default function Input(props: Info) {
         />
 
         {props.isPassword && (
-          <TouchableOpacity onPress={() => setSecureText(!secureText)}>
+          <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeButton}>
             <FontAwesome
               name={secureText ? 'eye-slash' : 'eye'}
               size={20}
               color={labelColor}
-              style={{ marginLeft: 8 }}
             />
           </TouchableOpacity>
         )}
@@ -115,7 +120,9 @@ export default function Input(props: Info) {
       </View>
 
       <View style={styles.errorContainer}>
-        {props.iconError && props.error && <FontAwesome name={props.iconError} size={14} color={RED_ERROR} />}
+        {props.iconError && props.error && (
+          <FontAwesome name={props.iconError} size={14} color={RED_ERROR} />
+        )}
         {props.error && <Text style={styles.error}>{props.error}</Text>}
       </View>
     </View>
@@ -141,7 +148,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     paddingBottom: 8,
-    position: 'relative',  // necesario para el posicionamiento absoluto de la línea animada
+    position: 'relative',
   },
   campo: {
     flex: 1,
@@ -150,6 +157,9 @@ const styles = StyleSheet.create({
     paddingVertical: Platform.OS === 'ios' ? 10 : 8,
     borderWidth: 0,
     margin: 0,
+  },
+  eyeButton: {
+    paddingLeft: 10,
   },
   animatedLine: {
     height: 2,
