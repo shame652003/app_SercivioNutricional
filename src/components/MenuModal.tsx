@@ -43,7 +43,7 @@ export default function MenuModal({
         }),
       (errorMsg) =>
         showMessage({
-          message: 'Error al generar PDF',
+          message: 'Cancelo el generar PDF',
           description: errorMsg,
           type: 'danger',
           icon: 'danger',
