@@ -13,6 +13,8 @@ import MenusScreen from '../screens/MenusScreen';
 import EventosScreen from '../screens/EventosScreen';
 import AsistenciasScreen from '../screens/AsistenciasScreen';
 import ConsultarAsistenciasScreen from '../screens/ConsultarAsistenciasScreen';
+import CodigoRecuperacionScreen from '../screens/CodigoRecuperacionScreen';
+import CambiarClaveScreen from '../screens/CambiarClaveScreen';
 import { RootStackParamList }  from '../../types';
 
 export default function Navigation() {
@@ -40,6 +42,8 @@ function RootNavigator() {
       <Stack.Screen name="Eventos" component={EventosScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="Asistencias" component={AsistenciasScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="ConsultarAsistencias" component={ConsultarAsistenciasScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="CodigoRecuperacion" component={CodigoRecuperacionScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="CambiarClave" component={CambiarClaveScreen} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }

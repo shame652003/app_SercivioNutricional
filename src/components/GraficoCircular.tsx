@@ -1,20 +1,16 @@
+// components/GraficoCircular.js
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
 const screenWidth = Dimensions.get('window').width;
 
-export default function GraficoCircular() {
-  const data = [
-    { name: 'Frutas', population: 40, color: '#0662c5', legendFontColor: '#333', legendFontSize: 12 },
-    { name: 'Verduras', population: 30, color: '#5fc1ff', legendFontColor: '#333', legendFontSize: 12 },
-    { name: 'Proteínas', population: 20, color: '#049ff9', legendFontColor: '#333', legendFontSize: 12 },
-    { name: 'Granos', population: 10, color: '#201db8', legendFontColor: '#333', legendFontSize: 12 },
-  ];
+export default function GraficoCircular({ data, title }) {
+  if (!data || data.length === 0) return null;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Alimentos Disponibles</Text>
+      {title && <Text style={styles.title}>{title}</Text>}
       <PieChart
         data={data}
         width={screenWidth - 40}
@@ -47,12 +43,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
-    marginHorizontal:10,
+    marginHorizontal: 10,
+    marginBottom: 20,
   },
   title: {
     fontSize: 25,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#0066CC',  
+    color: '#0066CC',
   },
 });

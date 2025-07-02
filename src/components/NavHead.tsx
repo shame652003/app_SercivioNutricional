@@ -5,8 +5,10 @@ import { useSelector } from 'react-redux';
 import { API_URL } from '@env'; 
 
 export default function NavHead({ navigation }) {
+
   const profile = useSelector((state: any) => state.profile);
   const profileImage = profile.img ? `${API_URL}${profile.img}` : null;
+
   return (
     <View style={styles.header}>
       <TouchableOpacity onPress={() => navigation.navigate('Home')}>

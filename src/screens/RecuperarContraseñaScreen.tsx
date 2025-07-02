@@ -5,12 +5,14 @@ import Card from '../components/Card';
 import Botton from '../components/Botton';
 import FlashMessage from 'react-native-flash-message';
 import useRecuperarContrasenaValidation from '../hooks/useRecuperarContraseniaValidation';
+import LoadingModal from '../components/LoadingModal';
 
 export default function RecuperarContraseñaScreen({ navigation }) {
-  const { email, errorEmail, handleEmailChange, recuperarPassword } = useRecuperarContrasenaValidation();
+  const { email, errorEmail, loading, handleEmailChange, recuperarPassword } = useRecuperarContrasenaValidation(navigation);
 
   return (
     <View style={styles.container}>
+      <LoadingModal visible={loading} message="Enviando, por favor espere..." />
       <FlashMessage position="top" />
       <Card>
         <View style={styles.header}>
@@ -30,7 +32,9 @@ export default function RecuperarContraseñaScreen({ navigation }) {
           iconError={errorEmail ? 'warning' : null}
         />
 
-        <Botton title="Recuperar Contraseña" onPress={recuperarPassword} />
+        <Botton  title={'Recuperar Contraseña'}
+        onPress={recuperarPassword}
+        disabled={loading} />
 
         <TouchableOpacity style={styles.link} onPress={() => navigation.navigate('LoginScreen')}>
           <Text style={styles.linkText}>Volver al Login</Text>
