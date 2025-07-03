@@ -8,6 +8,7 @@ import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system';
+import { showMessage } from 'react-native-flash-message';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/stockUtensiliosApi.php`;
 const BACKEND_URL_PDF = `${API_URL}bin/controlador/api/pdfStockUtensilioApi.php`;
@@ -27,41 +28,47 @@ export default function useStockUtensiliosValidation() {
       setLoading(true);
       const token = await AsyncStorage.getItem('token');
       if (!token) throw new Error('Token no encontrado');
-
+  
       const encryptedData = encryptData({
         mostrarUtensilios: 'true',
         utensilio: texto,
       });
-
+  
       const formBody = new URLSearchParams();
       formBody.append('datos', encryptedData);
-
+  
       const response = await axios.post(BACKEND_URL, formBody.toString(), {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
-
+  
       const data = response.data;
-
+  
       if (Array.isArray(data) && data.length > 0) {
-        const utensiliosConImagen = data.map((u) => ({
+        // Ensure each item has a unique idUtensilio
+        const utensiliosConImagen = data.map((u, index) => ({
           ...u,
+          idUtensilio: u.idUtensilio || `temp-${Date.now()}-${index}`, // Fallback to a unique ID if not present
           imagenUri: { uri: API_URL + u.imgUtensilios },
         }));
         setUtensiliosFiltrados(utensiliosConImagen);
       } else {
         setUtensiliosFiltrados([]);
       }
-
+  
       setBusquedaExitosa(true);
     } catch (error) {
       setBusquedaExitosa(false);
       const mensaje =
         error.response?.data?.mensaje || error.message || 'Error desconocido';
       console.error('Error en búsqueda de utensilios:', mensaje);
-      Alert.alert('Error', mensaje);
+      showMessage({
+        message: 'Error',
+        description: mensaje,
+        type: 'danger',
+      });
     } finally {
       setLoading(false);
     }
@@ -97,7 +104,11 @@ export default function useStockUtensiliosValidation() {
       const utensilios = await obtenerStockCompleto();
 
       if (!utensilios.length) {
-        Alert.alert('Aviso', 'No hay datos para generar el PDF.');
+        showMessage({
+          message: 'Aviso',
+          description: 'No hay datos para generar el PDF.',
+          type: 'warning',
+        });
         setLoadingPdf(false);
         return;
       }
@@ -284,7 +295,11 @@ export default function useStockUtensiliosValidation() {
       const { uri } = await Print.printToFileAsync({ html });
 
       if (!(await Sharing.isAvailableAsync())) {
-        Alert.alert('Error', 'La función de compartir no está disponible en este dispositivo.');
+        showMessage({
+          message: 'Error',
+          description: 'La función de compartir no está disponible en este dispositivo.',
+          type: 'danger',
+        });
         return;
       }
 
@@ -294,7 +309,11 @@ export default function useStockUtensiliosValidation() {
       });
     } catch (error) {
       console.error('Error al generar PDF:', error);
-      Alert.alert('Error', 'No se pudo generar el PDF');
+      showMessage({
+        message: 'Error',
+        description: 'No se pudo generar el PDF',
+        type: 'danger',
+      });
     } finally {
       setLoadingPdf(false);
     }
