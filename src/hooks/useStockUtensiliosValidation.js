@@ -19,8 +19,8 @@ export default function useStockUtensiliosValidation() {
   const [utensiliosFiltrados, setUtensiliosFiltrados] = useState([]);
   const [busquedaExitosa, setBusquedaExitosa] = useState(false);
   const [loading, setLoading] = useState(false);
-  const timeoutRef = useRef(null);
   const [loadingPdf, setLoadingPdf] = useState(false);
+  const timeoutRef = useRef(null);
 
   const buscarUtensilios = async (texto) => {
     try {
@@ -102,117 +102,192 @@ export default function useStockUtensiliosValidation() {
         return;
       }
 
-      const totalStock = utensilios.reduce(
-        (acc, u) => acc + (Number(u.stock) + Number(u.reservado || 0)),
-        0
-      );
+      const totalStock = utensilios.reduce((acc, u) => acc + Number(u.stock), 0);
 
-      const logoAsset = Asset.fromModule(require('../../assets/logo.png'));
-      await logoAsset.downloadAsync();
-      const base64Logo = await FileSystem.readAsStringAsync(logoAsset.localUri || '', {
+      const fechaExportacion = new Date().toLocaleString('es-VE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+
+      const logoAsset1 = Asset.fromModule(require('../../assets/logo.png'));
+      const logoAsset2 = Asset.fromModule(require('../../assets/uptaeb.png'));
+
+      await Promise.all([logoAsset1.downloadAsync(), logoAsset2.downloadAsync()]);
+
+      const base64Logo1 = await FileSystem.readAsStringAsync(logoAsset1.localUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const base64Logo2 = await FileSystem.readAsStringAsync(logoAsset2.localUri, {
         encoding: FileSystem.EncodingType.Base64,
       });
 
       const html = `
-  <html>
-    <head>
-      <meta charset="utf-8" />
-      <style>
-        @page {
-          margin-top: 40px;
-          margin-bottom: 40px;
-          margin-left: 24px;
-          margin-right: 24px;
-        }
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+        <meta charset="utf-8" />
+        <style>
+          @page {
+            margin: 40px 30px 60px 30px;
+            @bottom-center {
+              content: "Página " counter(page) " / Servicio Nutricional";
+              font-size: 12px;
+              color: #666;
+            }
+          }
 
-        body {
-          font-family: Arial, sans-serif;
-          padding: 24px;
-        }
+          body {
+            font-family: 'Helvetica', Arial, sans-serif;
+            margin: 0;
+            padding: 0 24px;
+            color: #333;
+            line-height: 1.4;
+          }
 
-        .encabezado {
-          color: #000;
-          text-align: center;
-          padding: 10px 20px;
-          border-radius: 8px;
-        }
+          .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #0066CC;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+          }
 
-        .encabezado img {
-          height: 100px;
-          margin-bottom: 10px;
-        }
+          .header img {
+            max-height: 70px;
+            width: auto;
+          }
 
-        h2 {
-          color: #0066CC;
-          text-align: center;
-        }
+          .header .title-container {
+            flex: 1;
+            text-align: center;
+            color: #0066CC;
+            font-weight: bold;
+            letter-spacing: 1.2px;
+          }
 
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 16px;
-        }
+          .header .title-container h1 {
+            margin: 0;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+          }
 
-        th, td {
-          border: 1px solid #3399FF;
-          padding: 8px 6px;
-          text-align: center;
-          font-size: 14px;
-        }
+          .header .title-container p {
+            margin: 4px 0 0 0;
+            font-weight: 600;
+            font-size: 14px;
+            color: #222;
+          }
 
-        th {
-          background: #0066CC;
-          color: #fff;
-        }
+          .report-title {
+            text-align: center;
+            font-size: 20px;
+            color: #0066CC;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+          }
 
-        tr:nth-child(even) {
-          background: #f6faff;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="encabezado">
-        <h3><strong>Servicio Nutricional</strong></h3>
-        <h3>Universidad Politécnica Territorial Andrés Eloy Blanco</h3>
-        <h3>Barquisimeto - Edo - Lara</h3>
-        <img src="data:image/png;base64,${base64Logo}" alt="Logo" />
-      </div>
-      <h2>Stock de Utensilios</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Utensilio</th>
-            <th>Material</th>
-            <th>Stock</th>
-            <th>Reservado</th>
-            <th>Stock Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${utensilios.map(u => `
+          .report-summary {
+            text-align: center;
+            font-size: 13px;
+            color: #444;
+            margin-bottom: 25px;
+            font-weight: 500;
+          }
+
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+          }
+
+          th, td {
+            border: 1px solid #3399FF;
+            padding: 8px 6px;
+            text-align: center;
+            font-size: 14px;
+          }
+
+          th {
+            background-color: #0066CC;
+            color: white;
+          }
+
+          tbody tr:nth-child(even) {
+            background-color: #f6faff;
+          }
+
+          tfoot td {
+            font-weight: bold;
+            text-align: right;
+            padding-right: 10px;
+            background-color: #dceeff;
+          }
+
+          tfoot td.total {
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <img src="data:image/png;base64,${base64Logo1}" alt="Logo" />
+          <div class="title-container">
+            <h1>Servicio Nutricional</h1>
+            <p>Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB)</p>
+            <p>Barquisimeto - Estado Lara</p>
+          </div>
+          <img src="data:image/png;base64,${base64Logo2}" alt="Logo" />
+        </div>
+
+        <div class="report-title">Stock de Utensilios</div>
+        <div class="report-summary">
+          Fecha y hora de exportación: ${fechaExportacion} | Cantidad de registros: ${utensilios.length}
+        </div>
+
+        <table>
+          <thead>
             <tr>
-              <td>${u.nombre}</td>
-              <td>${u.material}</td>
-              <td>${u.stock}</td>
-              <td>${u.reservado || 0}</td>
-              <td>${Number(u.stock) + Number(u.reservado || 0)}</td>
+              <th>Utensilio</th>
+              <th>Material</th>
+              <th>Stock</th>
             </tr>
-          `).join('')}
-          <tr>
-            <td colspan="4" style="font-weight:bold; text-align:right;">Total general</td>
-            <td style="font-weight:bold; text-align:center;">${totalStock}</td>
-          </tr>
-        </tbody>
-      </table>
-    </body>
-  </html>
+          </thead>
+          <tbody>
+            ${utensilios.map(u => `
+              <tr>
+                <td>${u.nombre}</td>
+                <td>${u.material}</td>
+                <td>${u.stock}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2">Total general</td>
+              <td class="total">${totalStock}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </body>
+      </html>
       `;
 
       const { uri } = await Print.printToFileAsync({ html });
+
       if (!(await Sharing.isAvailableAsync())) {
         Alert.alert('Error', 'La función de compartir no está disponible en este dispositivo.');
         return;
       }
+
       await Sharing.shareAsync(uri, {
         mimeType: 'application/pdf',
         dialogTitle: 'Exportar Inventario a PDF',
@@ -226,9 +301,7 @@ export default function useStockUtensiliosValidation() {
   };
 
   useEffect(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     if (searchText.trim() !== '') {
       timeoutRef.current = setTimeout(() => {
@@ -243,13 +316,6 @@ export default function useStockUtensiliosValidation() {
     return () => clearTimeout(timeoutRef.current);
   }, [searchText]);
 
-  const seleccionarUtensilio = (item) => {
-    setUtensilioSeleccionado(item);
-    setModalVisible(true);
-  };
-
-  const cerrarModal = () => setModalVisible(false);
-
   return {
     searchText,
     setSearchText,
@@ -259,8 +325,11 @@ export default function useStockUtensiliosValidation() {
     busquedaExitosa,
     loading,
     loadingPdf,
-    seleccionarUtensilio,
-    cerrarModal,
+    seleccionarUtensilio: (item) => {
+      setUtensilioSeleccionado(item);
+      setModalVisible(true);
+    },
+    cerrarModal: () => setModalVisible(false),
     generarPdf,
   };
 }
