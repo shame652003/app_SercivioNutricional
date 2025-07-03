@@ -28,7 +28,7 @@ export default function ModalDetalleUtensilio({
   if (!detalle) return null;
 
   const { nombre, material, stock, imagenUri } = detalle;
-  console.log('🖼️ Imagen URI:', imagenUri);
+
 
   return (
     <Modal visible={visible} animationType="fade" transparent>
