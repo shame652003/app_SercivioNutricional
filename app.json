@@ -32,7 +32,8 @@
       }
     },
     "plugins": [
-      "expo-barcode-scanner"
+      "expo-barcode-scanner",
+      "expo-font"
     ]
   }
 }
