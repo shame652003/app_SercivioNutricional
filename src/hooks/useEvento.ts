@@ -403,12 +403,13 @@ let contenidoHTML = `
 
     contenidoHTML += `</body></html>`;
 
-    await Print.printAsync({
+   await Print.printAsync({
         html: contenidoHTML,
       });
 
       onSuccess();
     } catch (error) {
+      console.error('Error al generar PDF:', error);
       onError('No se pudo generar el PDF.');
     }
   };

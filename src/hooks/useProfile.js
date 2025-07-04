@@ -61,6 +61,10 @@ export default function useProfile() {
   
       const data = response.data;
       console.log('Respuesta del backend:', data);
+      if(data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
+        console.error('Token no válido o expirado. Eliminando token y redirigiendo a login.');
+        await AsyncStorage.removeItem('token');     
+      }
 
       if (data.resultado === 'ok') {
         console.log('Correo disponible');

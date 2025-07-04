@@ -388,6 +388,7 @@ let contenidoHTML = `
 
       onSuccess();
     } catch (error) {
+      console.error('Error al generar PDF:', error);
       onError('No se pudo generar el PDF.');
     }
   };

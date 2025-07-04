@@ -13,7 +13,7 @@ import { showMessage } from 'react-native-flash-message';
 const BACKEND_URL = `${API_URL}bin/controlador/api/stockUtensiliosApi.php`;
 const BACKEND_URL_PDF = `${API_URL}bin/controlador/api/pdfStockUtensilioApi.php`;
 
-export default function useStockUtensiliosValidation() {
+export default function useStockUtensiliosValidation(navigation) {
   const [searchText, setSearchText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [utensilioSeleccionado, setUtensilioSeleccionado] = useState(null);
@@ -45,12 +45,18 @@ export default function useStockUtensiliosValidation() {
       });
   
       const data = response.data;
+      if (data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
+        Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
+        await AsyncStorage.removeItem('token');
+        navigation.navigate('LoginScreen');     
+        return;
+      }
   
       if (Array.isArray(data) && data.length > 0) {
-        // Ensure each item has a unique idUtensilio
+       
         const utensiliosConImagen = data.map((u, index) => ({
           ...u,
-          idUtensilio: u.idUtensilio || `temp-${Date.now()}-${index}`, // Fallback to a unique ID if not present
+          idUtensilio: u.idUtensilio || `temp-${Date.now()}-${index}`, 
           imagenUri: { uri: API_URL + u.imgUtensilios },
         }));
         setUtensiliosFiltrados(utensiliosConImagen);

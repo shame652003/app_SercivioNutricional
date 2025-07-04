@@ -31,7 +31,7 @@ export default function StockUtensiliosScreen({ navigation }) {
     seleccionarUtensilio,
     cerrarModal,
     generarPdf,
-  } = useStockUtensiliosValidation();
+  } = useStockUtensiliosValidation(navigation);
 
   return (
     <Container>

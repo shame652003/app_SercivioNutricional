@@ -31,7 +31,7 @@ export default function StockAlimentosScreen({ navigation }) {
     seleccionarAlimento,
     cerrarModal,
     generarPdf,
-  } = useStockAlimentosValidation();
+  } = useStockAlimentosValidation(navigation);
 
 return (
     <Container>

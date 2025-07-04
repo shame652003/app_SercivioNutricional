@@ -12,7 +12,7 @@ import * as FileSystem from 'expo-file-system';
 const BACKEND_URL = `${API_URL}bin/controlador/api/stockAlimentosApi.php`;
 const BACKEND_URL_PDF = `${API_URL}bin/controlador/api/pdfStockAlimentoApi.php`;
 
-export default function useStockAlimentosValidation() {
+export default function useStockAlimentosValidation(navigation) {
   const [searchText, setSearchText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [alimentoSeleccionado, setAlimentoSeleccionado] = useState(null);
@@ -45,6 +45,15 @@ export default function useStockAlimentosValidation() {
       });
 
       const data = response.data;
+
+      if(data.resultado === 'error' && data.mensaje =='Token no válido o expirado') {
+        Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
+        await AsyncStorage.removeItem('token');
+        navigation.navigate('LoginScreen');
+        return;
+      }
+
+      
 
       if (Array.isArray(data) && data.length > 0) {
         const alimentosConImagen = data.map((alimento) => ({

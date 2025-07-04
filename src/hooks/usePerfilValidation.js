@@ -5,7 +5,6 @@ import useProfile from "./useProfile";
 import { useValidarNombreApellido, useValidarEmail } from "./useValidacion";
 
 export default function usePerfilValidation(profile) {
-  const { handleUpdateProfile } = useProfile();
 
   const [nombre, setNombre, errorNombre, , validarNombre] =
     useValidarNombreApellido();
