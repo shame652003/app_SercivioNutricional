@@ -35,7 +35,7 @@ export default function MenusScreen({ navigation }) {
     ocultarFiltro,
     generarPdfPlano,
 
-  } = useMenusValidation();
+  } = useMenusValidation(navigation);
 
   return (
     <Container>

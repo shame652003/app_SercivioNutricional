@@ -30,7 +30,7 @@ export default function AsistenciasScreen({ navigation }) {
     actualizarPlatosDisponibles,
     hayPlatosDisponibles
   } = usePlatosPorHorario();
-  const { loading: loadingAsistencia, registrarAsistencia } = useRegistrarAsistencia();
+  const { loading: loadingAsistencia, registrarAsistencia } = useRegistrarAsistencia(navigation);
   const [isScannerVisible, setScannerVisible] = useState(false);
 
   return (

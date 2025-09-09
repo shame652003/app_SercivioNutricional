@@ -30,7 +30,7 @@ type UseAsistenciasDataReturn = {
   isEmpty: boolean;
 };
 
-export default function useAsistenciasData(): UseAsistenciasDataReturn {
+export default function useAsistenciasData(navigation): UseAsistenciasDataReturn {
   const [asistencias, setAsistencias] = useState<Asistencia[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -99,8 +99,16 @@ export default function useAsistenciasData(): UseAsistenciasDataReturn {
         timeout: 10000 // 10 segundos de timeout
       });
 
+        if(response.data.resultado === 'error' && response.data.mensaje =='Token no válido o expirado') {
+        Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
+        await AsyncStorage.removeItem('token');
+        navigation.navigate('LoginScreen');
+        return;
+      }
+
     
       const data = response.data;
+
     
     
 

@@ -86,8 +86,8 @@ export default function HomeScreen({ navigation }) {
 </View>
 
 
-  <GraficoCircular data={graficoDataA} title='Alimentos Disponibles' />
-  <GraficoCircular data={graficoDataM} title='Horarios con más Menús' />
+  <GraficoCircular data={graficoDataA} title='Asistencias por PNF' />
+  <GraficoCircular data={graficoDataM} title='Menus por Horario' />
 </ContentContainer>
 
       <BottomNavBar navigation={navigation} />

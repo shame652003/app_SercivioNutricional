@@ -61,7 +61,7 @@ export default function useHome() {
         const token = await AsyncStorage.getItem('token');
         if (!token) throw new Error('Token no encontrado');
 
-        const datos = await encryptData({ graficoAlimentos: true });
+        const datos = await encryptData({ graficoAsistencias: true });
         const formData = new FormData();
         formData.append('dataGraficoA', datos);
 
@@ -74,7 +74,7 @@ export default function useHome() {
 
         const colors = ['#0662c5', '#0A3361', '#049ff9', '#201db8', '#266dbe', '#0400ff', '#001a51', '#049ff9', '#a2c8de', '#3665b6'];
         const parsedData = response.data.map((item, index) => ({
-          name: item.tipo,
+          name: item.nombre,
           population: parseInt(item.cantidad),
           color: colors[index % colors.length],
           legendFontColor: '#333',
@@ -84,7 +84,7 @@ export default function useHome() {
         setGraficoDataA(parsedData);
 
       } catch (error) {
-        console.error('Error al obtener datos del gráfico circular:', error);
+        console.error('Error al obtener datos del gráfico circular Asistencias:', error);
       }
     };
 
@@ -120,7 +120,7 @@ export default function useHome() {
         setGraficoDataM(parsedData);
 
       } catch (error) {
-        console.error('Error al obtener datos del gráfico circular:', error);
+        console.error('Error al obtener datos del gráfico circular Data Menu:', error);
       }
     };
 

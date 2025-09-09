@@ -34,7 +34,7 @@ export default function EventosScreen({ navigation }) {
     setFechaFinFiltro,
     ocultarFiltro,
     generarPdfPlano,
-  } = useEventoValidation();
+  } = useEventoValidation(navigation);
 
   return (
     <Container>

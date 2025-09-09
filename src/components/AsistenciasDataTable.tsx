@@ -12,7 +12,7 @@ const backgroundCard = '#f8fbff';
 const successColor = '#10b981';
 const warningColor = '#f59e0b';
 
-const AsistenciasDataTable = () => {
+const AsistenciasDataTable = (navigation) => {
   const {
     search,
     setSearch,
@@ -24,7 +24,7 @@ const AsistenciasDataTable = () => {
     loading,
     isEmpty,
     error
-  } = useAsistenciasData();
+  } = useAsistenciasData(navigation);
 
   // Renderizar cada tarjeta de estudiante
   const renderStudentCard = ({ item, index }) => (

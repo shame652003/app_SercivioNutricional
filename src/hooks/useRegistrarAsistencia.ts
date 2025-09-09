@@ -15,7 +15,7 @@ type RegistrarAsistenciaResult = {
   registrarAsistencia: (cedula: string, idMenu: number, horario: string) => Promise<boolean>;
 };
 
-export default function useRegistrarAsistencia(): RegistrarAsistenciaResult {
+export default function useRegistrarAsistencia(navigation): RegistrarAsistenciaResult {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -87,6 +87,12 @@ export default function useRegistrarAsistencia(): RegistrarAsistenciaResult {
           'Authorization': `Bearer ${token}`
         }
       });
+       if(responseRegistrar.data.resultado === 'error' && responseRegistrar.data.mensaje =='Token no válido o expirado') {
+        Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
+        await AsyncStorage.removeItem('token');
+        navigation.navigate('LoginScreen');
+        return;
+      }
       const dataRegistrar = responseRegistrar.data;
       
       // Manejar el nuevo formato de respuesta

@@ -26,7 +26,7 @@ export default function CambioContraseñaScreen({ navigation }) {
     handleContrasenia2Change,
     handleCambioContrasenia,
     handleCancelar,
-  } = useCambioContraseniaValidation();
+  } = useCambioContraseniaValidation(navigation);
 
   return (
     <Container>

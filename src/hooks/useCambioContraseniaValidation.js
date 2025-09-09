@@ -9,7 +9,7 @@ import { showMessage } from 'react-native-flash-message';
 const BACKEND_URL = `${API_URL}bin/controlador/api/cambiarContrasenaPerfilApi.php`; 
 console.log(BACKEND_URL);
 
-export default function useCambioContraseniaValidation() {
+export default function useCambioContraseniaValidation(navigation) {
   const [contrasenia, setContrasenia] = useState('');
   const [contrasenia1, setContrasenia1] = useState('');
   const [contrasenia2, setContrasenia2] = useState('');
@@ -98,7 +98,15 @@ export default function useCambioContraseniaValidation() {
         },
       });
 
+       if(response.data.resultado === 'error' && response.data.mensaje =='Token no válido o expirado') {
+        Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
+        await AsyncStorage.removeItem('token');
+        navigation.navigate('LoginScreen');
+        return;
+      }
+
       const data = response.data;
+      
 
       if (data.resultado === 'clave Editada correctamente.') {
         showMessage({

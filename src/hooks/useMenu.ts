@@ -27,7 +27,7 @@ export type Alimento = {
   cantidad: string;
 };
 
-export default function useMenusValidation() {
+export default function useMenusValidation( navigation) {
   const [searchText, setSearchText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -106,6 +106,12 @@ export default function useMenusValidation() {
         }
       );
 
+       if(response.data.resultado === 'error' && response.data.mensaje =='Token no válido o expirado') {
+        Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
+        await AsyncStorage.removeItem('token');
+        navigation.navigate('LoginScreen');
+        return;
+      }
       if (response.data.resultado === 'success') {
         const menusSinDuplicados = quitarDuplicados(response.data.menus || []);
         setMenusFiltradosOriginal(menusSinDuplicados);
