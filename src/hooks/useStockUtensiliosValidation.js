@@ -7,7 +7,7 @@ import axios from 'axios';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy'
 import { showMessage } from 'react-native-flash-message';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/stockUtensiliosApi.php`;
@@ -287,12 +287,6 @@ export default function useStockUtensiliosValidation(navigation) {
               </tr>
             `).join('')}
           </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="2">Total general</td>
-              <td class="total">${totalStock}</td>
-            </tr>
-          </tfoot>
         </table>
       </body>
       </html>

@@ -41,8 +41,7 @@ export default function useRecuperarContrasenaValidation(navigation) {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         });
 
-        console.log('Respuesta backend:', data);
-
+        console.log('Respuesta de Recuperar Contrasenia:', data);
 
         if (data.resultado === 'ok') {
            await AsyncStorage.setItem('tokenRC', data.tokenRC);

@@ -6,7 +6,7 @@ import { encryptData } from '../security/crypto/encryptor';
 import axios from 'axios';
 import * as Print from 'expo-print';
 import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/consultarEventoApi.php`;
 console.log(BACKEND_URL);
@@ -259,11 +259,17 @@ export default function useEventoValidation(navigation) {
     onError: (msg: string) => void
   ) => {
     try {
-      const logoAsset = Asset.fromModule(require('../../assets/logo.png'));
-      await logoAsset.downloadAsync();
-      const base64Logo = await FileSystem.readAsStringAsync(logoAsset.localUri || '', {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+         const logoAsset = Asset.fromModule(require('../../assets/logo.png'));
+           await logoAsset.downloadAsync();
+           const base64Logo = await FileSystem.readAsStringAsync(logoAsset.localUri, {
+             encoding: 'base64',
+           });
+     
+           const logoAssetU = Asset.fromModule(require('../../assets/uptaeb.png'));
+           await logoAssetU.downloadAsync();
+           const base64LogoU = await FileSystem.readAsStringAsync(logoAssetU.localUri, {
+             encoding: 'base64',
+           });
 
 let contenidoHTML = `
 <html>
@@ -371,7 +377,7 @@ let contenidoHTML = `
         <span class="subtitle">Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB)</span><br/>
         <span class="location">Barquisimeto - Estado - Lara</span>
       </div>
-      <img src="data:image/png;base64,${base64Logo}" alt="Logo" />
+      <img src="data:image/png;base64,${base64LogoU}" alt="Logo" />
     </header>
 
     <h1>Reporte de Evento</h1>

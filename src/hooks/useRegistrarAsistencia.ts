@@ -45,7 +45,7 @@ export default function useRegistrarAsistencia(navigation): RegistrarAsistenciaR
         }
       });
       const dataVerificar = responseVerificar.data;
-      
+      console.log('Respuesta de verificación:', dataVerificar);
       
       // Manejar el nuevo formato de respuesta
       if (dataVerificar && dataVerificar.resultado) {
@@ -87,6 +87,9 @@ export default function useRegistrarAsistencia(navigation): RegistrarAsistenciaR
           'Authorization': `Bearer ${token}`
         }
       });
+
+      console.log('Respuesta de registro:', responseRegistrar.data);
+      
        if(responseRegistrar.data.resultado === 'error' && responseRegistrar.data.mensaje =='Token no válido o expirado') {
         Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
         await AsyncStorage.removeItem('token');

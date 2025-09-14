@@ -97,7 +97,7 @@ export default function useCambioContraseniaValidation(navigation) {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
-
+      console.log('Respuesta al cambiar contraseña:', response.data);
        if(response.data.resultado === 'error' && response.data.mensaje =='Token no válido o expirado') {
         Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
         await AsyncStorage.removeItem('token');

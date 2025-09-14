@@ -31,8 +31,6 @@ export default function useProfile() {
   };
 };
 
-
-  // 🔍 Validar si un correo ya está en uso
   const validarCorreo = async (correo) => {
     try {
       const token = await AsyncStorage.getItem('token');
@@ -48,7 +46,6 @@ export default function useProfile() {
         correo: correoFormateado
      });
 
-  
       const formData = new URLSearchParams();
       formData.append('datos', encryptedPayload);
   
@@ -58,9 +55,9 @@ export default function useProfile() {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
-  
       const data = response.data;
       console.log('Respuesta del backend:', data);
+
       if(data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
         console.error('Token no válido o expirado. Eliminando token y redirigiendo a login.');
         await AsyncStorage.removeItem('token');     
@@ -84,8 +81,6 @@ export default function useProfile() {
     }
   };
   
-
-  // 🔁 Editar perfil (nombre, apellido, correo)
   const editarPerfil = async (nombre, apellido, correo) => {
     try {
       const token = await AsyncStorage.getItem('token');
@@ -94,8 +89,6 @@ export default function useProfile() {
       const correoFormateado = correo.trim().toLowerCase();
       const mismoCorreo = profile.correo === correoFormateado;
 
-  
-      // Validar nombre y apellido
       if (!nombre.trim() || !apellido.trim()) {
         showMessage({
           message: 'Campos incompletos',
@@ -104,8 +97,6 @@ export default function useProfile() {
         });
         return false;
       }
-  
-      // Si el correo cambió, validarlo
       if (!mismoCorreo) {
         const correoDisponible = await validarCorreo(correo);
         if (!correoDisponible) {
@@ -133,6 +124,8 @@ export default function useProfile() {
       });
   
       const data = response.data;
+      
+      console.log('Respuesta al editar perfil:', data);
   
       if (data.resultado === 'success') {
         dispatch(updateProfile({ nombre, apellido, correo }));
@@ -155,8 +148,6 @@ export default function useProfile() {
     }
   };
   
-
-  // 🖼️ Subir imagen de perfil
   const subirImagenPerfil = async (uri) => {
     try {
       const token = await AsyncStorage.getItem('token');
@@ -199,19 +190,16 @@ export default function useProfile() {
     }
   };
 
-  // ❌ Eliminar imagen
   const eliminarImagenPerfil = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
       if (!token) throw new Error('Token no encontrado');
-  
-      // Preparar payload cifrado con la instrucción para borrar la imagen
+
       const encryptedPayload = encryptData({ borrar: true });
   
       const formData = new URLSearchParams();
       formData.append('datos', encryptedPayload);
-  
-      // Enviar solicitud al endpoint
+
       const response = await axios.post(BACKEND_URL, formData.toString(), {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -221,8 +209,7 @@ export default function useProfile() {
   
       const data = response.data;
       console.log('Respuesta al eliminar imagen:', data);
-  
-      // Evaluar respuesta
+
       if (data.resultado === 'success') {
         console.log('Actualizando estado de imagen en Redux:', data.img);
         dispatch(updateProfile({ img: data.img }));
