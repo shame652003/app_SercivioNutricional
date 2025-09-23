@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { encryptData } from '../security/crypto/encryptor';
 import axios from 'axios';
 import { showMessage } from 'react-native-flash-message';
+import { useDispatch } from 'react-redux';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/asistenciaApi.php`;
 
@@ -19,6 +20,7 @@ export default function useRegistrarAsistencia(navigation): RegistrarAsistenciaR
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const dispatch = useDispatch();
 
   const registrarAsistencia = async (cedula: string, idMenu: number, horario: string) => {
     setLoading(true);
@@ -90,13 +92,14 @@ export default function useRegistrarAsistencia(navigation): RegistrarAsistenciaR
 
       console.log('Respuesta de registro:', responseRegistrar.data);
       
-       if(responseRegistrar.data.resultado === 'error' && responseRegistrar.data.mensaje =='Token no válido o expirado') {
-        Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
-        await AsyncStorage.removeItem('token');
-        navigation.navigate('LoginScreen');
-        return;
-      }
       const dataRegistrar = responseRegistrar.data;
+
+       if (dataRegistrar.resultado === 'error' && dataRegistrar.mensaje === 'Token no válido o expirado') {
+         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+         await AsyncStorage.removeItem('token');
+         dispatch({ type: 'USER_SUCCESS', payload: null }); 
+         return;
+      }
       
       // Manejar el nuevo formato de respuesta
       if (dataRegistrar && dataRegistrar.resultado) {

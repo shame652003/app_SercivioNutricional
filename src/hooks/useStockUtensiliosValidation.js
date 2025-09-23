@@ -46,10 +46,10 @@ export default function useStockUtensiliosValidation(navigation) {
       const data = response.data;
       console.log('Respuesta del servidor stock de utensilios:', data);
       if (data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
-         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
-         await AsyncStorage.removeItem('token');
-         dispatch({ type: 'USER_SUCCESS', payload: null }); 
-         return;
+        Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
+        await AsyncStorage.removeItem('token');
+        navigation.navigate('LoginScreen');     
+        return;
       }
   
       if (Array.isArray(data) && data.length > 0) {

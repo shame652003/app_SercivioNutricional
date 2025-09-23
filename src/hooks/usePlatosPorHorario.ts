@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { encryptData } from '../security/crypto/encryptor';
 import axios from 'axios';
 import { showMessage } from 'react-native-flash-message';
+import { useDispatch } from 'react-redux';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/asistenciaApi.php`;
 
@@ -20,6 +21,7 @@ export default function usePlatosPorHorario() {
   });
   const [idMenu, setIdMenu] = useState<number | null>(null);
   const [cargando, setCargando] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
   // Función para obtener el ID del menú
   const obtenerIdMenu = useCallback(async (horario: HorarioComida): Promise<number | null> => {
@@ -51,6 +53,12 @@ export default function usePlatosPorHorario() {
       });
 
       const data = response.data;
+       if (data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
+         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+         await AsyncStorage.removeItem('token');
+         dispatch({ type: 'USER_SUCCESS', payload: null }); 
+         return;
+      }
       
       if (Array.isArray(data) && data.length > 0 && data[0].idMenu) {
         const menuId = Number(data[0].idMenu);
@@ -102,6 +110,12 @@ export default function usePlatosPorHorario() {
       });
 
       const data = response.data;
+       if (data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
+         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+         await AsyncStorage.removeItem('token');
+         dispatch({ type: 'USER_SUCCESS', payload: null }); 
+         return;
+      }
       
       let cantidadPlatos = 0; // Valor por defecto
       
@@ -208,7 +222,7 @@ export default function usePlatosPorHorario() {
   return {
     horarioSeleccionado,
     platosDisponibles: platosDisponibles[horarioSeleccionado],
-    idMenu, // Exponer el ID del menú
+    idMenu, 
     cargando,
     cambiarHorario,
     actualizarPlatosDisponibles,

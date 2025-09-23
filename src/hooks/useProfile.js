@@ -206,8 +206,6 @@ export default function useProfile() {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
-  
-      const data = response.data;
 
       if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
          Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
@@ -215,6 +213,9 @@ export default function useProfile() {
          dispatch({ type: 'USER_SUCCESS', payload: null }); 
          return;
       }
+  
+      const data = response.data;
+
       console.log('Respuesta al eliminar imagen:', data);
 
       if (data.resultado === 'success') {

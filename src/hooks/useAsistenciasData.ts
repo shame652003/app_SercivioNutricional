@@ -4,6 +4,7 @@ import { API_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { encryptData } from '../security/crypto/encryptor';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/consultarAsistenciaApi.php`;
 
@@ -37,7 +38,7 @@ export default function useAsistenciasData(navigation): UseAsistenciasDataReturn
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
   const [itemsPerPage] = useState(10);
-
+  const dispatch = useDispatch();
   // Pagination
   const pageCount = Math.ceil(asistencias.length / itemsPerPage);
   const paginatedData = asistencias.slice(
@@ -99,17 +100,14 @@ export default function useAsistenciasData(navigation): UseAsistenciasDataReturn
         timeout: 10000 // 10 segundos de timeout
       });
 
-        if(response.data.resultado === 'error' && response.data.mensaje =='Token no válido o expirado') {
-        Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
-        await AsyncStorage.removeItem('token');
-        navigation.navigate('LoginScreen');
-        return;
-      }
-
-    
       const data = response.data;
 
-    
+      if (data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
+         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+         await AsyncStorage.removeItem('token');
+         dispatch({ type: 'USER_SUCCESS', payload: null }); 
+         return;
+      }
     
 
       if (Array.isArray(data)) {

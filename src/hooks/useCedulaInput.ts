@@ -5,7 +5,7 @@ import { API_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { encryptData } from '../security/crypto/encryptor';
 import axios from 'axios';
-
+import { useDispatch } from 'react-redux';
 const BACKEND_URL = `${API_URL}bin/controlador/api/asistenciaApi.php`;
 
 export interface Estudiante {
@@ -21,6 +21,7 @@ export default function useCedulaInput() {
   const [estudiante, setEstudiante] = useState<Estudiante | null>(null);
   const [loading, setLoading] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const dispatch = useDispatch();
 
   const buscarEstudiante = async (cedulaABuscar: string) => {
     try {
@@ -45,6 +46,13 @@ export default function useCedulaInput() {
       });
 
       const data = response.data;
+
+       if (data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
+         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+         await AsyncStorage.removeItem('token');
+         dispatch({ type: 'USER_SUCCESS', payload: null }); 
+         return;
+      }
     
       if (!data || (Array.isArray(data) && data.length === 0)) {
         setEstudiante(null);

@@ -7,6 +7,7 @@ import axios from 'axios';
 import * as Print from 'expo-print';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
+import { useDispatch } from 'react-redux';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/consultarMenuApi.php`;
 
@@ -43,6 +44,7 @@ export default function useMenusValidation( navigation) {
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [fechaInicioFiltro, setFechaInicioFiltro] = useState<Date | undefined>(undefined);
   const [fechaFinFiltro, setFechaFinFiltro] = useState<Date | undefined>(undefined);
+  const dispatch = useDispatch();
 
   const quitarDuplicados = (menus: Menu[]) => {
     const ids = new Set<number>();
@@ -106,11 +108,11 @@ export default function useMenusValidation( navigation) {
         }
       );
 
-       if(response.data.resultado === 'error' && response.data.mensaje =='Token no válido o expirado') {
-        Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
-        await AsyncStorage.removeItem('token');
-        navigation.navigate('LoginScreen');
-        return;
+      if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
+         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+         await AsyncStorage.removeItem('token');
+         dispatch({ type: 'USER_SUCCESS', payload: null }); 
+         return;
       }
       if (response.data.resultado === 'success') {
         const menusSinDuplicados = quitarDuplicados(response.data.menus || []);

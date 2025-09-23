@@ -1,5 +1,12 @@
 import React from 'react';
-import { Dimensions, StyleSheet, Text, View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import Header from '../components/Header';
 import BottomNavBar from '../components/BottomNavBar';
 import NavHead from '../components/NavHead';
@@ -13,11 +20,11 @@ import useStockAlimentosValidation from '../hooks/useStockAlimentosValidation';
 import LoadingModal from '../components/LoadingModal';
 import { MaterialIcons } from '@expo/vector-icons';
 
-
 const marginHorizontal = 16;
 const cardsPerRow = 2;
 const screenWidth = Dimensions.get('window').width;
-const cardWidth = (screenWidth - marginHorizontal * (cardsPerRow + 1)) / cardsPerRow;
+const cardWidth =
+  (screenWidth - marginHorizontal * (cardsPerRow + 1)) / cardsPerRow;
 
 export default function StockAlimentosScreen({ navigation }) {
   const {
@@ -32,15 +39,23 @@ export default function StockAlimentosScreen({ navigation }) {
     seleccionarAlimento,
     cerrarModal,
     generarPdf,
+    cargarMasAlimentos,
+    totalAlimentos,
+    hasMore
   } = useStockAlimentosValidation(navigation);
 
-return (
+  return (
     <Container>
       <NavHead navigation={navigation} />
       <ContentContainer>
-        
-        <LoadingModal visible={loadingPdf} message="Generando PDF, por favor espere..." />
-        <LoadingModal visible={loading && searchText.trim() !== ''} message="Buscando alimentos..." />
+        <LoadingModal
+          visible={loadingPdf}
+          message="Generando PDF, por favor espere..."
+        />
+        <LoadingModal
+          visible={loading && searchText.trim() !== ''}
+          message="Buscando alimentos..."
+        />
 
         <Header Titulo="Stock de Alimentos" showSubtitle={false} />
         <Card>
@@ -59,45 +74,75 @@ return (
           </View>
         </Card>
 
-        {searchText.trim() !== '' && !loading && busquedaExitosa ? (
+        {/* --- Sección de Cantidad Total de Alimentos --- */}
+        {totalAlimentos > 0 && !searchText && (
+          <View style={styles.countCard}>
+            <Text style={styles.countText}>
+              Total de alimentos en stock:
+            </Text>
+            <Text style={styles.countNumber}>
+              {totalAlimentos}
+            </Text>
+          </View>
+        )}
+        {/* ------------------------------------------------ */}
+
+        {!loading && busquedaExitosa ? (
           alimentosFiltrados.length > 0 ? (
-            <View style={styles.gridContainer}>
-              {alimentosFiltrados.map((item) => (
-                <CardElemento
-                  key={item.idAlimento}
-                  nombre={item.nombre}
-                  marca={item.marca !== 'Sin Marca' ? item.marca : undefined}
-                  stock={item.stock}
-                  tituloCantidad="Stock"
-                  imagenUri={item.imagenUri}
-                  onPress={() => seleccionarAlimento(item)}
-                  style={[
-                    styles.card,
-                    { width: cardWidth, marginHorizontal: marginHorizontal / 2 },
-                  ]}
-                />
-              ))}
-            </View>
+            <ScrollView contentContainerStyle={styles.gridContainer}>
+              <View style={styles.row}>
+                {alimentosFiltrados.map((item) => (
+                  <CardElemento
+                    key={item.idAlimento}
+                    nombre={item.nombre}
+                    marca={item.marca !== 'Sin Marca' ? item.marca : undefined}
+                    stock={item.stock}
+                    tituloCantidad="Stock"
+                    imagenUri={item.imagenUri}
+                    onPress={() => seleccionarAlimento(item)}
+                    style={[
+                      styles.card,
+                      { width: cardWidth, marginHorizontal: marginHorizontal / 2 },
+                    ]}
+                  />
+                ))}
+              </View>
+
+              {hasMore && (
+                <TouchableOpacity
+                  onPress={cargarMasAlimentos}
+                  style={styles.loadMoreButton}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.loadMoreText}>Cargar más alimentos</Text>
+                </TouchableOpacity>
+              )}
+            </ScrollView>
           ) : (
             <Text style={styles.noResultsText}>No se encontraron alimentos</Text>
           )
         ) : null}
-
       </ContentContainer>
       <BottomNavBar navigation={navigation} />
-      <ModalDetalle visible={modalVisible} onClose={cerrarModal} detalle={alimentoSeleccionado} />
+      <ModalDetalle
+        visible={modalVisible}
+        onClose={cerrarModal}
+        detalle={alimentoSeleccionado}
+      />
     </Container>
   );
 }
 
 const styles = StyleSheet.create({
   gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
     paddingTop: 12,
     paddingBottom: 20,
     paddingHorizontal: 8,
+  },
+  row: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   card: {
     marginBottom: marginHorizontal,
@@ -116,26 +161,52 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     borderRadius: 8,
     padding: 7,
-    borderColor:'#3399FF',
+    borderColor: '#3399FF',
   },
-  loadingOverlay: {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  backgroundColor: 'rgba(255, 255, 255, 0.8)',
-  justifyContent: 'center',
-  alignItems: 'center',
-  zIndex: 9999,
-  paddingHorizontal: 20,
-},
-loadingText: {
-  marginTop: 12,
-  fontSize: 16,
-  color: '#0033aa',
-  fontWeight: '600',
-  textAlign: 'center',
-},
-
+  loadMoreButton: {
+    backgroundColor: '#0055cc',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+    marginHorizontal: 40,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  loadMoreText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 16,
+    letterSpacing: 1,
+  },
+  // --- Nuevos estilos para la ficha de conteo ---
+  countCard: {
+    backgroundColor: '#ffffffff', // Un azul claro
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginHorizontal: 16,
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderLeftWidth: 5,
+    borderLeftColor: '#0055cc',
+  },
+  countText: {
+    fontSize: 15,
+    color: '#333',
+    fontWeight: '600',
+  },
+  countNumber: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#2196f3',
+  },
+  // ---------------------------------------------
 });

@@ -33,7 +33,6 @@ export default function HomeScreen({ navigation }) {
       style={styles.cardItem}
       title="Registrar Asistencias"
       icon="graduation-cap"
-      cantidad={data?.asistencias_hoy ?? '0'}
       onPress={() => navigation.navigate('Asistencias')}
     />
   )}
