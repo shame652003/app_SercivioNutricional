@@ -1,3 +1,5 @@
+// En el archivo StockUtensiliosScreen.js
+
 import React from 'react';
 import { Dimensions, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Header from '../components/Header';
@@ -28,16 +30,17 @@ export default function StockUtensiliosScreen({ navigation }) {
     busquedaExitosa,
     loading,
     loadingPdf,
+    hasMore, // Se añade la nueva propiedad
     seleccionarUtensilio,
     cerrarModal,
     generarPdf,
+    cargarMasUtensilios, // Se añade el nuevo método
   } = useStockUtensiliosValidation(navigation);
 
   return (
     <Container>
       <NavHead navigation={navigation} />
       <ContentContainer>
-
         <LoadingModal visible={loadingPdf} message="Generando PDF, por favor espere..." />
         <LoadingModal visible={loading && searchText.trim() !== ''} message="Buscando utensilios..." />
 
@@ -58,8 +61,8 @@ export default function StockUtensiliosScreen({ navigation }) {
           </View>
         </Card>
 
-        {searchText.trim() !== '' && !loading && busquedaExitosa ? (
-          utensiliosFiltrados.length > 0 ? (
+        {utensiliosFiltrados.length > 0 ? (
+          <>
             <View style={styles.gridContainer}>
               {utensiliosFiltrados.map((item) => (
                 <CardElemento
@@ -77,11 +80,15 @@ export default function StockUtensiliosScreen({ navigation }) {
                 />
               ))}
             </View>
-          ) : (
-            <Text style={styles.noResultsText}>No se encontraron utensilios</Text>
-          )
-        ) : null}
-
+            {hasMore && (
+              <TouchableOpacity onPress={cargarMasUtensilios} style={styles.loadMoreButton}>
+                <Text style={styles.loadMoreText}>Cargar más utensilios</Text>
+              </TouchableOpacity>
+            )}
+          </>
+        ) : (
+          !loading && <Text style={styles.noResultsText}>No se encontraron utensilios</Text>
+        )}
       </ContentContainer>
       <BottomNavBar navigation={navigation} />
       <ModalDetalle visible={modalVisible} onClose={cerrarModal} detalle={utensilioSeleccionado} />
@@ -135,5 +142,26 @@ const styles = StyleSheet.create({
     color: '#0033aa',
     fontWeight: '600',
     textAlign: 'center',
+  },
+ loadMoreButton: {
+    backgroundColor: '#0055cc',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+    marginHorizontal: 40,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  loadMoreText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 16,
+    letterSpacing: 1,
   },
 });

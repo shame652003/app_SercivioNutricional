@@ -1,3 +1,5 @@
+// En el archivo useStockUtensiliosValidation.js
+
 import { useState, useEffect, useRef } from 'react';
 import { Alert } from 'react-native';
 import { API_URL } from '@env';
@@ -11,6 +13,7 @@ import * as FileSystem from 'expo-file-system/legacy'
 import { showMessage } from 'react-native-flash-message';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/stockUtensiliosApi.php`;
+const ITEMS_PER_PAGE = 10;
 
 export default function useStockUtensiliosValidation(navigation) {
   const [searchText, setSearchText] = useState('');
@@ -20,57 +23,74 @@ export default function useStockUtensiliosValidation(navigation) {
   const [busquedaExitosa, setBusquedaExitosa] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingPdf, setLoadingPdf] = useState(false);
+  const [page, setPage] = useState(0); 
+  const [hasMore, setHasMore] = useState(true);
   const timeoutRef = useRef(null);
-
-  const buscarUtensilios = async (texto) => {
+  
+  // Nuevo método de búsqueda con paginación
+  const buscarUtensilios = async (texto, offset = 0) => {
     try {
       setLoading(true);
+      if (offset === 0) {
+        setUtensiliosFiltrados([]);
+        setPage(0);
+        setHasMore(true);
+      }
+      
       const token = await AsyncStorage.getItem('token');
       if (!token) throw new Error('Token no encontrado');
-  
+      
       const encryptedData = encryptData({
         mostrarUtensilios: 'true',
         utensilio: texto,
+        offset: offset,
       });
-  
+      
       const formBody = new URLSearchParams();
       formBody.append('datos', encryptedData);
-  
+      
       const response = await axios.post(BACKEND_URL, formBody.toString(), {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
-  
+      
       const data = response.data;
-
+      
       console.log('Respuesta del servidor stock de utensilios:', data);
       
       if (data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
         Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
         await AsyncStorage.removeItem('token');
-        navigation.navigate('LoginScreen');     
+        navigation.navigate('LoginScreen');
         return;
       }
-  
+      
       if (Array.isArray(data) && data.length > 0) {
-       
         const utensiliosConImagen = data.map((u, index) => ({
           ...u,
-          idUtensilio: u.idUtensilio || `temp-${Date.now()}-${index}`, 
+          idUtensilio: u.idUtensilio || `temp-${Date.now()}-${index}`,
           imagenUri: { uri: API_URL + u.imgUtensilios },
         }));
-        setUtensiliosFiltrados(utensiliosConImagen);
+        
+        setUtensiliosFiltrados(prevUtensilios => [...prevUtensilios, ...utensiliosConImagen]);
+        
+        setHasMore(data.length === ITEMS_PER_PAGE);
+        setPage(prevPage => prevPage + 1);
+        
       } else {
-        setUtensiliosFiltrados([]);
+        if (offset === 0) { 
+          setUtensiliosFiltrados([]);
+        }
+        setHasMore(false);
       }
-  
+      
       setBusquedaExitosa(true);
     } catch (error) {
       setBusquedaExitosa(false);
       const mensaje =
-        error.response?.data?.mensaje || error.message || 'Error desconocido';
+      error.response?.data?.mensaje || error.message || 'Error desconocido';
       console.error('Error en búsqueda de utensilios:', mensaje);
       showMessage({
         message: 'Error',
@@ -81,6 +101,16 @@ export default function useStockUtensiliosValidation(navigation) {
       setLoading(false);
     }
   };
+  
+  // Función para cargar más utensilios al presionar el botón
+  const cargarMasUtensilios = () => {
+    if (!loading && hasMore) {
+      const newOffset = page * ITEMS_PER_PAGE;
+      buscarUtensilios(searchText, newOffset);
+    }
+  };
+  
+  // ... (El resto del código de obtenerStockCompleto, generarPdf, y useEffect es el mismo, pero lo adjunto para que se pueda copiar y pegar de forma completa)
 
   const obtenerStockCompleto = async () => {
     try {
@@ -327,17 +357,17 @@ export default function useStockUtensiliosValidation(navigation) {
 
     if (searchText.trim() !== '') {
       timeoutRef.current = setTimeout(() => {
-        buscarUtensilios(searchText);
+        buscarUtensilios(searchText); // Se llama con el texto y offset por defecto (0)
       }, 700);
     } else {
-      setUtensiliosFiltrados([]);
-      setBusquedaExitosa(false);
-      setLoading(false);
+      // Si el campo de búsqueda está vacío, se carga la primera página de forma automática
+      buscarUtensilios('');
     }
 
     return () => clearTimeout(timeoutRef.current);
   }, [searchText]);
-
+  
+  // Se añade cargarMasUtensilios y hasMore al objeto retornado
   return {
     searchText,
     setSearchText,
@@ -347,11 +377,13 @@ export default function useStockUtensiliosValidation(navigation) {
     busquedaExitosa,
     loading,
     loadingPdf,
+    hasMore,
     seleccionarUtensilio: (item) => {
       setUtensilioSeleccionado(item);
       setModalVisible(true);
     },
     cerrarModal: () => setModalVisible(false),
     generarPdf,
+    cargarMasUtensilios,
   };
 }
