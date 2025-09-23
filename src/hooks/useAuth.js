@@ -1,42 +1,58 @@
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+const { jwtDecode } = require('jwt-decode');
 
-const useAuth = () => {
-  const navigation = useNavigation();
+export default function useAuth() {
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.user.user);
+  const [loading, setLoading] = useState(true);
 
-  const cerrarSesion = async () => {
+  const checkToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        const userData = jwtDecode(token);
+        dispatch({ type: 'USER_SUCCESS', payload: userData });
+        dispatch({ type: 'UPDATE_PROFILE', payload: userData });
+      } else {
+        dispatch({ type: 'USER_SUCCESS', payload: null });
+      }
+    } catch (err) {
+      await AsyncStorage.removeItem('token');
+      dispatch({ type: 'USER_SUCCESS', payload: null });
+      console.error('Token inválido o expirado', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cerrarSesion = () => {
     Alert.alert(
       'Cerrar Sesión',
-      '¿Estás seguro de que quieres cerrar sesión?',
+      '¿Estás seguro que quieres cerrar sesión?',
       [
         {
           text: 'Cancelar',
           style: 'cancel',
         },
         {
-          text: 'Salir',
+          text: 'Cerrar Sesión',
           style: 'destructive',
           onPress: async () => {
-            try {
-              await AsyncStorage.removeItem('token');
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'LoginScreen' }], // ⚠️ Asegúrate de que este sea el nombre exacto de tu pantalla de login
-              });
-            } catch (error) {
-              console.error('Error al cerrar sesión:', error);
-            }
+            await AsyncStorage.removeItem('token');
+            dispatch({ type: 'USER_SUCCESS', payload: null });
           },
         },
       ],
-      { cancelable: false }
+      { cancelable: true }
     );
   };
 
-  return {
-    cerrarSesion,
-  };
-};
+  useEffect(() => {
+    checkToken();
+  }, []);
 
-export default useAuth;
+  return { user, loading, cerrarSesion };
+}

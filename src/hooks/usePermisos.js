@@ -10,7 +10,7 @@ const BACKEND_URL = `${API_URL}bin/controlador/api/permisoApi.php`;
 
 export default function usePermisos() {
   const [permiso, setPermiso] = useState(null);
-  const user = useSelector((state: any) => state.user.user);
+  const user = useSelector((state) => state.user.user);
 
 
  useEffect(() => {
@@ -32,6 +32,12 @@ export default function usePermisos() {
         },
       });
 
+      if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
+         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+         await AsyncStorage.removeItem('token');
+         dispatch({ type: 'USER_SUCCESS', payload: null }); 
+         return;
+      }
       console.log('Datos de permisos:', response.data);
       setPermiso(response.data);
     } catch (error) {

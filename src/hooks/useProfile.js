@@ -208,6 +208,13 @@ export default function useProfile() {
       });
   
       const data = response.data;
+
+      if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
+         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+         await AsyncStorage.removeItem('token');
+         dispatch({ type: 'USER_SUCCESS', payload: null }); 
+         return;
+      }
       console.log('Respuesta al eliminar imagen:', data);
 
       if (data.resultado === 'success') {

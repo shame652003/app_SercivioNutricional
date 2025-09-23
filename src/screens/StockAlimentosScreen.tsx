@@ -13,6 +13,7 @@ import useStockAlimentosValidation from '../hooks/useStockAlimentosValidation';
 import LoadingModal from '../components/LoadingModal';
 import { MaterialIcons } from '@expo/vector-icons';
 
+
 const marginHorizontal = 16;
 const cardsPerRow = 2;
 const screenWidth = Dimensions.get('window').width;

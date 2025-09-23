@@ -98,11 +98,11 @@ export default function useCambioContraseniaValidation(navigation) {
         },
       });
       console.log('Respuesta al cambiar contraseña:', response.data);
-       if(response.data.resultado === 'error' && response.data.mensaje =='Token no válido o expirado') {
-        Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
-        await AsyncStorage.removeItem('token');
-        navigation.navigate('LoginScreen');
-        return;
+       if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
+         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+         await AsyncStorage.removeItem('token');
+         dispatch({ type: 'USER_SUCCESS', payload: null }); 
+         return;
       }
 
       const data = response.data;

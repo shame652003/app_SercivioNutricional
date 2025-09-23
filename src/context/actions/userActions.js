@@ -1,7 +1,6 @@
-// actions.js
+
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-//import jwtDecode from 'jwt-decode';
 import { encryptData } from '../../security/crypto/encryptor';
 import { API_URL } from '@env';
 
@@ -29,7 +28,6 @@ export const loginUser = (cedula, clave, navigation, showMessage) => async (disp
       dispatch({ type: 'USER_SUCCESS', payload: userData });
       dispatch({ type: 'UPDATE_PROFILE', payload: userData });
       showMessage({ message: 'Login Exitoso', description: 'Bienvenido!', type: 'success' });
-      navigation.navigate('Home');
     } else {
       dispatch({ type: 'USER_ERROR', payload: data.mensaje || 'Credenciales incorrectas.' });
       showMessage({ message: 'Error de Usuario o Contraseña', description: data.mensaje || 'Credenciales incorrectas.', type: 'danger', duration: 2500 });

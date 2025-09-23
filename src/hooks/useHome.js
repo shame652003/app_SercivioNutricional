@@ -43,6 +43,14 @@ export default function useHome() {
           },
         });
 
+        if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
+         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+         await AsyncStorage.removeItem('token');
+         dispatch({ type: 'USER_SUCCESS', payload: null }); 
+         return;
+      }
+
+
         setData(response.data[0]);
       } catch (error) {
         console.error('Error al obtener datos del home:', error);
@@ -71,6 +79,13 @@ export default function useHome() {
             'Content-Type': 'multipart/form-data',
           },
         });
+        
+        if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
+         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+         await AsyncStorage.removeItem('token');
+         dispatch({ type: 'USER_SUCCESS', payload: null }); 
+         return;
+      }
 
         const colors = ['#0662c5', '#0A3361', '#049ff9', '#201db8', '#266dbe', '#0400ff', '#001a51', '#049ff9', '#a2c8de', '#3665b6'];
         const parsedData = response.data.map((item, index) => ({
@@ -107,6 +122,14 @@ export default function useHome() {
             'Content-Type': 'multipart/form-data',
           },
         });
+
+        if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
+         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+         await AsyncStorage.removeItem('token');
+         dispatch({ type: 'USER_SUCCESS', payload: null }); 
+         return;
+      }
+
 
         const colors = ['#0662c5', '#0A3361', '#049ff9', '#201db8', '#266dbe', '#0400ff', '#001a51', '#049ff9', '#a2c8de', '#3665b6'];
         const parsedData = response.data.map((item, index) => ({

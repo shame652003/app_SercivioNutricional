@@ -8,6 +8,7 @@ import ContentContainer from '../components/ContentContainer';
 import CardHome from '../components/CardHome';
 import GraficoCircular from '../components/GraficoCircular';
 import useHome from '../hooks/useHome';
+import LoadingModal from '../components/LoadingModal';
 
 export default function HomeScreen({ navigation }) {
   const { data, graficoDataA, graficoDataM, loading, tienePermiso } = useHome();
@@ -15,9 +16,7 @@ export default function HomeScreen({ navigation }) {
   if (loading) {
   return (
     <View style={styles.loadingContainer}>
-      <Text style={styles.loadingTitle}>Cargando datos...</Text>
-      <Text style={styles.loadingSubtitle}>Por favor espera un momento</Text>
-      <ActivityIndicator size="large" color="#0066CC" style={styles.spinner} />
+       <LoadingModal visible={loading} message="Cargando Datos, por favor espere..." />
     </View>
   );
 }
@@ -108,7 +107,7 @@ const styles = StyleSheet.create({
   flex: 1,
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundColor: '#F5F9FF',
+  backgroundColor: '#1d7cdbff',
   padding: 20,
 },
 loadingTitle: {

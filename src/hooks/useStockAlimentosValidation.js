@@ -10,7 +10,6 @@ import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/stockAlimentosApi.php`;
-const BACKEND_URL_PDF = `${API_URL}bin/controlador/api/pdfStockAlimentoApi.php`;
 
 export default function useStockAlimentosValidation(navigation) {
   const [searchText, setSearchText] = useState('');
@@ -45,12 +44,15 @@ export default function useStockAlimentosValidation(navigation) {
 
       const data = response.data;
 
+      console.log('Respuesta del servidor stock alimentos:', data);
+
       if (data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
-        Alert.alert('Error', 'Token no válido o expirado. Por favor, inicia sesión nuevamente.');
-        await AsyncStorage.removeItem('token');
-        navigation.navigate('LoginScreen');
-        return;
+         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+         await AsyncStorage.removeItem('token');
+         dispatch({ type: 'USER_SUCCESS', payload: null }); 
+         return;
       }
+
 
       if (Array.isArray(data) && data.length > 0) {
         const alimentosConImagen = data.map((alimento) => ({
@@ -82,12 +84,21 @@ export default function useStockAlimentosValidation(navigation) {
       const formBody = new URLSearchParams();
       formBody.append('consultarStockTotal', encrypted);
 
-      const response = await axios.post(BACKEND_URL_PDF, formBody.toString(), {
+      const response = await axios.post(BACKEND_URL, formBody.toString(), {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
+
+      console.log('Respuesta del servidor inventario completo:', response.data);
+
+      if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
+         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+         await AsyncStorage.removeItem('token');
+         dispatch({ type: 'USER_SUCCESS', payload: null }); 
+         return;
+      }
 
       return response.data;
     } catch (error) {
