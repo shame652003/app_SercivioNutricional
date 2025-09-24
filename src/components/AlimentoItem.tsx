@@ -1,3 +1,4 @@
+// AlimentoItem.js
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { API_URL} from '@env';
@@ -14,51 +15,69 @@ interface Props {
   alimento: Alimento;
 }
 
+const COLORS = {
+  BLUE: '#0066CC',
+  GRAY_DEFAULT: '#ccc',
+  WHITE: '#fff',
+  BLACK: '#000',
+};
+
 export default function AlimentoItem({ alimento }: Props) {
- 
+  
   return (
     <View style={styles.alimentoItem}>
-      <Image source={{ uri: API_URL + alimento.imgAlimento}} style={styles.imagen} />
-      <Text style={styles.nombre} numberOfLines={1}>
-        {alimento.nombre}
-      </Text>
-      <Text style={styles.marca} numberOfLines={1}>
-        {alimento.marca}
-      </Text>
-      <Text style={styles.cantidad}>{alimento.cantidad}</Text>
+      <Image 
+        source={{ uri: API_URL + alimento.imgAlimento}} 
+        style={styles.imagen} 
+        resizeMode="contain"
+      />
+      <View style={styles.infoContainer}>
+        <Text style={styles.nombre} numberOfLines={2}>
+          {alimento.nombre}
+        </Text>
+        <Text style={styles.marca} numberOfLines={1}>
+          {alimento.marca}
+        </Text>
+        <Text style={styles.cantidad}>{alimento.cantidad}</Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   alimentoItem: {
-    width: '48%',
-    backgroundColor: '#eef4fa',
-    borderRadius: 12,
-    padding: 12,
+    flexDirection: 'row',
     alignItems: 'center',
-    elevation: 2,
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: COLORS.GRAY_DEFAULT,
+    backgroundColor: COLORS.WHITE,
   },
   imagen: {
     width: 60,
     height: 60,
-    borderRadius: 10,
-    marginBottom: 10,
-    backgroundColor: '#ccc',
+    borderRadius: 12,
+    marginRight: 15,
+    backgroundColor: COLORS.GRAY_DEFAULT,
+  },
+  infoContainer: {
+    flex: 1,
   },
   nombre: {
     fontWeight: 'bold',
-    fontSize: 14,
-    color: '#222',
-    textAlign: 'center',
+    fontSize: 16,
+    color: COLORS.BLUE,
   },
   marca: {
-    fontSize: 13,
-    color: '#555',
+    fontSize: 14,
+    color: COLORS.BLACK,
+    opacity: 0.7,
   },
   cantidad: {
-    fontSize: 13,
-    color: '#008000',
-    marginTop: 4,
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.BLUE,
+    marginTop: 2,
   },
 });

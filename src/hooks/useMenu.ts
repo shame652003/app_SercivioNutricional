@@ -1,3 +1,5 @@
+
+// useMenusValidation.js
 import { useState, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { API_URL } from '@env';
@@ -10,6 +12,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { useDispatch } from 'react-redux';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/consultarMenuApi.php`;
+const MENUS_PER_PAGE = 5;
 
 export type Menu = {
   idMenu: number;
@@ -21,29 +24,26 @@ export type Menu = {
 
 export type Alimento = {
   idAlimento: number;
-  tipo?: string; 
+  tipo?: string;
   imgAlimento?: string;
   nombre: string;
   marca: string;
   cantidad: string;
 };
 
-export default function useMenusValidation( navigation) {
+export default function useMenusValidation(navigation) {
   const [searchText, setSearchText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-
   const [menuSeleccionadoInfo, setMenuSeleccionadoInfo] = useState<Menu | null>(null);
   const [alimentosDelMenu, setAlimentosDelMenu] = useState<Alimento[]>([]);
-
-  const [menusFiltradosOriginal, setMenusFiltradosOriginal] = useState<Menu[]>([]); 
-  const [menusFiltrados, setMenusFiltrados] = useState<Menu[]>([]); 
-
+  const [menus, setMenus] = useState<Menu[]>([]); // Usamos este para la paginación
   const [loadingMenus, setLoadingMenus] = useState(false);
   const [loadingAlimentos, setLoadingAlimentos] = useState(false);
-
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [fechaInicioFiltro, setFechaInicioFiltro] = useState<Date | undefined>(undefined);
   const [fechaFinFiltro, setFechaFinFiltro] = useState<Date | undefined>(undefined);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const dispatch = useDispatch();
 
   const quitarDuplicados = (menus: Menu[]) => {
@@ -58,7 +58,8 @@ export default function useMenusValidation( navigation) {
   const fetchMenus = async (
     search: string,
     fechaInicioStr: string = '',
-    fechaFinStr: string = ''
+    fechaFinStr: string = '',
+    page: number = 1
   ) => {
     try {
       setLoadingMenus(true);
@@ -90,10 +91,11 @@ export default function useMenusValidation( navigation) {
         fechaInicio,
         fechaFin,
         ...(horarioComida ? { horarioComida } : {}),
+        page, // Agregamos el parámetro de paginación
+        limit: MENUS_PER_PAGE,
       };
 
       const encryptedPayload = encryptData(payload);
-
       const formBody = new URLSearchParams();
       formBody.append('datos', encryptedPayload);
 
@@ -107,77 +109,73 @@ export default function useMenusValidation( navigation) {
           },
         }
       );
+      console.log('Respuesta del servidor:', response.data);
 
       if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
-         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
-         await AsyncStorage.removeItem('token');
-         dispatch({ type: 'USER_SUCCESS', payload: null }); 
-         return;
+        Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+        await AsyncStorage.removeItem('token');
+        dispatch({ type: 'USER_SUCCESS', payload: null });
+        return;
       }
       if (response.data.resultado === 'success') {
-        const menusSinDuplicados = quitarDuplicados(response.data.menus || []);
-        setMenusFiltradosOriginal(menusSinDuplicados);
-        setMenusFiltrados(menusSinDuplicados);
+        const nuevosMenus = quitarDuplicados(response.data.menus || []);
+        
+        if (page === 1) {
+          setMenus(nuevosMenus);
+        } else {
+          setMenus(prevMenus => [...prevMenus, ...nuevosMenus]);
+        }
+        setHasMore(nuevosMenus.length === MENUS_PER_PAGE);
       } else {
-        setMenusFiltradosOriginal([]);
-        setMenusFiltrados([]);
+        setMenus([]);
+        setHasMore(false);
         Alert.alert('Error', response.data.mensaje || 'Error al obtener menús');
       }
     } catch (error) {
-      setMenusFiltradosOriginal([]);
-      setMenusFiltrados([]);
+      setMenus([]);
+      setHasMore(false);
       Alert.alert('Error', 'No se pudo conectar con el servidor');
     } finally {
       setLoadingMenus(false);
     }
   };
 
-  useEffect(() => {
-    fetchMenus('');
-  }, []);
+  const loadMoreMenus = () => {
+    if (!loadingMenus && hasMore) {
+      setCurrentPage(prevPage => prevPage + 1);
+    }
+  };
 
   useEffect(() => {
-    if (showDateFilter) return;
+    fetchMenus(searchText, fechaInicioFiltro?.toISOString().slice(0, 10), fechaFinFiltro?.toISOString().slice(0, 10), currentPage);
+  }, [currentPage, searchText, fechaInicioFiltro, fechaFinFiltro]);
 
+  const menusFiltrados = useMemo(() => {
     const texto = searchText.trim().toLowerCase();
-
+    if (showDateFilter) {
+      return menus;
+    }
     if (texto === '') {
-      setMenusFiltrados(menusFiltradosOriginal);
+      return menus;
     } else {
-      const filtrados = menusFiltradosOriginal.filter(
+      return menus.filter(
         (menu) =>
           menu.horarioComida.toLowerCase().includes(texto) ||
           menu.descripcion.toLowerCase().includes(texto) ||
           menu.feMenu.includes(texto)
       );
-      setMenusFiltrados(filtrados);
     }
-  }, [searchText, menusFiltradosOriginal, showDateFilter]);
-
-  useEffect(() => {
-    if (
-      showDateFilter &&
-      fechaInicioFiltro instanceof Date &&
-      fechaFinFiltro instanceof Date
-    ) {
-      if (fechaFinFiltro < fechaInicioFiltro) {
-        Alert.alert('Error', 'La fecha fin debe ser mayor o igual a la fecha inicio');
-        return;
-      }
-      const fechaInicioStr = fechaInicioFiltro.toISOString().slice(0, 10);
-      const fechaFinStr = fechaFinFiltro.toISOString().slice(0, 10);
-      fetchMenus('', fechaInicioStr, fechaFinStr);
-    }
-  }, [fechaInicioFiltro, fechaFinFiltro, showDateFilter]);
+  }, [searchText, menus, showDateFilter]);
 
   const ocultarFiltro = () => {
     setShowDateFilter(false);
     setFechaInicioFiltro(undefined);
     setFechaFinFiltro(undefined);
-    fetchMenus(searchText);
+    setCurrentPage(1); // Reiniciar paginación al ocultar el filtro
+    setSearchText('');
   };
 
-  const seleccionarMenu = async (menu: Menu) => {
+   const seleccionarMenu = async (menu: Menu) => {
     try {
       setLoadingAlimentos(true);
       setMenuSeleccionadoInfo(menu);
@@ -407,6 +405,7 @@ let contenidoHTML = `
     }
   };
 
+
   return {
     searchText,
     setSearchText,
@@ -427,5 +426,7 @@ let contenidoHTML = `
     setFechaFinFiltro,
     ocultarFiltro,
     generarPdfPlano,
+    loadMoreMenus,
+    hasMore,
   };
 }

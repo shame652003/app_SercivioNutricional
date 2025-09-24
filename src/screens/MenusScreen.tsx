@@ -1,5 +1,6 @@
+// MenusScreen.js
 import React from 'react';
-import {View, Text,StyleSheet,ActivityIndicator,Button,} from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Button, TouchableOpacity } from 'react-native';
 import Header from '../components/Header';
 import BottomNavBar from '../components/BottomNavBar';
 import NavHead from '../components/NavHead';
@@ -8,7 +9,6 @@ import ContentContainer from '../components/ContentContainer';
 import Card from '../components/Card';
 import Buscador from '../components/Buscador';
 import useMenusValidation from '../hooks/useMenu';
-
 import MenuCard from '../components/MenuCard';
 import MenuModal from '../components/MenuModal';
 import FiltroFechas from '../components/FiltroFechas';
@@ -34,7 +34,8 @@ export default function MenusScreen({ navigation }) {
     setFechaFinFiltro,
     ocultarFiltro,
     generarPdfPlano,
-
+    loadMoreMenus,
+    hasMore,
   } = useMenusValidation(navigation);
 
   return (
@@ -73,15 +74,13 @@ export default function MenusScreen({ navigation }) {
           )}
         </Card>
 
-        {loadingMenus ? (
+        {loadingMenus && menusFiltrados.length === 0 ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#002c5f" />
-            <Text style={{ marginTop: 10, color: '#002c5f' }}>
-              Cargando menú...
-            </Text>
+            <Text style={{ marginTop: 10, color: '#002c5f' }}>Cargando menú...</Text>
           </View>
         ) : menusFiltrados.length === 0 ? (
-          <Text style={styles.noResultsText}>No se encontro ningun menú</Text>
+          <Text style={styles.noResultsText}>No se encontró ningún menú</Text>
         ) : (
           <View style={styles.gridContainer}>
             {menusFiltrados.map((menu, index) => (
@@ -91,6 +90,19 @@ export default function MenusScreen({ navigation }) {
                 onPress={() => seleccionarMenu(menu)}
               />
             ))}
+            {/* Botón de "Cargar más" */}
+           {hasMore && (
+    <TouchableOpacity
+        onPress={loadMoreMenus}
+        style={styles.loadMoreButton}
+        activeOpacity={0.8}
+        disabled={loadingMenus}
+    >
+        <Text style={styles.loadMoreText}>
+            {loadingMenus ? 'Cargando...' : 'Cargar más menús'}
+        </Text>
+    </TouchableOpacity>
+)}
           </View>
         )}
       </ContentContainer>
@@ -98,27 +110,27 @@ export default function MenusScreen({ navigation }) {
       <BottomNavBar navigation={navigation} />
 
       {menuSeleccionadoInfo && (
-<MenuModal
-  visible={modalVisible}
-  menuSeleccionado={menuSeleccionadoInfo}
-  alimentosPorTipo={alimentosPorTipo}
-  onClose={cerrarModal}
-  generarPdf={generarPdfPlano} 
->
-  {loadingAlimentos && (
-    <View style={styles.loadingModal}>
-      <ActivityIndicator size="large" color="#002c5f" />
-      <Text style={{ marginTop: 10, color: '#002c5f' }}>Cargando detalles...</Text>
-    </View>
-  )}
-</MenuModal>
-
+        <MenuModal
+          visible={modalVisible}
+          menuSeleccionado={menuSeleccionadoInfo}
+          alimentosPorTipo={alimentosPorTipo}
+          onClose={cerrarModal}
+          generarPdf={generarPdfPlano}
+        >
+          {loadingAlimentos && (
+            <View style={styles.loadingModal}>
+              <ActivityIndicator size="large" color="#002c5f" />
+              <Text style={{ marginTop: 10, color: '#002c5f' }}>Cargando detalles...</Text>
+            </View>
+          )}
+        </MenuModal>
       )}
     </Container>
   );
 }
 
 const styles = StyleSheet.create({
+  //... (estilos existentes)
   card: {
     paddingHorizontal: 12,
     paddingBottom: 12,
@@ -146,4 +158,25 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
   },
+ loadMoreButton: {
+        backgroundColor: '#0055cc',
+        paddingVertical: 14,
+        paddingHorizontal: 24,
+        borderRadius: 25,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 16,
+        marginHorizontal: 40,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    loadMoreText: {
+        color: '#fff',
+        fontWeight: '700',
+        fontSize: 16,
+        letterSpacing: 1,
+    },
 });
