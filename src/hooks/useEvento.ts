@@ -13,440 +13,472 @@ const BACKEND_URL = `${API_URL}bin/controlador/api/consultarEventoApi.php`;
 console.log(BACKEND_URL);
 
 export type Evento = {
-  idEvento: number;
-  nomEvent: string;
-  descripEvent: string;
-  feMenu: string;
-  horarioComida: string;
-  cantPlatos: number;
-  descripcion: string;
+    idEvento: number;
+    nomEvent: string;
+    descripEvent: string;
+    feMenu: string;
+    horarioComida: string;
+    cantPlatos: number;
+    descripcion: string;
 };
 
 export type Alimento = {
-  idAlimento: number;
-  tipo?: string; 
-  imgAlimento?: string;
-  nombre: string;
-  marca: string;
-  cantidad: string;
+    idAlimento: number;
+    tipo?: string;
+    imgAlimento?: string;
+    nombre: string;
+    marca: string;
+    cantidad: string;
+};
+
+// ✅ función para formatear fecha local en YYYY-MM-DD
+const formatDate = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 };
 
 export default function useEventoValidation(navigation) {
-  const [searchText, setSearchText] = useState('');
-  const [modalVisible, setModalVisible] = useState(false);
+    const [searchText, setSearchText] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
 
-  const [eventoSeleccionadoInfo, setEventoSeleccionadoInfo] = useState<Evento | null>(null);
-  const [alimentosDelEvento, setAlimentosDelEvento] = useState<Alimento[]>([]);
+    const [eventoSeleccionadoInfo, setEventoSeleccionadoInfo] = useState<Evento | null>(null);
+    const [alimentosDelEvento, setAlimentosDelEvento] = useState<Alimento[]>([]);
 
-  const [eventoFiltradosOriginal, setEventoFiltradosOriginal] = useState<Evento[]>([]); 
-  const [eventoFiltrados, setEventoFiltrados] = useState<Evento[]>([]); 
+    const [eventoFiltradosOriginal, setEventoFiltradosOriginal] = useState<Evento[]>([]);
+    const [eventoFiltrados, setEventoFiltrados] = useState<Evento[]>([]);
 
-  const [loadingEvento, setLoadingEvento] = useState(false);
-  const [loadingAlimentos, setLoadingAlimentos] = useState(false);
+    const [loadingEvento, setLoadingEvento] = useState(false);
+    const [loadingAlimentos, setLoadingAlimentos] = useState(false);
 
-  const [showDateFilter, setShowDateFilter] = useState(false);
-  const [fechaInicioFiltro, setFechaInicioFiltro] = useState<Date | undefined>(undefined);
-  const [fechaFinFiltro, setFechaFinFiltro] = useState<Date | undefined>(undefined);
-  const dispatch = useDispatch();
+    const [showDateFilter, setShowDateFilter] = useState(false);
+    const [fechaInicioFiltro, setFechaInicioFiltro] = useState<Date | undefined>(undefined);
+    const [fechaFinFiltro, setFechaFinFiltro] = useState<Date | undefined>(undefined);
+    const dispatch = useDispatch();
 
-  const quitarDuplicados = (evento: Evento[]) => {
-    const ids = new Set<number>();
-    return evento.filter(evento => {
-      if (ids.has(evento.idEvento)) return false;
-      ids.add(evento.idEvento);
-      return true;
-    });
-  };
+    const [offset, setOffset] = useState(0);
+    const [hasMoreEvents, setHasMoreEvents] = useState(true);
+    const eventsLimit = 5;
 
-  const fetchEvento = async (
-    search: string,
-    fechaInicioStr: string = '',
-    fechaFinStr: string = ''
-  ) => {
-    try {
-      setLoadingEvento(true);
-
-      let fechaInicio = '';
-      let fechaFin = '';
-      let horarioComida = null;
-
-      const trimmedSearch = search.trim();
-
-      if (/^\d{4}-\d{2}-\d{2}$/.test(trimmedSearch)) {
-        fechaInicio = trimmedSearch;
-        fechaFin = trimmedSearch;
-      } else if (trimmedSearch.length > 0) {
-        horarioComida = trimmedSearch;
-      }
-
-      if (fechaInicioStr && fechaFinStr) {
-        fechaInicio = fechaInicioStr;
-        fechaFin = fechaFinStr;
-        horarioComida = null;
-      }
-
-      const token = await AsyncStorage.getItem('token');
-      if (!token) throw new Error('Token no encontrado');
-
-      const payload = {
-        accion: 'buscarEvento',
-        fechaInicio,
-        fechaFin,
-        ...(horarioComida ? { horarioComida } : {}),
-      };
-
-      const encryptedPayload = encryptData(payload);
-
-      const formBody = new URLSearchParams();
-      formBody.append('datos', encryptedPayload);
-
-      const response = await axios.post(
-        BACKEND_URL,
-        formBody.toString(),
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
-      );
-        if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
-         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
-         await AsyncStorage.removeItem('token');
-         dispatch({ type: 'USER_SUCCESS', payload: null }); 
-         return;
-      }
-
-      if (response.data.resultado === 'success') {
-        const eventoSinDuplicados = quitarDuplicados(response.data.eventos || []);
-        setEventoFiltradosOriginal(eventoSinDuplicados);
-        setEventoFiltrados(eventoSinDuplicados);
-      } else {
-        setEventoFiltradosOriginal([]);
-        setEventoFiltrados([]);
-        Alert.alert('Error', response.data.mensaje || 'Error al obtener eventos');
-      }
-    } catch (error) {
-      setEventoFiltradosOriginal([]);
-      setEventoFiltrados([]);
-      Alert.alert('Error', 'No se pudo conectar con el servidor');
-    } finally {
-      setLoadingEvento(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchEvento('');
-  }, []);
-
-  useEffect(() => {
-    if (showDateFilter) return;
-
-    const texto = searchText.trim().toLowerCase();
-
-    if (texto === '') {
-      setEventoFiltrados(eventoFiltradosOriginal);
-    } else {
-      const filtrados = eventoFiltradosOriginal.filter(
-        (evento) =>
-          evento.horarioComida.toLowerCase().includes(texto) ||
-          evento.descripEvent.toLowerCase().includes(texto) ||
-          evento.feMenu.includes(texto)
-      );
-      setEventoFiltrados(filtrados);
-    }
-  }, [searchText, eventoFiltradosOriginal, showDateFilter]);
-
-  useEffect(() => {
-    if (
-      showDateFilter &&
-      fechaInicioFiltro instanceof Date &&
-      fechaFinFiltro instanceof Date
-    ) {
-      if (fechaFinFiltro < fechaInicioFiltro) {
-        Alert.alert('Error', 'La fecha fin debe ser mayor o igual a la fecha inicio');
-        return;
-      }
-      const fechaInicioStr = fechaInicioFiltro.toISOString().slice(0, 10);
-      const fechaFinStr = fechaFinFiltro.toISOString().slice(0, 10);
-      fetchEvento('', fechaInicioStr, fechaFinStr);
-    }
-  }, [fechaInicioFiltro, fechaFinFiltro, showDateFilter]);
-
-  const ocultarFiltro = () => {
-    setShowDateFilter(false);
-    setFechaInicioFiltro(undefined);
-    setFechaFinFiltro(undefined);
-    fetchEvento(searchText);
-  };
-
- const seleccionarEvento = async (evento: Evento) => {
-  try {
-    setLoadingAlimentos(true);
-
-    const token = await AsyncStorage.getItem('token');
-    if (!token) throw new Error('Token no encontrado');
-
-    const payload = {
-      mostrarEvento: true,
-      idEvento: evento.idEvento,
+    const quitarDuplicados = (evento: Evento[]) => {
+        const ids = new Set<number>();
+        return evento.filter(evento => {
+            if (ids.has(evento.idEvento)) return false;
+            ids.add(evento.idEvento);
+            return true;
+        });
     };
 
-    const encryptedPayload = encryptData(payload);
+    const fetchEvento = async (
+        search: string,
+        fechaInicioStr: string = '',
+        fechaFinStr: string = '',
+        currentOffset: number = 0,
+        append: boolean = false
+    ) => {
+        try {
+            setLoadingEvento(true);
 
-    const formBody = new URLSearchParams();
-    formBody.append('infoEventoModal', encryptedPayload);
+            let fechaInicio = '';
+            let fechaFin = '';
+            let horarioComida = null;
 
-    const response = await axios.post(
-      BACKEND_URL,
-      formBody.toString(),
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      }
-    );
+            const trimmedSearch = search.trim();
 
-    if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-      setAlimentosDelEvento(response.data);
+            if (/^\d{4}-\d{2}-\d{2}$/.test(trimmedSearch)) {
+                fechaInicio = trimmedSearch;
+                fechaFin = trimmedSearch;
+            } else if (trimmedSearch.length > 0) {
+                horarioComida = trimmedSearch;
+            }
 
-      const primerObjeto = response.data[0];
-      const eventoConDescripcion: Evento = {
-        idEvento: primerObjeto.idEvento,
-        nomEvent: primerObjeto.nomEvent,
-        descripEvent: primerObjeto.descripEvent,
-        feMenu: primerObjeto.feMenu,
-        horarioComida: primerObjeto.horarioComida,
-        cantPlatos: primerObjeto.cantPlatos,
-        descripcion: primerObjeto.descripcion || '',
-      };
+            if (fechaInicioStr && fechaFinStr) {
+                fechaInicio = fechaInicioStr;
+                fechaFin = fechaFinStr;
+                horarioComida = null;
+            }
 
-      setEventoSeleccionadoInfo(eventoConDescripcion);
-      setModalVisible(true);
-    } else {
-      Alert.alert('Error', 'No se pudo obtener el detalle del evento');
-    }
-  } catch (error) {
-    Alert.alert('Error', 'No se pudo conectar con el servidor para obtener detalles');
-  } finally {
-    setLoadingAlimentos(false);
-  }
-};
+            const token = await AsyncStorage.getItem('token');
+            if (!token) throw new Error('Token no encontrado');
 
+            const payload = {
+                accion: 'buscarEvento',
+                fechaInicio,
+                fechaFin,
+                ...(horarioComida ? { horarioComida } : {}),
+                limit: eventsLimit,
+                offset: currentOffset,
+            };
 
-  const cerrarModal = () => {
-    setModalVisible(false);
-    setEventoSeleccionadoInfo(null);
-    setAlimentosDelEvento([]);
-  };
+            const encryptedPayload = encryptData(payload);
 
-  const alimentosPorTipo = useMemo(() => {
-    if (!alimentosDelEvento || alimentosDelEvento.length === 0) return {};
+            const formBody = new URLSearchParams();
+            formBody.append('datos', encryptedPayload);
 
-    return alimentosDelEvento.reduce<Record<string, Alimento[]>>((acc, alimento) => {
-      const tipo = alimento.tipo || 'Sin Tipo';
-      if (!acc[tipo]) acc[tipo] = [];
-      acc[tipo].push(alimento);
-      return acc;
-    }, {});
-  }, [alimentosDelEvento]);
+            const response = await axios.post(
+                BACKEND_URL,
+                formBody.toString(),
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                }
+            );
+            if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
+                Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+                await AsyncStorage.removeItem('token');
+                dispatch({ type: 'USER_SUCCESS', payload: null });
+                return;
+            }
 
+            if (response.data.resultado === 'success') {
+                const eventoSinDuplicados = quitarDuplicados(response.data.eventos || []);
+                if (append) {
+                    setEventoFiltradosOriginal(prev => [...prev, ...eventoSinDuplicados]);
+                } else {
+                    setEventoFiltradosOriginal(eventoSinDuplicados);
+                }
+                setHasMoreEvents(eventoSinDuplicados.length === eventsLimit);
+            } else {
+                setEventoFiltradosOriginal([]);
+                setHasMoreEvents(false);
+                Alert.alert('Error', response.data.mensaje || 'Error al obtener eventos');
+            }
+        } catch (error) {
+            setEventoFiltradosOriginal([]);
+            setHasMoreEvents(false);
+            Alert.alert('Error', 'No se pudo conectar con el servidor');
+        } finally {
+            setLoadingEvento(false);
+        }
+    };
 
+    useEffect(() => {
+        fetchEvento(searchText, '', '', 0, false);
+    }, []);
 
+    useEffect(() => {
+        const texto = searchText.trim().toLowerCase();
+        setOffset(0);
+        if (texto === '') {
+            setEventoFiltrados(eventoFiltradosOriginal);
+        } else {
+            const filtrados = eventoFiltradosOriginal.filter(
+                (evento) =>
+                    evento.horarioComida.toLowerCase().includes(texto) ||
+                    evento.descripEvent.toLowerCase().includes(texto) ||
+                    evento.feMenu.includes(texto)
+            );
+            setEventoFiltrados(filtrados);
+        }
+    }, [searchText, eventoFiltradosOriginal, showDateFilter]);
 
-  const generarPdfPlano = async (
-    evento: Evento,
-    onSuccess: () => void,
-    onError: (msg: string) => void
-  ) => {
-    try {
-         const logoAsset = Asset.fromModule(require('../../assets/logo.png'));
-           await logoAsset.downloadAsync();
-           const base64Logo = await FileSystem.readAsStringAsync(logoAsset.localUri, {
-             encoding: 'base64',
-           });
-     
-           const logoAssetU = Asset.fromModule(require('../../assets/uptaeb.png'));
-           await logoAssetU.downloadAsync();
-           const base64LogoU = await FileSystem.readAsStringAsync(logoAssetU.localUri, {
-             encoding: 'base64',
-           });
+    useEffect(() => {
+        if (
+            showDateFilter &&
+            fechaInicioFiltro instanceof Date &&
+            fechaFinFiltro instanceof Date
+        ) {
+            if (fechaFinFiltro < fechaInicioFiltro) {
+                Alert.alert('Error', 'La fecha fin debe ser mayor o igual a la fecha inicio');
+                return;
+            }
+            const fechaInicioStr = formatDate(fechaInicioFiltro); // ✅ corregido
+            const fechaFinStr = formatDate(fechaFinFiltro);       // ✅ corregido
+            setOffset(0);
+            fetchEvento('', fechaInicioStr, fechaFinStr, 0, false);
+        }
+    }, [fechaInicioFiltro, fechaFinFiltro, showDateFilter]);
 
-let contenidoHTML = `
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <style>
-      @page {
-        margin-top: 40px;
-        margin-bottom: 40px;
-        margin-left: 24px;
-        margin-right: 24px;
-      }
+    const ocultarFiltro = () => {
+        setShowDateFilter(false);
+        setFechaInicioFiltro(undefined);
+        setFechaFinFiltro(undefined);
+        setOffset(0);
+        fetchEvento(searchText, '', '', 0, false);
+    };
 
-      body {
-        font-family: Arial, sans-serif;
-        padding: 24px;
-        color: #000;
-        background-color: #fff;
-      }
+    const cargarMasEventos = () => {
+        if (hasMoreEvents) {
+            const newOffset = offset + eventsLimit;
+            setOffset(newOffset);
+            if (showDateFilter) {
+                const fechaInicioStr = fechaInicioFiltro ? formatDate(fechaInicioFiltro) : '';
+                const fechaFinStr = fechaFinFiltro ? formatDate(fechaFinFiltro) : '';
+                fetchEvento('', fechaInicioStr, fechaFinStr, newOffset, true);
+            } else {
+                fetchEvento(searchText, '', '', newOffset, true);
+            }
+        }
+    };
 
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 20px;
-        border-radius: 8px;
-        text-align: center;
-        color: #000;
-      }
+    const seleccionarEvento = async (evento: Evento) => {
+        try {
+            setLoadingAlimentos(true);
 
-      header img {
-        height: 100px;
-        width: auto;
-        margin-bottom: 10px;
-      }
+            const token = await AsyncStorage.getItem('token');
+            if (!token) throw new Error('Token no encontrado');
 
-      .title-container {
-        flex-grow: 1;
-        font-weight: bold;
-        font-size: 22px;
-        line-height: 1.1;
-        margin: 0 10px;
-        color: #000;
-      }
+            const payload = {
+                mostrarEvento: true,
+                idEvento: evento.idEvento,
+            };
 
-      .subtitle, .location {
-        font-weight: 600;
-        font-size: 14px;
-        margin-top: 4px;
-        color: #000;
-      }
+            const encryptedPayload = encryptData(payload);
 
-      h1, h2 {
-        color: #0066CC;
-        text-align: center;
-      }
+            const formBody = new URLSearchParams();
+            formBody.append('infoEventoModal', encryptedPayload);
 
-      h2 {
-        border-bottom: 2px solid #0066CC;
-        padding-bottom: 4px;
-        margin-top: 25px;
-        margin-bottom: 10px;
-        font-size: 18px;
-      }
+            const response = await axios.post(
+                BACKEND_URL,
+                formBody.toString(),
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                }
+            );
 
-      p {
-        font-size: 14px;
-        margin: 6px 0;
-      }
+            if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+                setAlimentosDelEvento(response.data);
 
-      p strong {
-        color: #000;
-      }
+                const primerObjeto = response.data[0];
+                const eventoConDescripcion: Evento = {
+                    idEvento: primerObjeto.idEvento,
+                    nomEvent: primerObjeto.nomEvent,
+                    descripEvent: primerObjeto.descripEvent,
+                    feMenu: primerObjeto.feMenu,
+                    horarioComida: primerObjeto.horarioComida,
+                    cantPlatos: primerObjeto.cantPlatos,
+                    descripcion: primerObjeto.descripcion || '',
+                };
 
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 15px;
-        font-size: 14px;
-      }
+                setEventoSeleccionadoInfo(eventoConDescripcion);
+                setModalVisible(true);
+            } else {
+                Alert.alert('Error', 'No se pudo obtener el detalle del evento');
+            }
+        } catch (error) {
+            Alert.alert('Error', 'No se pudo conectar con el servidor para obtener detalles');
+        } finally {
+            setLoadingAlimentos(false);
+        }
+    };
 
-      th, td {
-        border: 1px solid #3399FF;
-        padding: 8px 6px;
-        text-align: center;
-        font-size: 14px;
-      }
+    const cerrarModal = () => {
+        setModalVisible(false);
+        setEventoSeleccionadoInfo(null);
+        setAlimentosDelEvento([]);
+    };
 
-      th {
-        background-color: #0066CC;
-        color: #fff;
-        font-weight: bold;
-      }
+    const alimentosPorTipo = useMemo(() => {
+        if (!alimentosDelEvento || alimentosDelEvento.length === 0) return {};
 
-      tr:nth-child(even) {
-        background: #f6faff;
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <img src="data:image/png;base64,${base64Logo}" alt="Logo" />
-      <div class="title-container">
-        Servicio Nutricional<br/>
-        <span class="subtitle">Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB)</span><br/>
-        <span class="location">Barquisimeto - Estado - Lara</span>
-      </div>
-      <img src="data:image/png;base64,${base64LogoU}" alt="Logo" />
-    </header>
+        return alimentosDelEvento.reduce<Record<string, Alimento[]>>((acc, alimento) => {
+            const tipo = alimento.tipo || 'Sin Tipo';
+            if (!acc[tipo]) acc[tipo] = [];
+            acc[tipo].push(alimento);
+            return acc;
+        }, {});
+    }, [alimentosDelEvento]);
 
-    <h1>Reporte de Evento</h1>
-    <p><strong>Nombre del Evento:</strong> ${evento.nomEvent}</p>
-    <p><strong>Descripción del Evento:</strong> ${evento.descripEvent}</p>
-    <p><strong>Fecha del Evento:</strong> ${evento.feMenu}</p>
-    <p><strong>Horario:</strong> ${evento.horarioComida}</p>
-    <p><strong>Cantidad de platos:</strong> ${evento.cantPlatos}</p>
-    <p><strong>Descripción:</strong> ${evento.descripcion}</p>
-`;
+    const generarPdfPlano = async (
+        evento: Evento,
+        onSuccess: () => void,
+        onError: (msg: string) => void
+    ) => {
+        try {
+            const logoAsset = Asset.fromModule(require('../../assets/logo.png'));
+            await logoAsset.downloadAsync();
+            const base64Logo = await FileSystem.readAsStringAsync(logoAsset.localUri, {
+                encoding: 'base64',
+            });
 
+            const logoAssetU = Asset.fromModule(require('../../assets/uptaeb.png'));
+            await logoAssetU.downloadAsync();
+            const base64LogoU = await FileSystem.readAsStringAsync(logoAssetU.localUri, {
+                encoding: 'base64',
+            });
 
-    for (const tipo in alimentosPorTipo) {
-      const grupo = alimentosPorTipo[tipo];
-      contenidoHTML += `
-        <h2>${tipo}</h2>
-        <table>
-          <tr>
-            <th>Nombre</th>
-            <th>Marca</th>
-            <th>Cantidad</th>
-          </tr>
-      `;
-      grupo.forEach((ali) => {
-        contenidoHTML += `
-          <tr>
-            <td>${ali.nombre}</td>
-            <td>${ali.marca}</td>
-            <td>${ali.cantidad}</td>
-          </tr>
-        `;
-      });
-      contenidoHTML += `</table>`;
-    }
+            let contenidoHTML = `
+                <html>
+                <head>
+                    <meta charset="utf-8" />
+                    <style>
+                        @page {
+                            margin-top: 40px;
+                            margin-bottom: 40px;
+                            margin-left: 24px;
+                            margin-right: 24px;
+                        }
 
-    contenidoHTML += `</body></html>`;
+                        body {
+                            font-family: Arial, sans-serif;
+                            padding: 24px;
+                            color: #000;
+                            background-color: #fff;
+                        }
 
-   await Print.printAsync({
-        html: contenidoHTML,
-      });
+                        header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 10px 20px;
+                            border-radius: 8px;
+                            text-align: center;
+                            color: #000;
+                        }
 
-      onSuccess();
-    } catch (error) {
-      console.error('Error al generar PDF:', error);
-      onError('No se pudo generar el PDF.');
-    }
-  };
+                        header img {
+                            height: 100px;
+                            width: auto;
+                            margin-bottom: 10px;
+                        }
 
-  return {
-    searchText,
-    setSearchText,
-    modalVisible,
-    eventoSeleccionadoInfo,
-    alimentosDelEvento,
-    alimentosPorTipo,
-    eventoFiltrados,
-    seleccionarEvento,
-    cerrarModal,
-    loadingEvento,
-    loadingAlimentos,
-    showDateFilter,
-    setShowDateFilter,
-    fechaInicioFiltro,
-    setFechaInicioFiltro,
-    fechaFinFiltro,
-    setFechaFinFiltro,
-    ocultarFiltro,
-    generarPdfPlano,
-  };
+                        .title-container {
+                            flex-grow: 1;
+                            font-weight: bold;
+                            font-size: 22px;
+                            line-height: 1.1;
+                            margin: 0 10px;
+                            color: #000;
+                        }
+
+                        .subtitle, .location {
+                            font-weight: 600;
+                            font-size: 14px;
+                            margin-top: 4px;
+                            color: #000;
+                        }
+
+                        h1, h2 {
+                            color: #0066CC;
+                            text-align: center;
+                        }
+
+                        h2 {
+                            border-bottom: 2px solid #0066CC;
+                            padding-bottom: 4px;
+                            margin-top: 25px;
+                            margin-bottom: 10px;
+                            font-size: 18px;
+                        }
+
+                        p {
+                            font-size: 14px;
+                            margin: 6px 0;
+                        }
+
+                        p strong {
+                            color: #000;
+                        }
+
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-bottom: 15px;
+                            font-size: 14px;
+                        }
+
+                        th, td {
+                            border: 1px solid #3399FF;
+                            padding: 8px 6px;
+                            text-align: center;
+                            font-size: 14px;
+                        }
+
+                        th {
+                            background-color: #0066CC;
+                            color: #fff;
+                            font-weight: bold;
+                        }
+
+                        tr:nth-child(even) {
+                            background: #f6faff;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <header>
+                        <img src="data:image/png;base64,${base64Logo}" alt="Logo" />
+                        <div class="title-container">
+                            Servicio Nutricional<br/>
+                            <span class="subtitle">Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB)</span><br/>
+                            <span class="location">Barquisimeto - Estado - Lara</span>
+                        </div>
+                        <img src="data:image/png;base64,${base64LogoU}" alt="Logo" />
+                    </header>
+
+                    <h1>Reporte de Evento</h1>
+                    <p><strong>Nombre del Evento:</strong> ${evento.nomEvent}</p>
+                    <p><strong>Descripción del Evento:</strong> ${evento.descripEvent}</p>
+                    <p><strong>Fecha del Evento:</strong> ${evento.feMenu}</p>
+                    <p><strong>Horario:</strong> ${evento.horarioComida}</p>
+                    <p><strong>Cantidad de platos:</strong> ${evento.cantPlatos}</p>
+                    <p><strong>Descripción:</strong> ${evento.descripcion}</p>
+            `;
+
+            for (const tipo in alimentosPorTipo) {
+                const grupo = alimentosPorTipo[tipo];
+                contenidoHTML += `
+                    <h2>${tipo}</h2>
+                    <table>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Marca</th>
+                            <th>Cantidad</th>
+                        </tr>
+                `;
+                grupo.forEach((ali) => {
+                    contenidoHTML += `
+                        <tr>
+                            <td>${ali.nombre}</td>
+                            <td>${ali.marca}</td>
+                            <td>${ali.cantidad}</td>
+                        </tr>
+                    `;
+                });
+                contenidoHTML += `</table>`;
+            }
+
+            contenidoHTML += `</body></html>`;
+
+            await Print.printAsync({
+                html: contenidoHTML,
+            });
+
+            onSuccess();
+        } catch (error) {
+            console.error('Error al generar PDF:', error);
+            onError('No se pudo generar el PDF.');
+        }
+    };
+
+    return {
+        searchText,
+        setSearchText,
+        modalVisible,
+        eventoSeleccionadoInfo,
+        alimentosDelEvento,
+        alimentosPorTipo,
+        eventoFiltrados,
+        seleccionarEvento,
+        cerrarModal,
+        loadingEvento,
+        loadingAlimentos,
+        showDateFilter,
+        setShowDateFilter,
+        fechaInicioFiltro,
+        setFechaInicioFiltro,
+        fechaFinFiltro,
+        setFechaFinFiltro,
+        ocultarFiltro,
+        generarPdfPlano,
+        fetchEvento,
+        cargarMasEventos,
+        hasMoreEvents,
+    };
 }

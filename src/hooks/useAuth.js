@@ -10,23 +10,30 @@ export default function useAuth() {
   const [loading, setLoading] = useState(true);
 
   const checkToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        const userData = jwtDecode(token);
-        dispatch({ type: 'USER_SUCCESS', payload: userData });
-        dispatch({ type: 'UPDATE_PROFILE', payload: userData });
-      } else {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    console.log('authenticando')
+    if (token) {
+      const userData = jwtDecode(token);
+      if (userData.exp && userData.exp < Date.now() / 1000) {
+        console.warn('⚠️ Token expirado');
+        await AsyncStorage.removeItem('token');
         dispatch({ type: 'USER_SUCCESS', payload: null });
+        return;
       }
-    } catch (err) {
-      await AsyncStorage.removeItem('token');
+      dispatch({ type: 'USER_SUCCESS', payload: userData });
+      dispatch({ type: 'UPDATE_PROFILE', payload: userData });
+    } else {
       dispatch({ type: 'USER_SUCCESS', payload: null });
-      console.error('Token inválido o expirado', err);
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (err) {
+    await AsyncStorage.removeItem('token');
+    dispatch({ type: 'USER_SUCCESS', payload: null });
+    console.error('Token inválido o expirado', err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const cerrarSesion = () => {
     Alert.alert(

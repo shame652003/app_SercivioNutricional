@@ -19,6 +19,7 @@ export default function usePermisos() {
       const token = await AsyncStorage.getItem('token');
       const idRol = user.rol;
       console.log('ID Rol:', idRol);
+      console.log('Token:', token);
       if (!token || !idRol) throw new Error('Token o rol no encontrado');
 
       const datos = await encryptData({ mostrarPermisos: true, idRol });

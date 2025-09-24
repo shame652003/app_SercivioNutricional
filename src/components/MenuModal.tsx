@@ -1,4 +1,3 @@
-// MenuModal.js
 import React from 'react';
 import {
   Modal,
@@ -8,7 +7,7 @@ import {
   StyleSheet,
   Pressable,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { showMessage } from 'react-native-flash-message';
 
 import AlimentoItem from './AlimentoItem';
@@ -27,7 +26,7 @@ type Props = {
   children?: React.ReactNode;
 };
 
-// Paleta de colores proporcionada por el usuario
+// Paleta de colores unificada
 const COLORS = {
   BLUE: '#0066CC',
   BLUE_LIGHT: '#3399FF',
@@ -75,48 +74,64 @@ export default function MenuModal({
     <Modal visible={visible} animationType="fade" transparent>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
-
-          {/* Header */}
+          {/* Header con icono y título */}
           <View style={styles.header}>
-            <Text style={styles.modalTitle}>
-              Menú
-            </Text>
+            <View style={styles.iconContainer}>
+              <MaterialCommunityIcons name="silverware-fork-knife" size={50} color={COLORS.WHITE} />
+            </View>
+            <Text style={styles.modalTitle}>Detalles del Menú</Text>
             <Pressable onPress={onClose} style={styles.closeButton}>
               <MaterialIcons name="close" size={28} color={COLORS.WHITE} />
             </Pressable>
           </View>
 
-          {/* Scrollable Content */}
+          {/* Contenido desplazable */}
           <ScrollView
             style={styles.contentScroll}
             showsVerticalScrollIndicator={false}
           >
-            {/* Descripción del menú */}
-            <View style={styles.descriptionSection}>
-              <Text style={styles.sectionTitle}>Descripción</Text>
-              <Text style={styles.descriptionText}>
-                {menuSeleccionado.descripcion}
-              </Text>
-            </View>
-
-            {/* Alimentos por tipo (lista) */}
-            {Object.entries(alimentosPorTipo).map(([tipo, alimentos]) => (
-              <View key={tipo} style={styles.typeGroup}>
-                <Text style={styles.sectionTitle}>{tipo}</Text>
-                <View>
-                  {alimentos.map((alimento) => (
-                    <AlimentoItem
-                      key={alimento.idAlimento}
-                      alimento={alimento}
-                    />
-                  ))}
+            {/* Tarjeta de información principal del menú */}
+            <View style={styles.infoCard}>
+                
+              <View style={styles.infoRow}>
+                <MaterialCommunityIcons name="file-document-outline" size={20} color={COLORS.BLUE} />
+                <View style={styles.infoTextContainer}>
+                  <Text style={styles.infoLabel}>Menú</Text>
+                  <Text style={styles.infoText}>{menuSeleccionado.descripcion}</Text>
                 </View>
               </View>
-            ))}
+            </View>
+
+            {/* Sección de Alimentos (Diseño Mejorado) */}
+            {Object.keys(alimentosPorTipo).length > 0 && (
+              <View style={styles.sectionContainer}>
+                <View style={styles.sectionHeader}>
+                  <MaterialCommunityIcons name="food-fork-drink" size={24} color={COLORS.BLUE} />
+                  <Text style={styles.sectionMainTitle}>Ingredientes del Menú</Text>
+                </View>
+                {Object.entries(alimentosPorTipo).map(([tipo, alimentos]) => (
+                  <View key={tipo} style={styles.section}>
+                    <Text style={styles.sectionTitle}>{tipo}</Text>
+                    <View>
+                      {alimentos.map((alimento) => (
+                        <AlimentoItem
+                          key={alimento.idAlimento}
+                          alimento={alimento}
+                          isLast={
+                            alimento.idAlimento ===
+                            alimentos[alimentos.length - 1].idAlimento
+                          }
+                        />
+                      ))}
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
             {children}
           </ScrollView>
 
-          {/* Footer (con PDF Button) */}
+          {/* Footer con botón de PDF */}
           {generarPdf && (
             <View style={styles.footer}>
               <Pressable
@@ -127,13 +142,13 @@ export default function MenuModal({
               </Pressable>
             </View>
           )}
-
         </View>
       </View>
     </Modal>
   );
 }
 
+// Estilos unificados
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
@@ -165,6 +180,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.WHITE,
     textAlign: 'center',
+    marginTop: 10,
+  },
+  iconContainer: {
+    backgroundColor: COLORS.BLUE_LIGHT,
+    borderRadius: 30,
+    padding: 10,
   },
   closeButton: {
     position: 'absolute',
@@ -176,24 +197,65 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
   },
-  descriptionSection: {
+  infoCard: {
+    backgroundColor: '#abd9f71f',
+    borderRadius: 15,
+    padding: 15,
     marginBottom: 20,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  infoTextContainer: {
+    marginLeft: 10,
+    flexShrink: 1,
+  },
+  infoLabel: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: COLORS.BLUE,
+  },
+  infoText: {
+    fontSize: 14,
+    color: COLORS.BLACK,
+    marginTop: 2,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: COLORS.GRAY_DEFAULT,
+    marginVertical: 10,
+  },
+  sectionContainer: {
+    backgroundColor: '#abd9f71f',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 20,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: COLORS.BLUE_LIGHT,
+    paddingBottom: 5,
+  },
+  sectionMainTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: COLORS.BLUE,
+    marginLeft: 10,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: COLORS.BLUE,
     marginBottom: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: COLORS.BLUE_LIGHT,
+    marginTop: 10,
     paddingBottom: 5,
   },
-  descriptionText: {
-    fontSize: 16,
-    color: COLORS.BLACK,
-    lineHeight: 24,
-  },
-  typeGroup: {
+  section: {
     marginBottom: 20,
   },
   footer: {

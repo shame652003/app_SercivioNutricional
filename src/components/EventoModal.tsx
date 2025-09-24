@@ -1,6 +1,14 @@
+// EventoModal.js (Código actualizado)
 import React from 'react';
-import {Modal,View,Text,ScrollView,StyleSheet,Pressable,} from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  Modal,
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Pressable,
+} from 'react-native';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { showMessage } from 'react-native-flash-message';
 
 import AlimentoItem from './AlimentoItem';
@@ -17,6 +25,17 @@ type Props = {
     onError: (msg: string) => void
   ) => void;
   children?: React.ReactNode;
+};
+
+// Paleta de colores proporcionada por el usuario
+const COLORS = {
+  BLUE: '#0066CC',
+  BLUE_LIGHT: '#3399FF',
+  GRAY_DEFAULT: '#ccc',
+  WHITE: '#fff',
+  BLACK: '#000',
+  BLACK_OVERLAY: 'rgba(0,0,0,0.6)',
+  BACKGROUND_LIGHT: '#f0f0f0',
 };
 
 export default function EventoModal({
@@ -43,7 +62,7 @@ export default function EventoModal({
         }),
       (errorMsg) =>
         showMessage({
-          message: 'Cancelo el generar PDF',
+          message: 'Error al generar PDF',
           description: errorMsg,
           type: 'danger',
           icon: 'danger',
@@ -53,47 +72,93 @@ export default function EventoModal({
   };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent>
+    <Modal visible={visible} animationType="fade" transparent>
       <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          {generarPdf && (
-            <Pressable onPress={handleGenerarPdf} style={styles.btnPdf}>
-              <MaterialIcons name="picture-as-pdf" size={20} color="#fff" />
-              <Text style={styles.txtPdf}>PDF</Text>
+        <View style={styles.modalContainer}>
+          {/* Header con icono y título */}
+          <View style={styles.header}>
+            <View style={styles.iconContainer}>
+              <MaterialIcons name="event" size={50} color={COLORS.WHITE} />
+            </View>
+            <Text style={styles.modalTitle}>Detalles del Evento</Text>
+            <Pressable onPress={onClose} style={styles.closeButton}>
+              <MaterialIcons name="close" size={28} color={COLORS.WHITE} />
             </Pressable>
-          )}
-
-          <View style={styles.scrollWrapper}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={styles.modalTitulo}>
-                Descripción del Evento: {eventoSeleccionado.descripEvent}
-              </Text>
-
-              <Text style={styles.modalTitulo}>
-                Descripción del Menú: {eventoSeleccionado.descripcion}
-              </Text>
-
-              {Object.entries(alimentosPorTipo).map(([tipo, alimentos]) => (
-                <View key={tipo} style={styles.tipoGroup}>
-                  <Text style={styles.tipoTitle}>{tipo}</Text>
-                  <View style={styles.alimentoGrid}>
-                    {alimentos.map((alimento) => (
-                      <AlimentoItem
-                        key={alimento.idAlimento}
-                        alimento={alimento}
-                      />
-                    ))}
-                  </View>
-                </View>
-              ))}
-
-              {children}
-            </ScrollView>
           </View>
 
-          <Pressable onPress={onClose} style={styles.btnCerrar}>
-            <Text style={styles.txtCerrar}>Cerrar</Text>
-          </Pressable>
+          {/* Contenido desplazable */}
+          <ScrollView
+            style={styles.contentScroll}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Tarjeta de información principal del evento */}
+            <View style={styles.infoCard}>
+              <View style={styles.infoRow}>
+                <MaterialCommunityIcons name="tag" size={20} color={COLORS.BLUE} />
+                <View style={styles.infoTextContainer}>
+                  <Text style={styles.infoLabel}>Nombre del Evento</Text>
+                  <Text style={styles.infoText}>{eventoSeleccionado.nomEvent}</Text>
+                </View>
+              </View>
+              <View style={styles.divider} />
+              <View style={styles.infoRow}>
+                <MaterialCommunityIcons name="file-document-outline" size={20} color={COLORS.BLUE} />
+                <View style={styles.infoTextContainer}>
+                  <Text style={styles.infoLabel}>Descripción del Evento</Text>
+                  <Text style={styles.infoText}>{eventoSeleccionado.descripEvent}</Text>
+                </View>
+              </View>
+              <View style={styles.divider} />
+              <View style={styles.infoRow}>
+                <MaterialCommunityIcons name="silverware-fork-knife" size={20} color={COLORS.BLUE} />
+                <View style={styles.infoTextContainer}>
+                  <Text style={styles.infoLabel}>Descripción del Menú</Text>
+                  <Text style={styles.infoText}>{eventoSeleccionado.descripcion}</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Sección de Alimentos (Diseño Mejorado) */}
+            {Object.keys(alimentosPorTipo).length > 0 && (
+              <View style={styles.sectionContainer}>
+                <View style={styles.sectionHeader}>
+                  <MaterialCommunityIcons name="food-fork-drink" size={24} color={COLORS.BLUE} />
+                  <Text style={styles.sectionMainTitle}>Ingredientes del Menú</Text>
+                </View>
+                {Object.entries(alimentosPorTipo).map(([tipo, alimentos]) => (
+                  <View key={tipo} style={styles.section}>
+                    <Text style={styles.sectionTitle}>{tipo}</Text>
+                    <View>
+                      {alimentos.map((alimento) => (
+                        <AlimentoItem
+                          key={alimento.idAlimento}
+                          alimento={alimento}
+                          isLast={
+                            alimento.idAlimento ===
+                            alimentos[alimentos.length - 1].idAlimento
+                          }
+                        />
+                      ))}
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {children}
+          </ScrollView>
+
+          {/* Footer con botón de PDF */}
+          {generarPdf && (
+            <View style={styles.footer}>
+              <Pressable
+                onPress={handleGenerarPdf}
+                style={styles.pdfButton}
+              >
+                <MaterialIcons name="picture-as-pdf" size={28} color={COLORS.WHITE} />
+              </Pressable>
+            </View>
+          )}
         </View>
       </View>
     </Modal>
@@ -103,69 +168,129 @@ export default function EventoModal({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: COLORS.BLACK_OVERLAY,
     justifyContent: 'center',
-    padding: 20,
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    maxHeight: '85%',
-    padding: 20,
-    paddingTop: 30,
-    flexDirection: 'column',
-    flex: 0,
-  },
-  btnPdf: {
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0066CC',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    marginBottom: 10,
   },
-  txtPdf: {
-    color: '#fff',
-    marginLeft: 4,
-    fontSize: 14,
+  modalContainer: {
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 25,
+    width: '90%',
+    maxHeight: '85%',
+    elevation: 20,
+    shadowColor: COLORS.BLUE,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
   },
-  scrollWrapper: {
-    flexGrow: 1,
-    maxHeight: '80%',
-    marginBottom: 10,
+  header: {
+    backgroundColor: COLORS.BLUE,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    padding: 20,
+    alignItems: 'center',
+    position: 'relative',
   },
-  modalTitulo: {
-    fontSize: 18,
+  modalTitle: {
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#0066CC',
+    color: COLORS.WHITE,
     textAlign: 'center',
-    marginBottom: 10,
+    marginTop: 10,
   },
-  tipoGroup: {
+  iconContainer: {
+    backgroundColor: COLORS.BLUE_LIGHT,
+    borderRadius: 30,
+    padding: 10,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    padding: 5,
+  },
+  contentScroll: {
+    flexGrow: 1,
+    padding: 20,
+  },
+  infoCard: {
+    backgroundColor: '#abd9f71f',
+    borderRadius: 15,
+    padding: 15,
     marginBottom: 20,
   },
-  tipoTitle: {
-    fontWeight: '700',
-    fontSize: 16,
-    color: '#0066CC',
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     marginBottom: 8,
   },
-  alimentoGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+  infoTextContainer: {
+    marginLeft: 10,
+    flexShrink: 1,
   },
-  btnCerrar: {
-    backgroundColor: '#0066CC',
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  txtCerrar: {
-    color: '#fff',
+  infoLabel: {
+    fontSize: 14,
     fontWeight: 'bold',
-    fontSize: 15,
+    color: COLORS.BLUE,
+  },
+  infoText: {
+    fontSize: 14,
+    color: COLORS.BLACK,
+    marginTop: 2,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: COLORS.GRAY_DEFAULT,
+    marginVertical: 10,
+  },
+  sectionContainer: {
+    backgroundColor: '#abd9f71f',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 20,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: COLORS.BLUE_LIGHT,
+    paddingBottom: 5,
+  },
+  sectionMainTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: COLORS.BLUE,
+    marginLeft: 10,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: COLORS.BLUE,
+    marginBottom: 10,
+    marginTop: 10,
+    paddingBottom: 5,
+  },
+    section: {
+    marginBottom: 20,
+  },
+  footer: {
+    padding: 20,
+    alignItems: 'flex-end',
+    borderTopWidth: 1,
+    borderTopColor: COLORS.GRAY_DEFAULT,
+  },
+  pdfButton: {
+    backgroundColor: COLORS.BLUE_LIGHT,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 10,
+    shadowColor: COLORS.BLUE_LIGHT,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 5,
   },
 });

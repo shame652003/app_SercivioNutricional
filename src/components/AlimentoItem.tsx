@@ -1,4 +1,4 @@
-// AlimentoItem.js
+// AlimentoItem.js (Código actualizado)
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { API_URL} from '@env';
@@ -13,6 +13,7 @@ type Alimento = {
 
 interface Props {
   alimento: Alimento;
+  isLast?: boolean; // Nueva prop para controlar el separador
 }
 
 const COLORS = {
@@ -22,10 +23,9 @@ const COLORS = {
   BLACK: '#000',
 };
 
-export default function AlimentoItem({ alimento }: Props) {
-  
+export default function AlimentoItem({ alimento, isLast }: Props) {
   return (
-    <View style={styles.alimentoItem}>
+    <View style={[styles.alimentoItem, isLast && styles.lastItem]}>
       <Image 
         source={{ uri: API_URL + alimento.imgAlimento}} 
         style={styles.imagen} 
@@ -53,6 +53,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: COLORS.GRAY_DEFAULT,
     backgroundColor: COLORS.WHITE,
+    borderRadius: 8,
+  },
+  lastItem: {
+    borderBottomWidth: 0,
   },
   imagen: {
     width: 60,
