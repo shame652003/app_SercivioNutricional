@@ -102,6 +102,8 @@ export default function useAsistenciasData(navigation): UseAsistenciasDataReturn
 
       const data = response.data;
 
+      console.log('Respuesta del servidor consultar Asistencia:', data);
+
       if (data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
          Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
          await AsyncStorage.removeItem('token');

@@ -8,6 +8,7 @@ import * as Print from 'expo-print';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { useDispatch } from 'react-redux';
+import { showMessage } from 'react-native-flash-message';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/consultarEventoApi.php`;
 console.log(BACKEND_URL);
@@ -185,11 +186,16 @@ export default function useEventoValidation(navigation) {
             fechaFinFiltro instanceof Date
         ) {
             if (fechaFinFiltro < fechaInicioFiltro) {
-                Alert.alert('Error', 'La fecha fin debe ser mayor o igual a la fecha inicio');
+                showMessage({
+                          message: 'Error en Fechas',
+                          description: 'La fecha de inicio no puede ser posterior a la fecha de fin.',
+                          type: 'danger',
+                        });
+                console.log('Fecha fin es menor que fecha inicio');
                 return;
             }
-            const fechaInicioStr = formatDate(fechaInicioFiltro); // ✅ corregido
-            const fechaFinStr = formatDate(fechaFinFiltro);       // ✅ corregido
+            const fechaInicioStr = formatDate(fechaInicioFiltro); 
+            const fechaFinStr = formatDate(fechaFinFiltro);      
             setOffset(0);
             fetchEvento('', fechaInicioStr, fechaFinStr, 0, false);
         }
