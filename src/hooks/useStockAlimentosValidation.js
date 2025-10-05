@@ -54,6 +54,8 @@ export default function useStockAlimentosValidation(navigation) {
 
       const data = response.data;
 
+      console.log('Respuesta de búsqueda de alimentos:', data);
+
       if (data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
         Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
         await AsyncStorage.removeItem('token');
@@ -105,6 +107,7 @@ export default function useStockAlimentosValidation(navigation) {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
+      console.log('Respuesta de obtener stock completo:', response.data);
 
       if (response.data.resultado === 'error') {
         if (response.data.mensaje === 'Token no válido o expirado') {
@@ -166,6 +169,7 @@ const obtenerTodoElStockParaPdf = async () => {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
+    console.log('Respuesta de obtener todo el stock para PDF:', response.data);
 
     if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
          Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');

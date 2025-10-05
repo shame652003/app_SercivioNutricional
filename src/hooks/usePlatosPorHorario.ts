@@ -52,6 +52,8 @@ export default function usePlatosPorHorario() {
         }
       });
 
+      console.log('Respuesta obtenerIdMenu:', response.data);
+
       const data = response.data;
        if (data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
          Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
@@ -110,6 +112,9 @@ export default function usePlatosPorHorario() {
       });
 
       const data = response.data;
+
+      console.log('Respuesta obtenerPlatosDisponibles:', data);
+      
        if (data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
          Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
          await AsyncStorage.removeItem('token');

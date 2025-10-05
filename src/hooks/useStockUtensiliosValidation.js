@@ -27,7 +27,6 @@ export default function useStockUtensiliosValidation(navigation) {
   const [hasMore, setHasMore] = useState(true);
   const timeoutRef = useRef(null);
   
-  // Nuevo método de búsqueda con paginación
   const buscarUtensilios = async (texto, offset = 0) => {
     try {
       setLoading(true);
@@ -102,7 +101,7 @@ export default function useStockUtensiliosValidation(navigation) {
     }
   };
   
-  // Función para cargar más utensilios al presionar el botón
+
   const cargarMasUtensilios = () => {
     if (!loading && hasMore) {
       const newOffset = page * ITEMS_PER_PAGE;
@@ -110,7 +109,7 @@ export default function useStockUtensiliosValidation(navigation) {
     }
   };
   
-  // ... (El resto del código de obtenerStockCompleto, generarPdf, y useEffect es el mismo, pero lo adjunto para que se pueda copiar y pegar de forma completa)
+  
 
   const obtenerStockCompleto = async () => {
     try {

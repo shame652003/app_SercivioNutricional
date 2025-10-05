@@ -47,6 +47,8 @@ export default function useCedulaInput() {
 
       const data = response.data;
 
+      console.log('Respuesta del servidor mostrar Info:', data);
+
        if (data.resultado === 'error' && data.mensaje === 'Token no válido o expirado') {
          Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
          await AsyncStorage.removeItem('token');

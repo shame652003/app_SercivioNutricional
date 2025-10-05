@@ -43,13 +43,14 @@ export default function useHome() {
           },
         });
 
+        console.log('Respuesta del servidor Info Card:', response.data);
+
         if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
          Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
          await AsyncStorage.removeItem('token');
          dispatch({ type: 'USER_SUCCESS', payload: null }); 
          return;
       }
-
 
         setData(response.data[0]);
       } catch (error) {
@@ -79,6 +80,8 @@ export default function useHome() {
             'Content-Type': 'multipart/form-data',
           },
         });
+
+        console.log('Respuesta del servidor Gráfico Asistencias:', response.data);
         
         if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
          Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
@@ -122,6 +125,8 @@ export default function useHome() {
             'Content-Type': 'multipart/form-data',
           },
         });
+
+        console.log('Respuesta del servidor Gráfico Menús:', response.data);
 
         if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
          Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
