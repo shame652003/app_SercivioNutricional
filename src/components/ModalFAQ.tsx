@@ -15,7 +15,6 @@ import {
   Easing,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'; 
-import FontAwesome from 'react-native-vector-icons/FontAwesome';  
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -28,7 +27,7 @@ const COLORS = {
   dark: '#003366',
   background: '#f8f9fa',
   white: '#FFFFFF',
-  border: '#dddddd',
+  border: '#92d7ff2f',
   backdropTransparent: 'rgba(0, 0, 0, 0)',
   backdropOpaque: 'rgba(0, 0, 0, 0.47)',
 };
@@ -244,7 +243,7 @@ const styles = StyleSheet.create({
   },
   faqImage: {
     width: '100%',
-    height: 150,
+    height: 300,
     borderRadius: 8,
     marginTop: 15,
     backgroundColor: COLORS.border,
