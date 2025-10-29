@@ -17,14 +17,7 @@ const BottomNavBar = ({ navigation }) => {
           <Text style={styles.navLabel}>Inicio</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity
-          style={styles.navButton}
-        >
-          <FontAwesome name="search" size={24} color="#0066CC" />
-          <Text style={styles.navLabel}>Buscar</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
+         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate('Perfil')}
         >
@@ -34,11 +27,25 @@ const BottomNavBar = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.navButton}
+          onPress={() => navigation.navigate('Ayuda')}
+        >
+          <FontAwesome name="question" size={24} color="#0066CC" />
+          <Text style={styles.navLabel}>Ayuda</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navButton}
           onPress={cerrarSesion}
         >
           <FontAwesome name="sign-out" size={24} color="#0066CC" />
           <Text style={styles.navLabel}>Cerrar Sesión</Text>
         </TouchableOpacity>
+
+        
+
+       
+
+        
       </View>
     </View>
   );

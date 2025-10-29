@@ -22,6 +22,7 @@ export type RootStackParamList = {
   ConsultarAsistencias: undefined;
   CodigoRecuperacion: undefined;
   CambiarClave: undefined;
+  Ayuda: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

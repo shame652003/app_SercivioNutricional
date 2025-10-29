@@ -18,6 +18,7 @@ import AsistenciasScreen from '../screens/AsistenciasScreen';
 import ConsultarAsistenciasScreen from '../screens/ConsultarAsistenciasScreen';
 import CodigoRecuperacionScreen from '../screens/CodigoRecuperacionScreen';
 import CambiarClaveScreen from '../screens/CambiarClaveScreen';
+import AyudaScreen from '../screens/AyudaScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -51,6 +52,7 @@ export default function Navigation() {
               <Stack.Screen name="Eventos" component={EventosScreen} />
               <Stack.Screen name="Asistencias" component={AsistenciasScreen} />
               <Stack.Screen name="ConsultarAsistencias" component={ConsultarAsistenciasScreen} />
+              <Stack.Screen name="Ayuda" component={AyudaScreen} />
               
             </>
           )}
