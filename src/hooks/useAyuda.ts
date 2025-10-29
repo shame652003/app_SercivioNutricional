@@ -1,28 +1,9 @@
 import { useState } from 'react';
 import { ImageSourcePropType } from 'react-native';
 
-/*const imgRecuperarContrasena = require('../../../assets/ayuda/recup2.png'); 
-const imgActualizarInfo = require('../../assets/ayuda/datosP.png');
-const imgCambiarFoto = require('../../assets/ayuda/imagenP.png');
-const imgCambiarContrasena = require('../../assets/ayuda/cambiarC.png');
-const imgRegistrarAsistencia = require('../../assets/ayuda/registrarAsistencia.png');
-const imgConsultarAsistencia = require('../../assets/ayuda/consultarAsistencia.png');
-const imgDescargarReporteAsistencia = require('../../assets/ayuda/reporteAsistencia.png');
-const imgVisualizarMenus = require('../../assets/ayuda/consultarMenu.png');
-const imgFiltrarMenus = require('../../assets/ayuda/filtroFecha.png');
-const imgDescargarReporteMenu = require('../../assets/ayuda/reporteMenu.png');
-const imgVisualizarEventos = require('../../assets/ayuda/consultarEvento.png');
-const imgFiltrarEventos = require('../../assets/ayuda/filtrofechaE.png');
-const imgDescargarReporteEvento = require('../../assets/ayuda/reporteEvento.png');
-const imgConsultarStockAlimentos = require('../../assets/ayuda/stockA.png');
-const imgDescargarReporteAlimentos = require('../../assets/ayuda/reporteStockA.png');
-const imgConsultarStockUtensilios = require('../../assets/ayuda/stockU.png');
-const imgDescargarReporteUtensilios = require('../../assets/ayuda/reporteStockU.png');
+/*
 
 
-
-
-*/
 const imgRecuperarContrasena = require('../../assets/logo.png'); 
 const imgActualizarInfo = require('../../assets/logo.png');
 const imgCambiarFoto = require('../../assets/logo.png');
@@ -40,6 +21,25 @@ const imgConsultarStockAlimentos = require('../../assets/logo.png');
 const imgDescargarReporteAlimentos = require('../../assets/logo.png');
 const imgConsultarStockUtensilios = require('../../assets/logo.png');
 const imgDescargarReporteUtensilios = require('../../assets/logo.png');
+
+*/
+const imgRecuperarContrasena = require('../../assets/ayuda/recup2.png'); 
+const imgActualizarInfo = require('../../assets/ayuda/datosP.png');
+const imgCambiarFoto = require('../../assets/ayuda/imagenP.png');
+const imgCambiarContrasena = require('../../assets/ayuda/cambiarC.png');
+const imgRegistrarAsistencia = require('../../assets/ayuda/registrarAsistencia.png');
+const imgConsultarAsistencia = require('../../assets/ayuda/consultarAsistencia.png');
+const imgDescargarReporteAsistencia = require('../../assets/ayuda/reporteAsistencia.png');
+const imgVisualizarMenus = require('../../assets/ayuda/consultarMenu.png');
+const imgFiltrarMenus = require('../../assets/ayuda/filtroFecha.png');
+const imgDescargarReporteMenu = require('../../assets/ayuda/reporteMenu.png');
+const imgVisualizarEventos = require('../../assets/ayuda/consultarEvento.png');
+const imgFiltrarEventos = require('../../assets/ayuda/filtrofechaE.png');
+const imgDescargarReporteEvento = require('../../assets/ayuda/reporteEvento.png');
+const imgConsultarStockAlimentos = require('../../assets/ayuda/stockA.png');
+const imgDescargarReporteAlimentos = require('../../assets/ayuda/reporteStockA.png');
+const imgConsultarStockUtensilios = require('../../assets/ayuda/stockU.png');
+const imgDescargarReporteUtensilios = require('../../assets/ayuda/reporteStockU.png');
 
 export interface FAQItem {
   pregunta: string;
