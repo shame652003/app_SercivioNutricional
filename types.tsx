@@ -23,6 +23,7 @@ export type RootStackParamList = {
   CodigoRecuperacion: undefined;
   CambiarClave: undefined;
   Ayuda: undefined;
+  Notificaciones: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

@@ -1,3 +1,5 @@
+// App.js (Modificación)
+
 import { StatusBar } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { Provider as ReduxProvider } from 'react-redux';
@@ -6,7 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import FlashMessage from 'react-native-flash-message';
 
 import store from './src/context/store';
-import Navigate from './src/navigate/Navigate';
+import SocketGate from './socketGate';
 
 export default function App() {
   return (
@@ -15,13 +17,14 @@ export default function App() {
       <FlashMessage position="center" />
       <ReduxProvider store={store}>
         <PaperProvider>
-          <Navigate />
+          <SocketGate /> 
         </PaperProvider>
       </ReduxProvider>
     </SafeAreaProvider>
   );
 }
 
+// ... (Styles)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
