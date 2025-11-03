@@ -30,7 +30,6 @@ export default function useRegistrarAsistencia(navigation): RegistrarAsistenciaR
       const token = await AsyncStorage.getItem('token');
       if (!token) throw new Error('No se encontró el token de autenticación');
 
-      // 1. Verificar si ya está registrado
       const datosVerificar = {
         verificar: 'true',
         horarioComida: horario,
