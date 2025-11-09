@@ -6,7 +6,7 @@ import { encryptData } from '../security/crypto/encryptor';
 import axios from 'axios';
 import usePermisos from './usePermisos';
 
-const BACKEND_URL = `http://192.168.1.33/Servicio-Nutricional-Uptaeb/bin/controlador/api/homeApi.php`;
+const BACKEND_URL = `${API_URL}/Servicio-Nutricional-Uptaeb/bin/controlador/api/homeApi.php`;
 
 export default function useHome() {
   const [data, setData] = useState(null);

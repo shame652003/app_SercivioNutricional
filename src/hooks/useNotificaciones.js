@@ -11,7 +11,7 @@ import {
 } from '../context/actions/notificationAction'; 
 import { useSocket } from '../context/SocketContext'; 
 
-const NOTIFICACIONES_ENDPOINT = `http://192.168.1.33/Servicio-Nutricional-Uptaeb/bin/controlador/api/notificacionesApi.php`;
+const NOTIFICACIONES_ENDPOINT = `${API_URL}/Servicio-Nutricional-Uptaeb/bin/controlador/api/notificacionesApi.php`;
 
 export default function useNotificaciones() {
     const [notificaciones, setNotificaciones] = useState([]);
