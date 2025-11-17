@@ -80,7 +80,6 @@ export default function useCodigoRecuperacionValidation(navigation) {
       message: 'Se ha reenviado el código a tu correo',
       type: 'info',
     });
-    // Aquí podrías llamar a tu API para reenviar el código real
   };
 
   return {

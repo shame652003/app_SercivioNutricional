@@ -74,7 +74,7 @@ export default function StockAlimentosScreen({ navigation }) {
           </View>
         </Card>
 
-        {/* --- Sección de Cantidad Total de Alimentos --- */}
+   
         {totalAlimentos > 0 && !searchText && (
           <View style={styles.countCard}>
             <Text style={styles.countText}>
@@ -85,7 +85,7 @@ export default function StockAlimentosScreen({ navigation }) {
             </Text>
           </View>
         )}
-        {/* ------------------------------------------------ */}
+
 
         {!loading && busquedaExitosa ? (
           alimentosFiltrados.length > 0 ? (
@@ -184,9 +184,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     letterSpacing: 1,
   },
-  // --- Nuevos estilos para la ficha de conteo ---
+  
   countCard: {
-    backgroundColor: '#ffffffff', // Un azul claro
+    backgroundColor: '#ffffffff', 
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 10,
@@ -208,5 +208,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#2196f3',
   },
-  // ---------------------------------------------
+
 });

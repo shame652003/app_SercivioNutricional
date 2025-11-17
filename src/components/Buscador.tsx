@@ -43,7 +43,6 @@ export default function Buscador(props: BuscadorProps) {
     props.onBlur && props.onBlur(props.value || '');
   };
 
-  // Animación para la línea
   const lineWidth = animatedValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0%', '100%'],

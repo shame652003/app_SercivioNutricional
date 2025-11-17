@@ -35,11 +35,11 @@ const styleBotton = StyleSheet.create({
     marginBottom: 15,
     marginHorizontal: 5,
     height: 50,
-    width: "100%", // Asegura que el botón ocupe todo el ancho
+    width: "100%", 
   },
   textBotton: {
     fontSize: 16,
-    color: "#fff", // Asegura que el texto sea blanco
+    color: "#fff", 
     fontWeight: "bold",
   },
   

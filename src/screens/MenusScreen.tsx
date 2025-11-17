@@ -1,4 +1,4 @@
-// MenusScreen.js
+
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Button, TouchableOpacity } from 'react-native';
 import Header from '../components/Header';
@@ -90,7 +90,7 @@ export default function MenusScreen({ navigation }) {
                 onPress={() => seleccionarMenu(menu)}
               />
             ))}
-            {/* Botón de "Cargar más" */}
+          
            {hasMore && (
     <TouchableOpacity
         onPress={loadMoreMenus}
@@ -130,7 +130,7 @@ export default function MenusScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  //... (estilos existentes)
+
   card: {
     paddingHorizontal: 12,
     paddingBottom: 12,

@@ -12,7 +12,7 @@ export default function usePerfilValidation(profile) {
     useValidarNombreApellido();
   const [email, setEmail, errorEmail, , validarEmail] = useValidarEmail();
 
-  // Inicializa los campos con los datos del perfil
+
   const inicializarCampos = () => {
     setNombre(profile?.nombre || "");
     setApellido(profile?.apellido || "");

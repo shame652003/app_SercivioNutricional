@@ -1,4 +1,4 @@
-// components/GraficoCircular.js
+
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native'; // Importa ScrollView
 import { PieChart } from 'react-native-chart-kit';
@@ -11,48 +11,46 @@ export default function GraficoCircular({ data, title }) {
   return (
     <View style={styles.container}>
       {title && <Text style={styles.title}>{title}</Text>}
-      {/* Usamos un ScrollView horizontal para el caso de que el gráfico sea muy ancho o la leyenda sea larga */}
+      
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chartScrollView}>
         <PieChart
           data={data}
-          // Aumentamos el ancho del gráfico para que tenga espacio suficiente
-          // Puedes ajustar este valor si el círculo sigue sin verse completo
-          width={screenWidth * 1.2} // Por ejemplo, 120% del ancho de la pantalla
-          height={220} // Mantén la altura
+    
+          width={screenWidth * 1.2} 
+          height={220} 
           chartConfig={{
             backgroundColor: '#f0f0f0',
             backgroundGradientFrom: '#f0f0f0',
             backgroundGradientTo: '#f0f0f0',
             color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
             labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            // Configuramos las propiedades para las etiquetas del gráfico (porcentajes)
+           
             propsForLabels: {
-              fontSize: 10, // Un poco más pequeña para asegurar que quepa
-              fill: '#fff', // Color de texto para que se vea sobre los colores del gráfico
+              fontSize: 10, 
+              fill: '#fff', 
             },
-            // Configuramos las propiedades para la leyenda
+          
             propsForDots: {
-              r: '6', // Tamaño de los puntos de la leyenda
+              r: '6', 
               strokeWidth: '2',
               stroke: '#fff',
             },
-            decimalPlaces: 0, // Si quieres números enteros en los porcentajes
+            decimalPlaces: 0, 
           }}
           accessor="population"
           backgroundColor="transparent"
-          // Mueve el paddingLeft para alinear el gráfico si el texto de la leyenda se mueve abajo
-          paddingLeft="0" // Cambiado a 0 si la leyenda va abajo o se usa un contenedor específico
-          center={[0, 0]} // Centra el gráfico si es necesario. Ajusta si tienes problemas.
-          hasLegend={false} // Desactivamos la leyenda por defecto del PieChart
+        
+          paddingLeft="0"
+          center={[0, 0]} 
+          hasLegend={false} 
           style={{
             marginVertical: 8,
-            alignSelf: 'center', // Para centrar el gráfico dentro del ScrollView
+            alignSelf: 'center', 
           }}
-          // No necesitamos pasar propsForLabels aquí de nuevo, ya está en chartConfig
+
         />
       </ScrollView>
 
-      {/* Creamos una leyenda personalizada debajo del gráfico */}
       <View style={styles.legendContainer}>
         {data.map((item, index) => (
           <View key={index} style={styles.legendItem}>
@@ -90,28 +88,28 @@ const styles = StyleSheet.create({
     color: '#0066CC',
   },
   chartScrollView: {
-    alignItems: 'center', // Centra el contenido si es más ancho que el ScrollView
+    alignItems: 'center', 
   },
   legendContainer: {
-    flexDirection: 'column', // Muestra los elementos de la leyenda en una columna
-    alignItems: 'flex-start', // Alinea los elementos a la izquierda
-    marginTop: 10, // Espacio entre el gráfico y la leyenda
-    width: '100%', // Para que la leyenda ocupe todo el ancho disponible
-    paddingLeft: 20, // Un poco de padding a la izquierda para alinear con el gráfico
+    flexDirection: 'column', 
+    alignItems: 'flex-start', 
+    marginTop: 10,
+    width: '100%', 
+    paddingLeft: 20, 
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5, // Espacio entre cada elemento de la leyenda
+    marginBottom: 5,
   },
   legendColorBox: {
     width: 15,
     height: 15,
-    borderRadius: 7.5, // Para que sean círculos
+    borderRadius: 7.5, 
     marginRight: 10,
   },
   legendText: {
-    fontSize: 14, // Ajusta el tamaño de la fuente para que quepa bien
+    fontSize: 14, 
     color: '#333',
   },
 });

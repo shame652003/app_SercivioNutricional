@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   },
   buttonWrapper: {
   flex: 1,
-  marginHorizontal: 5, // separa los botones
+  marginHorizontal: 5,
   },
 
 

@@ -15,7 +15,6 @@ function Header(props: Info) {
   const nombreCompleto = `${profile.nombre || ''} ${profile.apellido || ''}`.trim();
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  // Aseguramos que el componente se actualice cuando el perfil cambie
   useEffect(() => {
   }, [profile]);
 
@@ -23,9 +22,9 @@ function Header(props: Info) {
     Animated.loop(
       Animated.sequence([
         Animated.timing(scaleAnim, {
-          toValue: 1.50, // Zoom más perceptible
+          toValue: 1.50, 
           duration: 15000,
-          easing: Easing.inOut(Easing.ease), // Hace la animación más natural
+          easing: Easing.inOut(Easing.ease), 
           useNativeDriver: true,
         }),
         Animated.timing(scaleAnim, {

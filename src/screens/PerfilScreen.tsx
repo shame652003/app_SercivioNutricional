@@ -26,7 +26,6 @@ export default function PerfilScreen({ navigation }) {
     editarPerfil  
   } = usePerfilValidation(profile);
 
-  // Logs de depuración para monitorear cambios en el perfil
   useEffect(() => {
   }, []);
 

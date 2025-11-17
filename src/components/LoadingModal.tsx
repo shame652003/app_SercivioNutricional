@@ -22,7 +22,7 @@ export default function LoadingModal({ visible, message = "Cargando..." }) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)', // fondo semitransparente
+    backgroundColor: 'rgba(0,0,0,0.3)', 
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -33,8 +33,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 12,
     alignItems: 'center',
-    elevation: 10, // sombra para android
-    shadowColor: '#000', // sombra para ios
+    elevation: 10, 
+    shadowColor: '#000', 
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,

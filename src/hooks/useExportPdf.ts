@@ -10,12 +10,12 @@ export type Asistencia = {
   horario: string;
 };
 
-// Importar las imágenes
+
 const logoImage = Image.resolveAssetSource(require('../../assets/logo.png')).uri;
 const uptaebImage = Image.resolveAssetSource(require('../../assets/uptaeb.png')).uri;
 
 export async function exportAsistenciasToPdf(data: Asistencia[]): Promise<void> {
-  // Obtener las URIs de las imágenes
+
 
   if (!data || data.length === 0) {
     showMessage({
@@ -26,7 +26,6 @@ export async function exportAsistenciasToPdf(data: Asistencia[]): Promise<void> 
     return;
   }
 
-  // Obtener fecha actual formateada
   const now = new Date();
   const fechaGeneracion = now.toLocaleDateString('es-VE', {
     year: 'numeric',
@@ -38,7 +37,6 @@ export async function exportAsistenciasToPdf(data: Asistencia[]): Promise<void> 
     minute: '2-digit'
   });
 
-  // Construir HTML para el PDF con diseño mejorado
   const html = `
     <!DOCTYPE html>
     <html>
@@ -417,7 +415,6 @@ export async function exportAsistenciasToPdf(data: Asistencia[]): Promise<void> 
   `;
 
   try {
-    // Verificar si la función de compartir está disponible
     const sharingAvailable = await Sharing.isAvailableAsync();
     
     if (!sharingAvailable) {
@@ -429,19 +426,17 @@ export async function exportAsistenciasToPdf(data: Asistencia[]): Promise<void> 
       return;
     }
 
-    // Generar el PDF con configuraciones mejoradas
     const { uri } = await Print.printToFileAsync({ 
       html, 
       base64: false,
-      width: 612,  // Ancho estándar carta
-      height: 792 // Alto estándar carta
+      width: 612,  
+      height: 792 
     });
 
     if (!uri) {
       throw new Error('No se pudo generar el archivo PDF');
     }
 
-    // Compartir el archivo con opciones específicas
     await Sharing.shareAsync(uri, { 
       mimeType: 'application/pdf',
       dialogTitle: 'Exportar Listado de Asistencias',

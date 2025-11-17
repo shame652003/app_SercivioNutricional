@@ -74,7 +74,7 @@ export default function MenuModal({
     <Modal visible={visible} animationType="fade" transparent>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
-          {/* Header con icono y título */}
+
           <View style={styles.header}>
             <View style={styles.iconContainer}>
               <MaterialCommunityIcons name="silverware-fork-knife" size={50} color={COLORS.WHITE} />
@@ -85,12 +85,11 @@ export default function MenuModal({
             </Pressable>
           </View>
 
-          {/* Contenido desplazable */}
           <ScrollView
             style={styles.contentScroll}
             showsVerticalScrollIndicator={false}
           >
-            {/* Tarjeta de información principal del menú */}
+
             <View style={styles.infoCard}>
                 
               <View style={styles.infoRow}>
@@ -102,7 +101,6 @@ export default function MenuModal({
               </View>
             </View>
 
-            {/* Sección de Alimentos (Diseño Mejorado) */}
             {Object.keys(alimentosPorTipo).length > 0 && (
               <View style={styles.sectionContainer}>
                 <View style={styles.sectionHeader}>
@@ -131,7 +129,6 @@ export default function MenuModal({
             {children}
           </ScrollView>
 
-          {/* Footer con botón de PDF */}
           {generarPdf && (
             <View style={styles.footer}>
               <Pressable
@@ -148,7 +145,6 @@ export default function MenuModal({
   );
 }
 
-// Estilos unificados
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,

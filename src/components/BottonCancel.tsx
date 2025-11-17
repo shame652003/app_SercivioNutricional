@@ -21,8 +21,8 @@
   
   const styleBotton = StyleSheet.create({
     container: {
-      width: "100%", // Asegura que el contenedor ocupe el 100% del ancho
-      alignItems: "center", // Centra el botón en el contenedor
+      width: "100%", 
+      alignItems: "center", 
     },
     btnSecondary: {
         backgroundColor: '#F44336',

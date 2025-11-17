@@ -26,10 +26,10 @@ const AsistenciasDataTable = (navigation) => {
     error
   } = useAsistenciasData(navigation);
 
-  // Renderizar cada tarjeta de estudiante
+
   const renderStudentCard = ({ item, index }) => (
     <View style={styles.studentCard}>
-      {/* Header de la tarjeta con ícono de usuario */}
+    
       <View style={styles.cardHeader}>
         <View style={styles.avatarContainer}>
           <MaterialIcons name="person" size={24} color="#fff" />

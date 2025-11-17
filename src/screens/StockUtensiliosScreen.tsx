@@ -1,4 +1,3 @@
-// En el archivo StockUtensiliosScreen.js
 
 import React from 'react';
 import { Dimensions, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
@@ -30,11 +29,11 @@ export default function StockUtensiliosScreen({ navigation }) {
     busquedaExitosa,
     loading,
     loadingPdf,
-    hasMore, // Se añade la nueva propiedad
+    hasMore, 
     seleccionarUtensilio,
     cerrarModal,
     generarPdf,
-    cargarMasUtensilios, // Se añade el nuevo método
+    cargarMasUtensilios, 
   } = useStockUtensiliosValidation(navigation);
 
   return (

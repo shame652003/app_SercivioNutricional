@@ -1,28 +1,6 @@
 import { useState } from 'react';
 import { ImageSourcePropType } from 'react-native';
 
-/*
-
-
-const imgRecuperarContrasena = require('../../assets/logo.png'); 
-const imgActualizarInfo = require('../../assets/logo.png');
-const imgCambiarFoto = require('../../assets/logo.png');
-const imgCambiarContrasena = require('../../assets/logo.png');
-const imgRegistrarAsistencia = require('../../assets/logo.png');
-const imgConsultarAsistencia = require('../../assets/logo.png');
-const imgDescargarReporteAsistencia = require('../../assets/logo.png');
-const imgVisualizarMenus = require('../../assets/logo.png');
-const imgFiltrarMenus = require('../../assets/logo.png');
-const imgDescargarReporteMenu = require('../../assets/logo.png');
-const imgVisualizarEventos = require('../../assets/logo.png');
-const imgFiltrarEventos = require('../../assets/logo.png');
-const imgDescargarReporteEvento = require('../../assets/logo.png');
-const imgConsultarStockAlimentos = require('../../assets/logo.png');
-const imgDescargarReporteAlimentos = require('../../assets/logo.png');
-const imgConsultarStockUtensilios = require('../../assets/logo.png');
-const imgDescargarReporteUtensilios = require('../../assets/logo.png');
-
-*/
 const imgRecuperarContrasena = require('../../assets/ayuda/recup2.png'); 
 const imgActualizarInfo = require('../../assets/ayuda/datosP.png');
 const imgCambiarFoto = require('../../assets/ayuda/imagenP.png');
@@ -203,11 +181,9 @@ export const useAyuda = () => {
   };
 
   return {
-    // Datos y funciones de presentación
     DATOS_SOPORTE,
     handleCardPress,
     
-    // Estados del Modal
     modalVisible,
     onCloseModal,
     faqActual,

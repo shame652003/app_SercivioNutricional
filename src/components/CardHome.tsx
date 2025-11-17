@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
-    // quitar width y margin de aquí
     shadowColor: '#00000054',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,

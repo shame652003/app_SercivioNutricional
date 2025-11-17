@@ -1,4 +1,4 @@
-// EventoModal.js (Código actualizado)
+
 import React from 'react';
 import {
   Modal,
@@ -27,7 +27,6 @@ type Props = {
   children?: React.ReactNode;
 };
 
-// Paleta de colores proporcionada por el usuario
 const COLORS = {
   BLUE: '#0066CC',
   BLUE_LIGHT: '#3399FF',
@@ -75,7 +74,7 @@ export default function EventoModal({
     <Modal visible={visible} animationType="fade" transparent>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
-          {/* Header con icono y título */}
+    
           <View style={styles.header}>
             <View style={styles.iconContainer}>
               <MaterialIcons name="event" size={50} color={COLORS.WHITE} />
@@ -86,12 +85,12 @@ export default function EventoModal({
             </Pressable>
           </View>
 
-          {/* Contenido desplazable */}
+        
           <ScrollView
             style={styles.contentScroll}
             showsVerticalScrollIndicator={false}
           >
-            {/* Tarjeta de información principal del evento */}
+         
             <View style={styles.infoCard}>
               <View style={styles.infoRow}>
                 <MaterialCommunityIcons name="tag" size={20} color={COLORS.BLUE} />
@@ -118,7 +117,7 @@ export default function EventoModal({
               </View>
             </View>
 
-            {/* Sección de Alimentos (Diseño Mejorado) */}
+        
             {Object.keys(alimentosPorTipo).length > 0 && (
               <View style={styles.sectionContainer}>
                 <View style={styles.sectionHeader}>
@@ -148,7 +147,7 @@ export default function EventoModal({
             {children}
           </ScrollView>
 
-          {/* Footer con botón de PDF */}
+       
           {generarPdf && (
             <View style={styles.footer}>
               <Pressable

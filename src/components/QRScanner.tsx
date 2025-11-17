@@ -6,10 +6,8 @@ interface Props {
   onScan: (cedula: string) => void;
 }
 
-// Simulación: en una app real usarías expo-barcode-scanner o similar
 export default function QRScanner({ onScan }: Props) {
   const handleFakeScan = () => {
-    // Simula un escaneo exitoso
     onScan('12345678');
   };
 

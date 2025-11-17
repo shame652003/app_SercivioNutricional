@@ -1,4 +1,4 @@
-// screens/LoginScreen.js
+
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import Input from '../components/Input';
@@ -53,7 +53,7 @@ export default function LoginScreen({ navigation }) {
           value={contrasenia}
           onChangeText={handleContraseniaChange}
           onBlur={() => {
-            // Puedes agregar validar al hacer blur si quieres
+  
           }}
           error={ErrorContrasenia}
           iconError={ErrorContrasenia ? 'warning' : null}

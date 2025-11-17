@@ -18,7 +18,7 @@ export default function QRScannerModal({ visible, onClose, onCodeScanned }: QRSc
     })();
   }, []);
 
-  // Extrae solo los números al inicio del texto (antes del primer guion)
+
   const extraerCedula = (texto: string): string => {
     const match = texto.match(/^(\d+)/);
     return match ? match[0] : '';

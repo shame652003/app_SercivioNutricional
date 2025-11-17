@@ -1,4 +1,4 @@
-// AlimentoItem.js (Código actualizado)
+
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { API_URL} from '@env';
@@ -13,7 +13,7 @@ type Alimento = {
 
 interface Props {
   alimento: Alimento;
-  isLast?: boolean; // Nueva prop para controlar el separador
+  isLast?: boolean; 
 }
 
 const COLORS = {

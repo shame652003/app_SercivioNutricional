@@ -19,7 +19,7 @@ import QRScannerModal from '../components/QRScannerModal';
 
 
 export default function AsistenciasScreen({ navigation }) {
-  // Hooks para pruebas (todo estático)
+
   const { cedula, estudiante, handleCedulaChange, clear, setByQR } = useCedulaInput();
   const { 
     horarioSeleccionado, 
