@@ -13,7 +13,7 @@ import SocketGate from './socketGate';
 export default function App() {
   return (
     <SafeAreaProvider>
-      <StatusBar backgroundColor="#0033aa" barStyle="light-content" />
+      <StatusBar backgroundColor="#044aa6" />
       <FlashMessage position="center" />
       <ReduxProvider store={store}>
         <PaperProvider>

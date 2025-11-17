@@ -5,6 +5,7 @@ import axios from 'axios';
 import { encryptData } from '../security/crypto/encryptor';
 import { API_URL } from '@env';
 import { showMessage } from 'react-native-flash-message';
+import { useDispatch } from 'react-redux';
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/cambiarContrasenaPerfilApi.php`; 
 console.log(BACKEND_URL);
@@ -16,6 +17,7 @@ export default function useCambioContraseniaValidation(navigation) {
   const [ErrorContrasenia, setErrorContrasenia] = useState('');
   const [errorContrasenia1, setErrorContrasenia1] = useState('');
   const [errorContrasenia2, setErrorContrasenia2] = useState('');
+  const dispatch = useDispatch();
 
   const validarContrasenia = (value) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\*\-_\.\;\,\(\)\"@#\$=])[A-Za-z\d\*\-_\.\;\,\(\)\"@#\$=]{8,}$/;

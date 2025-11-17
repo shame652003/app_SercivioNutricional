@@ -5,6 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { encryptData } from '../security/crypto/encryptor';
 import axios from 'axios';
 import usePermisos from './usePermisos';
+import { useDispatch } from 'react-redux';
+
 
 const BACKEND_URL = `${API_URL}bin/controlador/api/homeApi.php`;
 
@@ -13,6 +15,7 @@ export default function useHome() {
   const [graficoDataA, setGraficoDataA] = useState([]);
   const [graficoDataM, setGraficoDataM] = useState([]);
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
   const { permiso } = usePermisos();
 

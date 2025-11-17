@@ -13,14 +13,13 @@ import LoadingModal from '../components/LoadingModal';
 export default function HomeScreen({ navigation }) {
   const { data, graficoDataA, graficoDataM, loading, tienePermiso } = useHome();
 
-  if (loading) {
+if (loading) {
   return (
     <View style={styles.loadingContainer}>
        <LoadingModal visible={loading} message="Cargando Datos, por favor espere..." />
     </View>
   );
 }
-
   return (
     <Container>
       <NavHead navigation={navigation} />
@@ -106,7 +105,7 @@ const styles = StyleSheet.create({
   flex: 1,
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundColor: '#1d7cdbff',
+  backgroundColor: '#044aa6',
   padding: 20,
 },
 loadingTitle: {
