@@ -48,7 +48,6 @@ export default function useRegistrarAsistencia(navigation): RegistrarAsistenciaR
       const dataVerificar = responseVerificar.data;
       console.log('Respuesta de verificación:', dataVerificar);
       
-      // Manejar el nuevo formato de respuesta
       if (dataVerificar && dataVerificar.resultado) {
         if (dataVerificar.resultado.toLowerCase().includes('ya ingreso')) {
           showMessage({
@@ -72,7 +71,6 @@ export default function useRegistrarAsistencia(navigation): RegistrarAsistenciaR
         return false;
       }
 
-      // 2. Registrar asistencia
       const datosRegistrar = {
         registrar: 'true',
         id: cedula,
@@ -99,8 +97,7 @@ export default function useRegistrarAsistencia(navigation): RegistrarAsistenciaR
          dispatch({ type: 'USER_SUCCESS', payload: null }); 
          return;
       }
-      
-      // Manejar el nuevo formato de respuesta
+
       if (dataRegistrar && dataRegistrar.resultado) {
         if (dataRegistrar.resultado.toLowerCase().includes('exitoso')) {
           setSuccess(true);

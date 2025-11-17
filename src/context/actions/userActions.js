@@ -5,7 +5,7 @@ import { encryptData } from '../../security/crypto/encryptor';
 import { API_URL } from '@env';
 
 const { jwtDecode } = require('jwt-decode');
-const BACKEND_URL = `${API_URL}/Servicio-Nutricional-Uptaeb/bin/controlador/api/loginApi.php`;
+const BACKEND_URL = `${API_URL}bin/controlador/api/loginApi.php`;
 console.log('BACKEND_URL:', BACKEND_URL);
 
 export const loginUser = (cedula, clave, navigation, showMessage) => async (dispatch) => {

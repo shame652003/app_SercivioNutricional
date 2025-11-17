@@ -110,29 +110,26 @@ export default function useCedulaInput() {
 
   const handleCedulaChange = (text: string) => {
     setCedula(text);
-    
-    // Cancelar la búsqueda anterior si existe
+
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
-    
-    // Si la cédula tiene 7 o más caracteres, programar la búsqueda con un retraso
+ 
     if (text.length >= 7) {
       searchTimeoutRef.current = setTimeout(() => {
         setLoading(true);
         buscarEstudiante(text);
-      }, 2000); // 2 segundos de retraso
+      }, 2000); 
     }
   };
 
   const setByQR = (qrCedula: string) => {
-    // Cancelar cualquier búsqueda pendiente al escanear QR
+
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
     
     setCedula(qrCedula);
-    // Búsqueda inmediata para QR
     buscarEstudiante(qrCedula);
     setLoading(true);
   };

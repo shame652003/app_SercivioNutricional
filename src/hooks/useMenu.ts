@@ -1,5 +1,4 @@
 
-// useMenusValidation.js
 import { useState, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { API_URL } from '@env';
@@ -16,260 +15,260 @@ const BACKEND_URL = `${API_URL}bin/controlador/api/consultarMenuApi.php`;
 const MENUS_PER_PAGE = 5;
 
 export type Menu = {
-  idMenu: number;
-  feMenu: string;
-  horarioComida: string;
-  cantPlatos: number;
-  descripcion: string;
+ idMenu: number;
+ feMenu: string;
+ horarioComida: string;
+ cantPlatos: number;
+ descripcion: string;
 };
 
 export type Alimento = {
-  idAlimento: number;
-  tipo?: string;
-  imgAlimento?: string;
-  nombre: string;
-  marca: string;
-  cantidad: string;
+ idAlimento: number;
+ tipo?: string;
+ imgAlimento?: string;
+ nombre: string;
+ marca: string;
+ cantidad: string;
 };
 
 export default function useMenusValidation(navigation) {
-  const [searchText, setSearchText] = useState('');
-  const [modalVisible, setModalVisible] = useState(false);
-  const [menuSeleccionadoInfo, setMenuSeleccionadoInfo] = useState<Menu | null>(null);
-  const [alimentosDelMenu, setAlimentosDelMenu] = useState<Alimento[]>([]);
-  const [menus, setMenus] = useState<Menu[]>([]); // Usamos este para la paginación
-  const [loadingMenus, setLoadingMenus] = useState(false);
-  const [loadingAlimentos, setLoadingAlimentos] = useState(false);
-  const [showDateFilter, setShowDateFilter] = useState(false);
-  const [fechaInicioFiltro, setFechaInicioFiltro] = useState<Date | undefined>(undefined);
-  const [fechaFinFiltro, setFechaFinFiltro] = useState<Date | undefined>(undefined);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const dispatch = useDispatch();
+ const [searchText, setSearchText] = useState('');
+ const [modalVisible, setModalVisible] = useState(false);
+ const [menuSeleccionadoInfo, setMenuSeleccionadoInfo] = useState<Menu | null>(null);
+ const [alimentosDelMenu, setAlimentosDelMenu] = useState<Alimento[]>([]);
+ const [menus, setMenus] = useState<Menu[]>([]); 
+ const [loadingMenus, setLoadingMenus] = useState(false);
+ const [loadingAlimentos, setLoadingAlimentos] = useState(false);
+ const [showDateFilter, setShowDateFilter] = useState(false);
+ const [fechaInicioFiltro, setFechaInicioFiltro] = useState<Date | undefined>(undefined);
+ const [fechaFinFiltro, setFechaFinFiltro] = useState<Date | undefined>(undefined);
+ const [currentPage, setCurrentPage] = useState(1);
+ const [hasMore, setHasMore] = useState(true);
+ const dispatch = useDispatch();
 
-  const quitarDuplicados = (menus: Menu[]) => {
-    const ids = new Set<number>();
-    return menus.filter(menu => {
-      if (ids.has(menu.idMenu)) return false;
-      ids.add(menu.idMenu);
-      return true;
-    });
-  };
+ const quitarDuplicados = (menus: Menu[]) => {
+  const ids = new Set<number>();
+  return menus.filter(menu => {
+   if (ids.has(menu.idMenu)) return false;
+   ids.add(menu.idMenu);
+   return true;
+  });
+ };
 
-  // 1. Nueva función de validación
-  const validarFechas = () => {
-    if (fechaInicioFiltro && fechaFinFiltro) {
-      // Convertimos a timestamp para la comparación
-      const inicioMs = fechaInicioFiltro.getTime();
-      const finMs = fechaFinFiltro.getTime();
 
-      if (inicioMs > finMs) {
-        // Muestra el Alert si la fecha de inicio es mayor que la fecha fin
+ const validarFechas = () => {
+  if (fechaInicioFiltro && fechaFinFiltro) {
+
+   const inicioMs = fechaInicioFiltro.getTime();
+   const finMs = fechaFinFiltro.getTime();
+
+   if (inicioMs > finMs) {
+ 
         showMessage({
           message: 'Error en Fechas',
           description: 'La fecha de inicio no puede ser posterior a la fecha de fin.',
           type: 'danger',
         });
         console.log('Fecha inicio es mayor que fecha fin');
-        return false;
-      }
-    }
-    return true;
-  };
+    return false;
+   }
+  }
+  return true;
+ };
 
-  const fetchMenus = async (
-    search: string,
-    fechaInicioStr: string = '',
-    fechaFinStr: string = '',
-    page: number = 1
-  ) => {
-    try {
-      // 3. Llamar a la validación antes de hacer el fetch
-      if (!validarFechas() && page === 1) {
-        // Si la validación falla y es la primera página (inicio de una nueva búsqueda), no hacemos el fetch
-        setMenus([]);
-        setHasMore(false);
-        setLoadingMenus(false); // Asegurar que el loading se detenga
-        return;
-      }
+ const fetchMenus = async (
+  search: string,
+  fechaInicioStr: string = '',
+  fechaFinStr: string = '',
+  page: number = 1
+ ) => {
+  try {
+ 
+   if (!validarFechas() && page === 1) {
 
-      setLoadingMenus(true);
+    setMenus([]);
+    setHasMore(false);
+    setLoadingMenus(false);
+    return;
+   }
 
-      let fechaInicio = '';
-      let fechaFin = '';
-      let horarioComida = null;
+   setLoadingMenus(true);
 
-      const trimmedSearch = search.trim();
+   let fechaInicio = '';
+   let fechaFin = '';
+   let horarioComida = null;
 
-      if (/^\d{4}-\d{2}-\d{2}$/.test(trimmedSearch)) {
-        fechaInicio = trimmedSearch;
-        fechaFin = trimmedSearch;
-      } else if (trimmedSearch.length > 0) {
-        horarioComida = trimmedSearch;
-      }
+   const trimmedSearch = search.trim();
 
-      if (fechaInicioStr && fechaFinStr) {
-        fechaInicio = fechaInicioStr;
-        fechaFin = fechaFinStr;
-        horarioComida = null;
-      }
+   if (/^\d{4}-\d{2}-\d{2}$/.test(trimmedSearch)) {
+    fechaInicio = trimmedSearch;
+    fechaFin = trimmedSearch;
+   } else if (trimmedSearch.length > 0) {
+    horarioComida = trimmedSearch;
+   }
 
-      const token = await AsyncStorage.getItem('token');
-      if (!token) throw new Error('Token no encontrado');
+   if (fechaInicioStr && fechaFinStr) {
+    fechaInicio = fechaInicioStr;
+    fechaFin = fechaFinStr;
+    horarioComida = null;
+   }
 
-      const payload = {
-        accion: 'buscarMenu',
-        fechaInicio,
-        fechaFin,
-        ...(horarioComida ? { horarioComida } : {}),
-        page, // Agregamos el parámetro de paginación
-        limit: MENUS_PER_PAGE,
-      };
+   const token = await AsyncStorage.getItem('token');
+   if (!token) throw new Error('Token no encontrado');
 
-      const encryptedPayload = encryptData(payload);
-      const formBody = new URLSearchParams();
-      formBody.append('datos', encryptedPayload);
+   const payload = {
+    accion: 'buscarMenu',
+    fechaInicio,
+    fechaFin,
+    ...(horarioComida ? { horarioComida } : {}),
+    page, // Agregamos el parámetro de paginación
+    limit: MENUS_PER_PAGE,
+   };
 
-      const response = await axios.post(
-        BACKEND_URL,
-        formBody.toString(),
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
-      );
-      console.log('Respuesta del servidor:', response.data);
+   const encryptedPayload = encryptData(payload);
+   const formBody = new URLSearchParams();
+   formBody.append('datos', encryptedPayload);
 
-      if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
-        Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
-        await AsyncStorage.removeItem('token');
-        dispatch({ type: 'USER_SUCCESS', payload: null });
-        return;
-      }
-      if (response.data.resultado === 'success') {
-        const nuevosMenus = quitarDuplicados(response.data.menus || []);
-        
-        if (page === 1) {
-          setMenus(nuevosMenus);
-        } else {
-          setMenus(prevMenus => [...prevMenus, ...nuevosMenus]);
-        }
-        setHasMore(nuevosMenus.length === MENUS_PER_PAGE);
-      } else {
-        setMenus([]);
-        setHasMore(false);
-        Alert.alert('Error', response.data.mensaje || 'Error al obtener menús');
-      }
-    } catch (error) {
-      setMenus([]);
-      setHasMore(false);
-      Alert.alert('Error', 'No se pudo conectar con el servidor');
-    } finally {
-      setLoadingMenus(false);
-    }
-  };
+   const response = await axios.post(
+    BACKEND_URL,
+    formBody.toString(),
+    {
+     headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+     },
+    }
+   );
+   console.log('Respuesta del servidor:', response.data);
 
-  const loadMoreMenus = () => {
-    if (!loadingMenus && hasMore) {
-      setCurrentPage(prevPage => prevPage + 1);
-    }
-  };
-  
-  // 2. Nuevo useEffect para validar las fechas cuando cambian
-  useEffect(() => {
-    // Llama a la validación cada vez que cambian las fechas
-    validarFechas(); 
-  }, [fechaInicioFiltro, fechaFinFiltro]);
+   if (response.data.resultado === 'error' && response.data.mensaje === 'Token no válido o expirado') {
+    Alert.alert('Error', 'Sesion expirada. Por favor, inicia sesión nuevamente.');
+    await AsyncStorage.removeItem('token');
+    dispatch({ type: 'USER_SUCCESS', payload: null });
+    return;
+   }
+   if (response.data.resultado === 'success') {
+    const nuevosMenus = quitarDuplicados(response.data.menus || []);
+    
+    if (page === 1) {
+     setMenus(nuevosMenus);
+    } else {
+     setMenus(prevMenus => [...prevMenus, ...nuevosMenus]);
+    }
+    setHasMore(nuevosMenus.length === MENUS_PER_PAGE);
+   } else {
+    setMenus([]);
+    setHasMore(false);
+    Alert.alert('Error', response.data.mensaje || 'Error al obtener menús');
+   }
+  } catch (error) {
+   setMenus([]);
+   setHasMore(false);
+   Alert.alert('Error', 'No se pudo conectar con el servidor');
+  } finally {
+   setLoadingMenus(false);
+  }
+ };
+
+ const loadMoreMenus = () => {
+  if (!loadingMenus && hasMore) {
+   setCurrentPage(prevPage => prevPage + 1);
+  }
+ };
+ 
+
+ useEffect(() => {
+ 
+  validarFechas(); 
+ }, [fechaInicioFiltro, fechaFinFiltro]);
 
 
-  useEffect(() => {
-    fetchMenus(searchText, fechaInicioFiltro?.toISOString().slice(0, 10), fechaFinFiltro?.toISOString().slice(0, 10), currentPage);
-  }, [currentPage, searchText, fechaInicioFiltro, fechaFinFiltro]);
+ useEffect(() => {
+  fetchMenus(searchText, fechaInicioFiltro?.toISOString().slice(0, 10), fechaFinFiltro?.toISOString().slice(0, 10), currentPage);
+ }, [currentPage, searchText, fechaInicioFiltro, fechaFinFiltro]);
 
-  const menusFiltrados = useMemo(() => {
-    const texto = searchText.trim().toLowerCase();
-    if (showDateFilter) {
-      return menus;
-    }
-    if (texto === '') {
-      return menus;
-    } else {
-      return menus.filter(
-        (menu) =>
-          menu.horarioComida.toLowerCase().includes(texto) ||
-          menu.descripcion.toLowerCase().includes(texto) ||
-          menu.feMenu.includes(texto)
-      );
-    }
-  }, [searchText, menus, showDateFilter]);
+ const menusFiltrados = useMemo(() => {
+  const texto = searchText.trim().toLowerCase();
+  if (showDateFilter) {
+   return menus;
+  }
+  if (texto === '') {
+   return menus;
+  } else {
+   return menus.filter(
+    (menu) =>
+     menu.horarioComida.toLowerCase().includes(texto) ||
+     menu.descripcion.toLowerCase().includes(texto) ||
+     menu.feMenu.includes(texto)
+   );
+  }
+ }, [searchText, menus, showDateFilter]);
 
-  const ocultarFiltro = () => {
-    setShowDateFilter(false);
-    setFechaInicioFiltro(undefined);
-    setFechaFinFiltro(undefined);
-    setCurrentPage(1); // Reiniciar paginación al ocultar el filtro
-    setSearchText('');
-  };
+ const ocultarFiltro = () => {
+  setShowDateFilter(false);
+  setFechaInicioFiltro(undefined);
+  setFechaFinFiltro(undefined);
+  setCurrentPage(1); 
+  setSearchText('');
+ };
 
-   const seleccionarMenu = async (menu: Menu) => {
-    try {
-      setLoadingAlimentos(true);
-      setMenuSeleccionadoInfo(menu);
+ const seleccionarMenu = async (menu: Menu) => {
+  try {
+   setLoadingAlimentos(true);
+   setMenuSeleccionadoInfo(menu);
 
-      const token = await AsyncStorage.getItem('token');
-      if (!token) throw new Error('Token no encontrado');
+   const token = await AsyncStorage.getItem('token');
+   if (!token) throw new Error('Token no encontrado');
 
-      const payload = {
-        mostrarMenu: true,
-        idMenu: menu.idMenu,
-      };
+   const payload = {
+    mostrarMenu: true,
+    idMenu: menu.idMenu,
+   };
 
-      const encryptedPayload = encryptData(payload);
-      const formBody = new URLSearchParams();
-      formBody.append('infoMenuModal', encryptedPayload);
+   const encryptedPayload = encryptData(payload);
+   const formBody = new URLSearchParams();
+   formBody.append('infoMenuModal', encryptedPayload);
 
-      const response = await axios.post(
-        BACKEND_URL,
-        formBody.toString(),
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
-      );
+   const response = await axios.post(
+    BACKEND_URL,
+    formBody.toString(),
+    {
+     headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+     },
+    }
+   );
 
-      if (response.data && Array.isArray(response.data)) {
-        setAlimentosDelMenu(response.data);
-        setModalVisible(true);
-      } else {
-        Alert.alert('Error', 'No se pudo obtener el detalle del menú');
-      }
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo conectar con el servidor para obtener detalles');
-    } finally {
-      setLoadingAlimentos(false);
-    }
-  };
+   if (response.data && Array.isArray(response.data)) {
+    setAlimentosDelMenu(response.data);
+    setModalVisible(true);
+   } else {
+    Alert.alert('Error', 'No se pudo obtener el detalle del menú');
+   }
+  } catch (error) {
+   Alert.alert('Error', 'No se pudo conectar con el servidor para obtener detalles');
+  } finally {
+   setLoadingAlimentos(false);
+  }
+ };
 
-  const cerrarModal = () => {
-    setModalVisible(false);
-    setMenuSeleccionadoInfo(null);
-    setAlimentosDelMenu([]);
-  };
+ const cerrarModal = () => {
+  setModalVisible(false);
+  setMenuSeleccionadoInfo(null);
+  setAlimentosDelMenu([]);
+ };
 
-  const alimentosPorTipo = useMemo(() => {
-    if (!alimentosDelMenu || alimentosDelMenu.length === 0) return {};
+ const alimentosPorTipo = useMemo(() => {
+  if (!alimentosDelMenu || alimentosDelMenu.length === 0) return {};
 
-    return alimentosDelMenu.reduce<Record<string, Alimento[]>>((acc, alimento) => {
-      const tipo = alimento.tipo || 'Sin Tipo';
-      if (!acc[tipo]) acc[tipo] = [];
-      acc[tipo].push(alimento);
-      return acc;
-    }, {});
-  }, [alimentosDelMenu]);
+  return alimentosDelMenu.reduce<Record<string, Alimento[]>>((acc, alimento) => {
+   const tipo = alimento.tipo || 'Sin Tipo';
+   if (!acc[tipo]) acc[tipo] = [];
+   acc[tipo].push(alimento);
+   return acc;
+  }, {});
+ }, [alimentosDelMenu]);
 
   const generarPdfPlano = async (
     menu: Menu,

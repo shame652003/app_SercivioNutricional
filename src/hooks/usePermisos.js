@@ -6,7 +6,7 @@ import { encryptData } from '../security/crypto/encryptor';
 import axios from 'axios';
 import { useSelector } from 'react-redux'; 
 
-const BACKEND_URL = `${API_URL}/Servicio-Nutricional-Uptaeb/bin/controlador/api/permisoApi.php`;
+const BACKEND_URL = `${API_URL}bin/controlador/api/permisoApi.php`;
 
 export default function usePermisos() {
   const [permiso, setPermiso] = useState(null);

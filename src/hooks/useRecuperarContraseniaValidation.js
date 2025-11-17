@@ -11,7 +11,7 @@ const BACKEND_URL = `${API_URL}bin/controlador/api/recuperarContraseñaApi.php`;
 
 export default function useRecuperarContrasenaValidation(navigation) {
   const [email, setEmail, errorEmail, setErrorEmail, validarEmail, resetEmail] = useValidarEmail();
-  const [loading, setLoading] = useState(false); // 👈 Nuevo estado loading
+  const [loading, setLoading] = useState(false);
 
   const handleEmailChange = (text) => {
     setEmail(text);
@@ -89,7 +89,7 @@ export default function useRecuperarContrasenaValidation(navigation) {
   return {
     email,
     errorEmail,
-    loading, // 👈 Devuelve el loading
+    loading, 
     handleEmailChange,
     recuperarPassword,
   };
